@@ -1,6 +1,5 @@
-import { motion, useScroll, useTransform, useInView } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { useRef } from 'react'
 import { 
   Shield, 
   Users, 
@@ -11,7 +10,6 @@ import {
   Baby,
   Microscope,
   Activity,
-  Zap,
   Globe,
   Star,
   Award,
