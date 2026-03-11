@@ -26,19 +26,19 @@
   }
   
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200;
+    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 hover:shadow-md transition-shadow duration-200;
   }
   
   .card-primary {
-    @apply bg-gradient-to-br from-pink-50 to-white rounded-xl shadow-sm border border-pink-100 p-6;
+    @apply bg-gradient-to-br from-pink-50 to-white rounded-xl shadow-sm border border-pink-100 p-4 lg:p-6;
   }
   
   .card-secondary {
-    @apply bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-sm border border-blue-100 p-6;
+    @apply bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-sm border border-blue-100 p-4 lg:p-6;
   }
   
   .card-accent {
-    @apply bg-gradient-to-br from-orange-50 to-white rounded-xl shadow-sm border border-orange-100 p-6;
+    @apply bg-gradient-to-br from-orange-50 to-white rounded-xl shadow-sm border border-orange-100 p-4 lg:p-6;
   }
   
   .section-primary {
@@ -55,6 +55,24 @@
   
   .section-nature {
     @apply bg-gradient-to-br from-green-50 to-pink-50;
+  }
+
+  /* Mobile-first responsive utilities */
+  .mobile-container {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  .mobile-text {
+    @apply text-sm sm:text-base;
+  }
+
+  .mobile-heading {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+
+  /* Ensure proper touch targets on mobile */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
   }
 
   /* Video background styles */
@@ -76,6 +94,16 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+    
+    /* Better mobile spacing */
+    .mobile-section {
+      @apply py-12 px-4;
+    }
+    
+    /* Mobile-friendly buttons */
+    .btn-mobile {
+      @apply px-6 py-3 text-base min-h-[48px];
     }
   }
 

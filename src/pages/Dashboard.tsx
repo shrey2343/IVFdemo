@@ -24,18 +24,18 @@ const Dashboard = () => {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-2">Overview of your IVF practice analytics</p>
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-gray-600 mt-1 lg:mt-2 text-sm lg:text-base">Overview of your IVF practice analytics</p>
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         {stats.map((stat, index) => (
           <motion.div
             key={stat.name}
@@ -45,21 +45,21 @@ const Dashboard = () => {
             className="card"
           >
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{stat.name}</p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs lg:text-sm font-medium text-gray-600 truncate">{stat.name}</p>
+                <p className="text-xl lg:text-2xl font-bold text-gray-900">{stat.value}</p>
               </div>
-              <div className="h-12 w-12 bg-pink-50 rounded-lg flex items-center justify-center">
-                <stat.icon className="h-6 w-6 text-pink-600" />
+              <div className="h-10 w-10 lg:h-12 lg:w-12 bg-pink-50 rounded-lg flex items-center justify-center flex-shrink-0 ml-3">
+                <stat.icon className="h-5 w-5 lg:h-6 lg:w-6 text-pink-600" />
               </div>
             </div>
-            <div className="mt-4 flex items-center">
-              <span className={`text-sm font-medium ${
+            <div className="mt-3 lg:mt-4 flex items-center">
+              <span className={`text-xs lg:text-sm font-medium ${
                 stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
               }`}>
                 {stat.change}
               </span>
-              <span className="text-sm text-gray-500 ml-2">from last month</span>
+              <span className="text-xs lg:text-sm text-gray-500 ml-2 truncate">from last month</span>
             </div>
           </motion.div>
         ))}
@@ -72,8 +72,45 @@ const Dashboard = () => {
         transition={{ duration: 0.5, delay: 0.4 }}
         className="card"
       >
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Test Results</h2>
-        <div className="overflow-x-auto">
+        <h2 className="text-lg lg:text-xl font-semibold text-gray-900 mb-4">Recent Test Results</h2>
+        
+        {/* Mobile Card View */}
+        <div className="block lg:hidden space-y-3">
+          {recentTests.map((test) => (
+            <div key={test.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-medium text-gray-900 text-sm">{test.patient}</h3>
+                <div className="flex items-center">
+                  {test.status === 'completed' && (
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+                  )}
+                  {test.status === 'review' && (
+                    <AlertCircle className="h-4 w-4 text-orange-500 mr-1" />
+                  )}
+                  {test.status === 'pending' && (
+                    <Calendar className="h-4 w-4 text-gray-400 mr-1" />
+                  )}
+                  <span className={`text-xs capitalize ${
+                    test.status === 'completed' ? 'text-green-600' :
+                    test.status === 'review' ? 'text-orange-600' :
+                    'text-gray-500'
+                  }`}>
+                    {test.status}
+                  </span>
+                </div>
+              </div>
+              <div className="text-sm text-gray-600 mb-1">
+                <span className="font-medium">Test:</span> {test.test}
+              </div>
+              <div className="text-sm text-gray-900">
+                <span className="font-medium">Result:</span> {test.result}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
