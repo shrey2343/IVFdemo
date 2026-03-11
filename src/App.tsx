@@ -1,0 +1,86 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { AuthProvider } from './contexts/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import Layout from './components/Layout'
+import PublicLayout from './components/PublicLayout'
+import Landing from './pages/Landing'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import Blog from './pages/Blog'
+import Contact from './pages/Contact'
+import Terms from './pages/Terms'
+import Dashboard from './pages/Dashboard'
+import TestAnalysis from './pages/TestAnalysis'
+import PatientRecords from './pages/PatientRecords'
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="min-h-screen bg-gray-50"
+        >
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={
+              <PublicLayout>
+                <Landing />
+              </PublicLayout>
+            } />
+            <Route path="/blog" element={
+              <PublicLayout>
+                <Blog />
+              </PublicLayout>
+            } />
+            <Route path="/contact" element={
+              <PublicLayout>
+                <Contact />
+              </PublicLayout>
+            } />
+            <Route path="/terms" element={
+              <PublicLayout>
+                <Terms />
+              </PublicLayout>
+            } />
+            
+            {/* Auth Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/analysis" element={
+              <ProtectedRoute>
+                <Layout>
+                  <TestAnalysis />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/patients" element={
+              <ProtectedRoute>
+                <Layout>
+                  <PatientRecords />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Redirect old routes */}
+            <Route path="/app/*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </motion.div>
+      </Router>
+    </AuthProvider>
+  )
+}
+
+export default App
