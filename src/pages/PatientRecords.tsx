@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { 
   Search, 
   Plus, 
@@ -14,6 +15,7 @@ import {
 const PatientRecords = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedFilter, setSelectedFilter] = useState('all')
+  const navigate = useNavigate()
 
   const patients = [
     {
@@ -187,7 +189,10 @@ const PatientRecords = () => {
               </div>
 
               <div className="flex space-x-2">
-                <button className="flex-1 btn-primary text-sm">
+                <button 
+                  onClick={() => navigate(`/patients/${patient.id}`)}
+                  className="flex-1 btn-primary text-sm"
+                >
                   View Details
                 </button>
                 <button className="btn-secondary text-sm flex items-center space-x-1">

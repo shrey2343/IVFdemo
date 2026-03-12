@@ -14,6 +14,7 @@ import Terms from './pages/Terms'
 import Dashboard from './pages/Dashboard'
 import TestAnalysis from './pages/TestAnalysis'
 import PatientRecords from './pages/PatientRecords'
+import PatientDetails from './pages/PatientDetails'
 import AddPatient from './pages/AddPatient'
 import Settings from './pages/Settings'
 import Billing from './pages/Billing'
@@ -75,6 +76,13 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <PatientRecords />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/patients/:id" element={
+              <ProtectedRoute>
+                <Layout>
+                  <PatientDetails />
                 </Layout>
               </ProtectedRoute>
             } />
