@@ -42,7 +42,7 @@ const Landing = () => {
     'Treatment outcome predictions',
     'Patient progress tracking',
     'Secure data management',
-    'Mobile-responsive design'
+  
   ]
 
   return (
@@ -99,9 +99,6 @@ const Landing = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/signup" className="btn-primary text-lg px-8 py-4 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200">
                 Start Your Journey
-              </Link>
-              <Link to="/contact" className="btn-accent text-lg px-8 py-4 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200">
-                Schedule Consultation
               </Link>
             </div>
           </motion.div>
@@ -220,7 +217,7 @@ const Landing = () => {
                   to="/signup" 
                   className="btn-primary w-full flex items-center justify-center space-x-2"
                 >
-                  <span>Start Free Trial</span>
+                  <span>Start your journey</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
