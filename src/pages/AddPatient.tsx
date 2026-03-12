@@ -42,10 +42,10 @@ const AddPatient = () => {
     medications: '',
     allergies: '',
     
-    // Test Files
-    pgtaFile: null,
-    pgtmFile: null,
-    pgtsrFile: null,
+    // Genetic Test Selection
+    selectedGeneticTests: [], // Array for PGT-A and PGT-M
+    selectedStructuralTest: null, // For PGT-SR
+    testReportFiles: [], // Array of files for selected tests
     
     // Embryo Images
     embryoImages: []
@@ -116,9 +116,9 @@ const AddPatient = () => {
       otherConditions: '',
       medications: '',
       allergies: '',
-      pgtaFile: null,
-      pgtmFile: null,
-      pgtsrFile: null,
+      selectedGeneticTests: [],
+      selectedStructuralTest: null,
+      testReportFiles: [],
       embryoImages: []
     })
     setCurrentSection(0)
@@ -495,31 +495,134 @@ const ComorbiditiesSection = ({ formData, onChange }: any) => (
 )
 // Tests Section Component
 const TestsSection = ({ formData, onFileUpload }: any) => {
-  const tests = [
+  const [selectedGeneticTests, setSelectedGeneticTests] = useState<string[]>(
+    formData.selectedGeneticTests || []
+  )
+  const [selectedStructuralTest, setSelectedStructuralTest] = useState<string | null>(
+    formData.selectedStructuralTest || null
+  )
+
+  const geneticTests = [
     {
-      key: 'pgtaFile',
+      key: 'pgt-a',
       title: 'PGT-A (Preimplantation Genetic Testing for Aneuploidy)',
       description: 'Screens embryos for chromosomal abnormalities',
-      color: 'blue'
+      cost: '₹2,000 – ₹8,000 per embryo',
+      colors: {
+        border: 'border-blue-500',
+        borderHover: 'hover:border-blue-300',
+        borderDefault: 'border-blue-200',
+        bg: 'bg-blue-50',
+        bgHover: 'hover:bg-blue-25',
+        iconBg: 'bg-blue-100',
+        text: 'text-blue-700',
+        badgeBg: 'bg-blue-100',
+        badgeText: 'text-blue-800'
+      },
+      icon: '🧬'
     },
     {
-      key: 'pgtmFile',
+      key: 'pgt-m',
       title: 'PGT-M (Preimplantation Genetic Testing for Monogenic)',
       description: 'Tests for specific genetic disorders',
-      color: 'green'
-    },
-    {
-      key: 'pgtsrFile',
-      title: 'PGT-SR (Preimplantation Genetic Testing for Structural Rearrangements)',
-      description: 'Detects chromosomal structural abnormalities',
-      color: 'purple'
+      cost: '₹5,000 – ₹20,000 per case/family',
+      colors: {
+        border: 'border-green-500',
+        borderHover: 'hover:border-green-300',
+        borderDefault: 'border-green-200',
+        bg: 'bg-green-50',
+        bgHover: 'hover:bg-green-25',
+        iconBg: 'bg-green-100',
+        text: 'text-green-700',
+        badgeBg: 'bg-green-100',
+        badgeText: 'text-green-800'
+      },
+      icon: '🔬'
     }
   ]
 
+  const structuralTest = {
+    key: 'pgt-sr',
+    title: 'PGT-SR (Preimplantation Genetic Testing for Structural Rearrangements)',
+    description: 'Detects chromosomal structural abnormalities',
+    cost: '₹4,000 – ₹15,000 per embryo',
+    colors: {
+      border: 'border-purple-500',
+      borderHover: 'hover:border-purple-300',
+      borderDefault: 'border-purple-200',
+      bg: 'bg-purple-50',
+      bgHover: 'hover:bg-purple-25',
+      iconBg: 'bg-purple-100',
+      text: 'text-purple-700',
+      badgeBg: 'bg-purple-100',
+      badgeText: 'text-purple-800'
+    },
+    icon: '🧪'
+  }
+
+  const handleGeneticTestSelection = (testKey: string) => {
+    const newSelection = selectedGeneticTests.includes(testKey)
+      ? selectedGeneticTests.filter(t => t !== testKey)
+      : [...selectedGeneticTests, testKey]
+    
+    setSelectedGeneticTests(newSelection)
+    onFileUpload('selectedGeneticTests', newSelection)
+    
+    // If selecting genetic tests, clear structural test
+    if (newSelection.length > 0 && selectedStructuralTest) {
+      setSelectedStructuralTest(null)
+      onFileUpload('selectedStructuralTest', null)
+      // Remove PGT-SR file if it exists
+      const currentFiles = formData.testReportFiles || []
+      const newFiles = currentFiles.filter((f: any) => f.testKey !== 'pgt-sr')
+      onFileUpload('testReportFiles', newFiles)
+    }
+  }
+
+  const handleStructuralTestSelection = (testKey: string) => {
+    const newSelection = selectedStructuralTest === testKey ? null : testKey
+    setSelectedStructuralTest(newSelection)
+    onFileUpload('selectedStructuralTest', newSelection)
+    
+    // If selecting structural test, clear genetic tests
+    if (newSelection && selectedGeneticTests.length > 0) {
+      setSelectedGeneticTests([])
+      onFileUpload('selectedGeneticTests', [])
+      // Remove genetic test files if they exist
+      const currentFiles = formData.testReportFiles || []
+      const newFiles = currentFiles.filter((f: any) => !['pgt-a', 'pgt-m'].includes(f.testKey))
+      onFileUpload('testReportFiles', newFiles)
+    }
+  }
+
   const handleFileChange = (testKey: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null
-    onFileUpload(testKey, file)
+    const currentFiles = formData.testReportFiles || []
+    
+    if (file) {
+      // Add or update file for this test
+      const newFiles = currentFiles.filter((f: any) => f.testKey !== testKey)
+      newFiles.push({ testKey, file, fileName: file.name })
+      onFileUpload('testReportFiles', newFiles)
+    } else {
+      // Remove file for this test
+      const newFiles = currentFiles.filter((f: any) => f.testKey !== testKey)
+      onFileUpload('testReportFiles', newFiles)
+    }
   }
+
+  const getFileForTest = (testKey: string) => {
+    const files = formData.testReportFiles || []
+    return files.find((f: any) => f.testKey === testKey)
+  }
+
+  const removeFileForTest = (testKey: string) => {
+    const currentFiles = formData.testReportFiles || []
+    const newFiles = currentFiles.filter((f: any) => f.testKey !== testKey)
+    onFileUpload('testReportFiles', newFiles)
+  }
+
+  const selectedTests = [...selectedGeneticTests, ...(selectedStructuralTest ? [selectedStructuralTest] : [])]
 
   return (
     <div>
@@ -528,88 +631,256 @@ const TestsSection = ({ formData, onFileUpload }: any) => {
         <h2 className="text-2xl font-bold text-gray-900">Genetic Tests</h2>
       </div>
       
-      <div className="space-y-6">
-        {tests.map((test) => (
-          <motion.div
-            key={test.key}
-            whileHover={{ scale: 1.01 }}
-            className={`border-2 border-${test.color}-200 rounded-xl p-6 hover:border-${test.color}-300 transition-all duration-200`}
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className={`text-lg font-semibold text-${test.color}-700 mb-2`}>
-                  {test.title}
-                </h3>
-                <p className="text-gray-600 text-sm">{test.description}</p>
-              </div>
-              <div className={`w-12 h-12 bg-${test.color}-100 rounded-lg flex items-center justify-center`}>
-                <FileText className={`h-6 w-6 text-${test.color}-600`} />
-              </div>
-            </div>
-            
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload FastQ File
-              </label>
-              <div className="relative">
-                <input
-                  type="file"
-                  accept=".fastq,.fq,.fastq.gz,.fq.gz"
-                  onChange={(e) => handleFileChange(test.key, e)}
-                  className="hidden"
-                  id={`file-${test.key}`}
-                />
-                <label
-                  htmlFor={`file-${test.key}`}
-                  className={`flex items-center justify-center w-full px-6 py-4 border-2 border-dashed border-${test.color}-300 rounded-lg cursor-pointer hover:border-${test.color}-400 hover:bg-${test.color}-50 transition-all duration-200`}
-                >
-                  <div className="text-center">
-                    <Upload className={`h-8 w-8 text-${test.color}-500 mx-auto mb-2`} />
-                    <p className="text-sm font-medium text-gray-700">
-                      {formData[test.key] ? formData[test.key].name : 'Click to upload FastQ file'}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Supports .fastq, .fq, .fastq.gz, .fq.gz files
-                    </p>
-                  </div>
-                </label>
-              </div>
+      <div className="space-y-8">
+        {/* Genetic Tests Section (PGT-A and PGT-M) */}
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Genetic Tests (Can select multiple)
+          </h3>
+          <p className="text-sm text-gray-600 mb-4">
+            You can select both PGT-A and PGT-M tests for comprehensive genetic analysis.
+            {selectedStructuralTest && (
+              <span className="text-orange-600 font-medium"> Note: Cannot combine with structural test below.</span>
+            )}
+          </p>
+          
+          <div className="grid grid-cols-1 gap-4">
+            {geneticTests.map((test) => {
+              const isDisabled = selectedStructuralTest !== null
+              const isSelected = selectedGeneticTests.includes(test.key)
               
-              {formData[test.key] && (
-                <div className={`mt-3 p-3 bg-${test.color}-50 rounded-lg border border-${test.color}-200`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <FileText className={`h-4 w-4 text-${test.color}-600 mr-2`} />
-                      <span className="text-sm font-medium text-gray-700">
-                        {formData[test.key].name}
-                      </span>
+              return (
+                <motion.div
+                  key={test.key}
+                  whileHover={!isDisabled ? { scale: 1.01 } : {}}
+                  whileTap={!isDisabled ? { scale: 0.99 } : {}}
+                  onClick={() => !isDisabled && handleGeneticTestSelection(test.key)}
+                  className={`relative border-2 rounded-xl p-6 transition-all duration-200 ${
+                    isDisabled
+                      ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                      : isSelected
+                        ? `${test.colors.border} ${test.colors.bg} shadow-md cursor-pointer`
+                        : `${test.colors.borderDefault} ${test.colors.borderHover} ${test.colors.bgHover} cursor-pointer`
+                  }`}
+                >
+                  {/* Selection Checkbox */}
+                  <div className="absolute top-4 right-4">
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                      isSelected && !isDisabled
+                        ? `${test.colors.border} bg-blue-500`
+                        : `border-gray-300`
+                    }`}>
+                      {isSelected && !isDisabled && (
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
                     </div>
-                    <button
-                      onClick={() => onFileUpload(test.key, null)}
-                      className="text-red-600 hover:text-red-700 text-sm"
-                    >
-                      Remove
-                    </button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Size: {(formData[test.key].size / 1024 / 1024).toFixed(2)} MB
-                  </p>
+
+                  <div className="flex items-start space-x-4">
+                    <div className={`w-16 h-16 ${isDisabled ? 'bg-gray-200' : test.colors.iconBg} rounded-xl flex items-center justify-center text-2xl`}>
+                      {test.icon}
+                    </div>
+                    
+                    <div className="flex-1">
+                      <h4 className={`text-lg font-semibold mb-2 ${
+                        isDisabled
+                          ? 'text-gray-400'
+                          : isSelected 
+                            ? test.colors.text 
+                            : 'text-gray-900'
+                      }`}>
+                        {test.title}
+                      </h4>
+                      <p className={`text-sm mb-3 ${isDisabled ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {test.description}
+                      </p>
+                      <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                        isDisabled
+                          ? 'bg-gray-200 text-gray-500'
+                          : isSelected
+                            ? `${test.colors.badgeBg} ${test.colors.badgeText}`
+                            : 'bg-gray-100 text-gray-700'
+                      }`}>
+                        Cost: {test.cost}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Structural Test Section (PGT-SR) */}
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Structural Rearrangement Test (Separate selection)
+          </h3>
+          <p className="text-sm text-gray-600 mb-4">
+            This test is performed separately and cannot be combined with the genetic tests above.
+            {selectedGeneticTests.length > 0 && (
+              <span className="text-orange-600 font-medium"> Note: Cannot combine with genetic tests above.</span>
+            )}
+          </p>
+          
+          {(() => {
+            const isDisabled = selectedGeneticTests.length > 0
+            const isSelected = selectedStructuralTest === structuralTest.key
+            
+            return (
+              <motion.div
+                whileHover={!isDisabled ? { scale: 1.01 } : {}}
+                whileTap={!isDisabled ? { scale: 0.99 } : {}}
+                onClick={() => !isDisabled && handleStructuralTestSelection(structuralTest.key)}
+                className={`relative border-2 rounded-xl p-6 transition-all duration-200 ${
+                  isDisabled
+                    ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                    : isSelected
+                      ? `${structuralTest.colors.border} ${structuralTest.colors.bg} shadow-md cursor-pointer`
+                      : `${structuralTest.colors.borderDefault} ${structuralTest.colors.borderHover} ${structuralTest.colors.bgHover} cursor-pointer`
+                }`}
+              >
+                {/* Selection Radio Button */}
+                <div className="absolute top-4 right-4">
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    isSelected && !isDisabled
+                      ? `${structuralTest.colors.border} bg-purple-500`
+                      : `border-gray-300`
+                  }`}>
+                    {isSelected && !isDisabled && (
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    )}
+                  </div>
                 </div>
-              )}
-            </div>
-          </motion.div>
-        ))}
+
+                <div className="flex items-start space-x-4">
+                  <div className={`w-16 h-16 ${isDisabled ? 'bg-gray-200' : structuralTest.colors.iconBg} rounded-xl flex items-center justify-center text-2xl`}>
+                    {structuralTest.icon}
+                  </div>
+                  
+                  <div className="flex-1">
+                    <h4 className={`text-lg font-semibold mb-2 ${
+                      isDisabled
+                        ? 'text-gray-400'
+                        : isSelected 
+                          ? structuralTest.colors.text 
+                          : 'text-gray-900'
+                    }`}>
+                      {structuralTest.title}
+                    </h4>
+                    <p className={`text-sm mb-3 ${isDisabled ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {structuralTest.description}
+                    </p>
+                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                      isDisabled
+                        ? 'bg-gray-200 text-gray-500'
+                        : isSelected
+                          ? `${structuralTest.colors.badgeBg} ${structuralTest.colors.badgeText}`
+                          : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      Cost: {structuralTest.cost}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })()}
+        </div>
+
+        {/* File Upload Section - Show for each selected test */}
+        {selectedTests.length > 0 && (
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Upload Test Reports
+            </h3>
+            
+            {selectedTests.map((testKey) => {
+              const test = [...geneticTests, structuralTest].find(t => t.key === testKey)
+              const fileData = getFileForTest(testKey)
+              
+              return (
+                <motion.div
+                  key={testKey}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-white border border-gray-200 rounded-xl p-6"
+                >
+                  <h4 className="text-md font-semibold text-gray-900 mb-4">
+                    {test?.title} Report
+                  </h4>
+                  
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.fastq,.fq,.fastq.gz,.fq.gz"
+                      onChange={(e) => handleFileChange(testKey, e)}
+                      className="hidden"
+                      id={`test-report-file-${testKey}`}
+                    />
+                    <label
+                      htmlFor={`test-report-file-${testKey}`}
+                      className="flex items-center justify-center w-full px-6 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-pink-400 hover:bg-pink-50 transition-all duration-200"
+                    >
+                      <div className="text-center">
+                        <Upload className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+                        <p className="text-md font-medium text-gray-700 mb-1">
+                          {fileData ? 'Change Report File' : 'Click to upload test report'}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          PDF, DOC, DOCX, Images, FastQ files (Max: 100MB)
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+                  
+                  {fileData && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <FileText className="h-5 w-5 text-green-600 mr-3" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {fileData.fileName}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Size: {(fileData.file.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => removeFileForTest(testKey)}
+                          className="text-red-600 hover:text-red-700 text-sm font-medium"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              )
+            })}
+          </div>
+        )}
         
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        {/* Guidelines */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-start">
-            <AlertCircle className="h-5 w-5 text-yellow-600 mr-3 mt-0.5" />
+            <AlertCircle className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
             <div>
-              <h4 className="text-sm font-semibold text-yellow-800">File Upload Guidelines</h4>
-              <ul className="text-sm text-yellow-700 mt-2 space-y-1">
-                <li>• FastQ files should be quality-checked before upload</li>
-                <li>• Maximum file size: 500MB per file</li>
-                <li>• Compressed files (.gz) are recommended for faster upload</li>
-                <li>• Ensure file names are descriptive and include sample ID</li>
+              <h4 className="text-sm font-semibold text-blue-800 mb-2">Test Selection Rules</h4>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• <strong>Valid combinations:</strong> PGT-A only, PGT-M only, PGT-A + PGT-M together, or PGT-SR only</li>
+                <li>• <strong>Cannot combine:</strong> Genetic tests (PGT-A/PGT-M) with structural test (PGT-SR)</li>
+                <li>• Upload separate report files for each selected test</li>
+                <li>• Ensure file quality is clear and readable</li>
+                <li>• Include patient ID and test date in filenames if possible</li>
               </ul>
             </div>
           </div>

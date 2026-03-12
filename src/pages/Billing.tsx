@@ -241,6 +241,164 @@ const Billing = () => {
         ))}
       </div>
 
+      {/* Genetic Testing Costs */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Genetic Testing Costs</h2>
+            <p className="text-sm text-gray-600 mt-1">NGS Data Analysis pricing for genetic testing services</p>
+          </div>
+          <div className="text-sm text-gray-500">
+            Prices in Indian Rupees (₹)
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Test Code
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Full Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Cost Range
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Cost Type
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              <tr className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-blue-600 font-bold text-xs">PGT-A</span>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">PGT-A</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900 font-medium">Preimplantation Genetic Testing for Aneuploidy</div>
+                  <div className="text-xs text-gray-500 mt-1">Chromosomal abnormality screening</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-bold text-gray-900">₹2,000 – ₹8,000</div>
+                  <div className="text-xs text-gray-500">Average: ₹5,000</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                    Per embryo
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <button className="text-pink-600 hover:text-pink-700 font-medium mr-3">
+                    Request Quote
+                  </button>
+                  <button className="text-gray-600 hover:text-gray-700 font-medium">
+                    Details
+                  </button>
+                </td>
+              </tr>
+              
+              <tr className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-green-600 font-bold text-xs">PGT-M</span>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">PGT-M</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900 font-medium">Preimplantation Genetic Testing for Monogenic Disorders</div>
+                  <div className="text-xs text-gray-500 mt-1">Single gene disorder testing</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-bold text-gray-900">₹5,000 – ₹20,000</div>
+                  <div className="text-xs text-gray-500">Average: ₹12,500</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                    Per case / family
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <button className="text-pink-600 hover:text-pink-700 font-medium mr-3">
+                    Request Quote
+                  </button>
+                  <button className="text-gray-600 hover:text-gray-700 font-medium">
+                    Details
+                  </button>
+                </td>
+              </tr>
+              
+              <tr className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-purple-600 font-bold text-xs">PGT-SR</span>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">PGT-SR</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900 font-medium">Preimplantation Genetic Testing for Structural Rearrangements</div>
+                  <div className="text-xs text-gray-500 mt-1">Chromosomal structural abnormality testing</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-bold text-gray-900">₹4,000 – ₹15,000</div>
+                  <div className="text-xs text-gray-500">Average: ₹9,500</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
+                    Per embryo
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <button className="text-pink-600 hover:text-pink-700 font-medium mr-3">
+                    Request Quote
+                  </button>
+                  <button className="text-gray-600 hover:text-gray-700 font-medium">
+                    Details
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-blue-800">Important Notes</h3>
+              <div className="mt-2 text-sm text-blue-700">
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Prices may vary based on complexity and laboratory requirements</li>
+                  <li>Bulk testing discounts available for multiple embryos</li>
+                  <li>Additional charges may apply for expedited processing</li>
+                  <li>Insurance coverage varies - please check with your provider</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Available Plans */}
         <div className="lg:col-span-2">
