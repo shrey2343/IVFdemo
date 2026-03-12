@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { AuthProvider } from './contexts/AuthContext'
+import { ToastProvider } from './contexts/ToastContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import PublicLayout from './components/PublicLayout'
@@ -13,17 +14,21 @@ import Terms from './pages/Terms'
 import Dashboard from './pages/Dashboard'
 import TestAnalysis from './pages/TestAnalysis'
 import PatientRecords from './pages/PatientRecords'
+import AddPatient from './pages/AddPatient'
+import Settings from './pages/Settings'
+import Billing from './pages/Billing'
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="min-h-screen bg-gray-50"
-        >
+      <ToastProvider>
+        <Router>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="min-h-screen bg-gray-50"
+          >
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={
@@ -59,10 +64,10 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
-            <Route path="/analysis" element={
+            <Route path="/add-patient" element={
               <ProtectedRoute>
                 <Layout>
-                  <TestAnalysis />
+                  <AddPatient />
                 </Layout>
               </ProtectedRoute>
             } />
@@ -73,12 +78,34 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Settings />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/billing" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Billing />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/analysis" element={
+              <ProtectedRoute>
+                <Layout>
+                  <TestAnalysis />
+                </Layout>
+              </ProtectedRoute>
+            } />
             
             {/* Redirect old routes */}
             <Route path="/app/*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </motion.div>
       </Router>
+      </ToastProvider>
     </AuthProvider>
   )
 }

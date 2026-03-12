@@ -5,10 +5,15 @@ import {
   TestTube, 
   Calendar,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  CreditCard,
+  Clock
 } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
+import { Link } from 'react-router-dom'
 
 const Dashboard = () => {
+  const { user, canAddPatient } = useAuth()
   const stats = [
     { name: 'Total Patients', value: '248', icon: Users, change: '+12%', changeType: 'positive' },
     { name: 'Tests This Month', value: '89', icon: TestTube, change: '+8%', changeType: 'positive' },
@@ -64,6 +69,94 @@ const Dashboard = () => {
           </motion.div>
         ))}
       </div>
+
+      {/* Plan Status Widget */}
+      {user && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="card"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg lg:text-xl font-semibold text-gray-900">Plan Status</h2>
+            <Link
+              to="/billing"
+              className="text-pink-600 hover:text-pink-700 text-sm font-medium flex items-center"
+            >
+              <CreditCard className="h-4 w-4 mr-1" />
+              Manage Plan
+            </Link>
+          </div>
+          
+          <div className={`p-4 rounded-lg border-2 ${
+            canAddPatient() 
+              ? 'bg-green-50 border-green-200' 
+              : 'bg-red-50 border-red-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                {canAddPatient() ? (
+                  <CheckCircle className="h-6 w-6 text-green-600 mr-3" />
+                ) : (
+                  <AlertCircle className="h-6 w-6 text-red-600 mr-3" />
+                )}
+                <div>
+                  <h3 className={`font-semibold ${
+                    canAddPatient() ? 'text-green-800' : 'text-red-800'
+                  }`}>
+                    {user.plan.name}
+                  </h3>
+                  <p className={`text-sm ${
+                    canAddPatient() ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {canAddPatient() 
+                      ? 'Active and ready to use'
+                      : typeof user.plan.cyclesRemaining === 'number' && user.plan.cyclesRemaining === 0
+                        ? 'No cycles remaining'
+                        : new Date() > new Date(user.plan.expiryDate)
+                          ? 'Plan expired'
+                          : 'Plan inactive'
+                    }
+                  </p>
+                </div>
+              </div>
+              
+              <div className="text-right">
+                <div className={`text-lg font-bold ${
+                  canAddPatient() ? 'text-green-800' : 'text-red-800'
+                }`}>
+                  {user.plan.cyclesRemaining === 'unlimited' 
+                    ? '∞' 
+                    : user.plan.cyclesRemaining
+                  }
+                </div>
+                <p className={`text-xs ${
+                  canAddPatient() ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  cycles {user.plan.cyclesRemaining === 'unlimited' ? 'available' : 'remaining'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-3 flex items-center justify-between text-sm">
+              <div className="flex items-center text-gray-600">
+                <Clock className="h-4 w-4 mr-1" />
+                Expires: {new Date(user.plan.expiryDate).toLocaleDateString()}
+              </div>
+              
+              {!canAddPatient() && (
+                <Link
+                  to="/billing"
+                  className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors text-xs font-medium"
+                >
+                  Upgrade Now
+                </Link>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Recent Tests */}
       <motion.div

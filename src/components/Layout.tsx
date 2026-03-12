@@ -3,12 +3,14 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { 
   LayoutDashboard, 
-  TestTube, 
+  UserPlus, 
   Users, 
   Activity,
   Menu,
   X,
-  LogOut
+  LogOut,
+  Settings,
+  CreditCard
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
@@ -24,8 +26,10 @@ const Layout = ({ children }: LayoutProps) => {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Test Analysis', href: '/analysis', icon: TestTube },
+    { name: 'Add Patient', href: '/add-patient', icon: UserPlus },
     { name: 'Patient Records', href: '/patients', icon: Users },
+    { name: 'Billing', href: '/billing', icon: CreditCard },
+    { name: 'Settings', href: '/settings', icon: Settings },
   ]
 
   return (
@@ -34,7 +38,7 @@ const Layout = ({ children }: LayoutProps) => {
       <div
         className={`${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:transform-none`}
+        } fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:transform-none flex flex-col`}
       >
         <div className="flex items-center justify-between h-16 px-4 lg:px-6 border-b border-gray-200">
           <div className="flex items-center space-x-2">
@@ -49,7 +53,8 @@ const Layout = ({ children }: LayoutProps) => {
           </button>
         </div>
         
-        <nav className="mt-4 lg:mt-8 px-2 lg:px-4">
+        {/* Navigation Links */}
+        <nav className="flex-1 mt-4 lg:mt-8 px-2 lg:px-4">
           {navigation.map((item) => {
             const isActive = location.pathname === item.href
             return (
@@ -69,6 +74,17 @@ const Layout = ({ children }: LayoutProps) => {
             )
           })}
         </nav>
+
+        {/* Logout Button at Bottom */}
+        <div className="p-2 lg:p-4 border-t border-gray-200">
+          <button
+            onClick={logout}
+            className="flex items-center w-full px-3 lg:px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors text-sm lg:text-base"
+          >
+            <LogOut className="h-5 w-5 mr-3 flex-shrink-0" />
+            <span className="truncate">Logout</span>
+          </button>
+        </div>
       </div>
 
       {/* Main content */}
@@ -84,13 +100,6 @@ const Layout = ({ children }: LayoutProps) => {
             </button>
             <div className="flex items-center space-x-2 lg:space-x-4 ml-auto">
               <span className="text-xs lg:text-sm text-gray-500 truncate max-w-32 lg:max-w-none">{user?.name}</span>
-              <button
-                onClick={logout}
-                className="flex items-center space-x-1 lg:space-x-2 text-gray-600 hover:text-gray-900 px-2 lg:px-3 py-2 text-xs lg:text-sm font-medium hover:bg-gray-100 rounded-md"
-              >
-                <LogOut className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden sm:inline">Logout</span>
-              </button>
             </div>
           </div>
         </header>
