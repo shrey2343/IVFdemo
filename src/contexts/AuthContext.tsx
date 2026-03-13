@@ -87,10 +87,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         },
         plan: {
           type: 'per-cycle',
-          name: 'Per Cycle Plan',
-          cyclesRemaining: 0,
-          expiryDate: '2024-01-15', // Expired date
-          isActive: false
+          name: 'Demo Plan',
+          cyclesRemaining: 5, // Give demo user 5 cycles to test
+          expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
+          isActive: true
         }
       }
       setUser(mockUser)
@@ -182,36 +182,65 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (!user) return
 
     let newPlan
-    switch (planId) {
-      case 'per-cycle':
-        newPlan = {
-          type: 'per-cycle' as const,
-          name: 'Per Cycle Plan',
-          cyclesRemaining: 1,
-          expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          isActive: true
-        }
-        break
-      case 'cycle-bundle':
-        newPlan = {
-          type: 'cycle-bundle' as const,
-          name: 'Cycle Bundle',
-          cyclesRemaining: 100, // Default to 100 cycles bundle
-          expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          isActive: true
-        }
-        break
-      case 'annual':
-        newPlan = {
-          type: 'annual' as const,
-          name: 'Annual Subscription',
-          cyclesRemaining: 'unlimited' as const,
-          expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          isActive: true
-        }
-        break
-      default:
-        return
+    
+    // Handle billing page plan IDs
+    if (planId.includes('per-sample') || planId.includes('per-case')) {
+      newPlan = {
+        type: 'per-cycle' as const,
+        name: planData?.name || 'Per Sample Plan',
+        cyclesRemaining: 10, // Give 10 cycles for per-sample plans
+        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        isActive: true
+      }
+    } else if (planId.includes('monthly')) {
+      newPlan = {
+        type: 'cycle-bundle' as const,
+        name: planData?.name || 'Monthly Subscription',
+        cyclesRemaining: 'unlimited' as const, // Monthly plans have unlimited cycles
+        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        isActive: true
+      }
+    } else if (planId.includes('yearly')) {
+      newPlan = {
+        type: 'annual' as const,
+        name: planData?.name || 'Yearly Subscription',
+        cyclesRemaining: 'unlimited' as const,
+        expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        isActive: true
+      }
+    } else {
+      // Fallback for legacy plan types
+      switch (planId) {
+        case 'per-cycle':
+          newPlan = {
+            type: 'per-cycle' as const,
+            name: 'Per Cycle Plan',
+            cyclesRemaining: 1,
+            expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            isActive: true
+          }
+          break
+        case 'cycle-bundle':
+          newPlan = {
+            type: 'cycle-bundle' as const,
+            name: 'Cycle Bundle',
+            cyclesRemaining: 100,
+            expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            isActive: true
+          }
+          break
+        case 'annual':
+          newPlan = {
+            type: 'annual' as const,
+            name: 'Annual Subscription',
+            cyclesRemaining: 'unlimited' as const,
+            expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            isActive: true
+          }
+          break
+        default:
+          return
+      }
     }
 
     const updatedUser = {

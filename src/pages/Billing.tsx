@@ -269,16 +269,22 @@ const Billing = () => {
         updatePlan(selectedPlan, plan)
         showSuccess(
           'Plan Updated Successfully!', 
-          `You have successfully upgraded to ${plan.name} for ${currentTestPlans.name}.`
+          `You have successfully upgraded to ${plan.name} for ${currentTestPlans.name}. You can now add patients and use the platform features.`
         )
         setShowConfirmation(false)
         setSelectedPlan(null)
       } catch (error) {
+        console.error('Plan update error:', error)
         showError(
           'Plan Update Failed', 
-          'There was an error updating your plan. Please try again.'
+          'There was an error updating your plan. Please try again or contact support.'
         )
       }
+    } else {
+      showError(
+        'Invalid Plan Selection', 
+        'Please select a valid plan and try again.'
+      )
     }
   }
 
