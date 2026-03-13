@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { 
   Download, 
   Calendar, 
-  DollarSign, 
+  IndianRupee, 
   TrendingUp, 
   FileText,
   CheckCircle,
@@ -17,6 +17,7 @@ const Billing = () => {
   const { updatePlan, getCurrentPlan } = useAuth()
   const { showSuccess, showError } = useToast()
   const [selectedPeriod, setSelectedPeriod] = useState('monthly')
+  const [selectedTest, setSelectedTest] = useState<string>('pgt-a') // Default to PGT-A
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [showConfirmation, setShowConfirmation] = useState(false)
   
@@ -28,69 +29,177 @@ const Billing = () => {
     isActive: false
   }
 
-  const plans = [
-    {
-      id: 'per-cycle',
-      name: 'Per Cycle Plan',
-      description: 'Pay as you go for each analysis cycle',
-      price: '₹2,075',
-      unit: 'per cycle',
-      features: [
-        'Single cycle analysis',
-        'Basic reporting',
-        'Email support',
-        'Standard processing time'
-      ],
+  const testBasedPlans = {
+    'pgt-a': {
+      name: 'PGT-A (Preimplantation Genetic Testing for Aneuploidy)',
+      description: 'Screens embryos for chromosomal abnormalities',
+      icon: '🧬',
       color: 'blue',
-      popular: false
+      plans: [
+        {
+          id: 'pgt-a-per-sample',
+          name: 'Per Sample Plan',
+          description: 'Pay per embryo analysis',
+          price: '₹3,000',
+          unit: 'per embryo',
+          bulkPrice: '₹3,00,000 for 100 samples',
+          features: [
+            'Single embryo analysis',
+            'Basic reporting',
+            'Email support',
+            'Standard processing time'
+          ],
+          popular: false
+        },
+        {
+          id: 'pgt-a-monthly',
+          name: 'Monthly Subscription',
+          description: 'Fixed monthly cost with sample limit',
+          price: '₹1,50,000',
+          unit: 'per month',
+          sampleLimit: 'up to 50 embryos',
+          features: [
+            'Up to 50 embryos per month',
+            'Advanced reporting',
+            'Priority support',
+            'Faster processing',
+            'Data export'
+          ],
+          popular: true
+        },
+        {
+          id: 'pgt-a-yearly',
+          name: 'Yearly Subscription',
+          description: 'Best value for high-volume users',
+          price: '₹15,00,000',
+          unit: 'per year',
+          features: [
+            'Unlimited embryos',
+            'Premium reporting',
+            '24/7 phone support',
+            'Fastest processing',
+            'Advanced analytics',
+            'API access'
+          ],
+          popular: false
+        }
+      ]
     },
-    {
-      id: 'cycle-bundle',
-      name: 'Cycle Bundle',
-      description: 'Best value for regular users',
-      price: '₹1,245',
-      unit: 'per cycle',
-      originalPrice: '₹2,075',
-      bundles: [
-        { cycles: 100, price: '₹1,24,500', discount: '40%' },
-        { cycles: 200, price: '₹2,07,500', discount: '50%' },
-        { cycles: 300, price: '₹2,49,000', discount: '60%' }
-      ],
-      features: [
-        'Bulk cycle purchase',
-        'Advanced reporting',
-        'Priority support',
-        'Faster processing',
-        'Data export'
-      ],
-      color: 'purple',
-      popular: true
-    },
-    {
-      id: 'annual',
-      name: 'Annual Subscription',
-      description: 'Unlimited access for serious professionals',
-      price: '₹82,917',
-      unit: 'per year',
-      features: [
-        'Unlimited cycles',
-        'Premium reporting',
-        '24/7 phone support',
-        'Fastest processing',
-        'Advanced analytics',
-        'API access',
-        'Custom integrations'
-      ],
+    'pgt-m': {
+      name: 'PGT-M (Preimplantation Genetic Testing for Monogenic Disorders)',
+      description: 'Tests for specific genetic disorders',
+      icon: '🔬',
       color: 'green',
-      popular: false
+      plans: [
+        {
+          id: 'pgt-m-per-sample',
+          name: 'Per Case Plan',
+          description: 'Pay per case analysis',
+          price: '₹10,000',
+          unit: 'per case',
+          bulkPrice: '₹10,00,000 for 100 samples',
+          features: [
+            'Single case analysis',
+            'Basic reporting',
+            'Email support',
+            'Standard processing time'
+          ],
+          popular: false
+        },
+        {
+          id: 'pgt-m-monthly',
+          name: 'Monthly Subscription',
+          description: 'Fixed monthly cost for regular testing',
+          price: '₹2,50,000',
+          unit: 'per month',
+          features: [
+            'Unlimited cases per month',
+            'Advanced reporting',
+            'Priority support',
+            'Faster processing',
+            'Data export'
+          ],
+          popular: true
+        },
+        {
+          id: 'pgt-m-yearly',
+          name: 'Yearly Subscription',
+          description: 'Best value for specialized clinics',
+          price: '₹25,00,000',
+          unit: 'per year',
+          features: [
+            'Unlimited cases',
+            'Premium reporting',
+            '24/7 phone support',
+            'Fastest processing',
+            'Advanced analytics',
+            'API access'
+          ],
+          popular: false
+        }
+      ]
+    },
+    'pgt-sr': {
+      name: 'PGT-SR (Preimplantation Genetic Testing for Structural Rearrangements)',
+      description: 'Detects chromosomal structural abnormalities',
+      icon: '🧪',
+      color: 'purple',
+      plans: [
+        {
+          id: 'pgt-sr-per-sample',
+          name: 'Per Sample Plan',
+          description: 'Pay per embryo analysis',
+          price: '₹6,000',
+          unit: 'per embryo',
+          bulkPrice: '₹6,00,000 for 100 samples',
+          features: [
+            'Single embryo analysis',
+            'Basic reporting',
+            'Email support',
+            'Standard processing time'
+          ],
+          popular: false
+        },
+        {
+          id: 'pgt-sr-monthly',
+          name: 'Monthly Subscription',
+          description: 'Fixed monthly cost with comprehensive coverage',
+          price: '₹2,00,000',
+          unit: 'per month',
+          features: [
+            'Unlimited embryos per month',
+            'Advanced reporting',
+            'Priority support',
+            'Faster processing',
+            'Data export'
+          ],
+          popular: true
+        },
+        {
+          id: 'pgt-sr-yearly',
+          name: 'Yearly Subscription',
+          description: 'Best value for structural analysis',
+          price: '₹20,00,000',
+          unit: 'per year',
+          features: [
+            'Unlimited embryos',
+            'Premium reporting',
+            '24/7 phone support',
+            'Fastest processing',
+            'Advanced analytics',
+            'API access'
+          ],
+          popular: false
+        }
+      ]
     }
-  ]
+  }
 
   const billingStats = [
     { label: 'Current Plan', value: currentPlan.name, icon: CheckCircle, color: currentPlan.isActive ? 'green' : 'red' },
     { label: 'Cycles Remaining', value: String(currentPlan.cyclesRemaining), icon: TrendingUp, color: currentPlan.isActive ? 'blue' : 'red' },
     { label: 'Plan Expires', value: new Date(currentPlan.expiryDate).toLocaleDateString(), icon: Calendar, color: currentPlan.isActive ? 'orange' : 'red' },
-    { label: 'Total Spent', value: '₹1,06,821.00', icon: DollarSign, color: 'purple' }
+    { label: 'Total Spent', value: '₹1,06,821.00', icon: IndianRupee, color: 'purple' }
   ]
 
   const invoices = [
@@ -153,13 +262,14 @@ const Billing = () => {
   }
 
   const confirmPlanSelection = () => {
-    const plan = plans.find(p => p.id === selectedPlan)
+    const currentTestPlans = testBasedPlans[selectedTest as keyof typeof testBasedPlans]
+    const plan = currentTestPlans?.plans.find(p => p.id === selectedPlan)
     if (plan && selectedPlan) {
       try {
         updatePlan(selectedPlan, plan)
         showSuccess(
           'Plan Updated Successfully!', 
-          `You have successfully upgraded to ${plan.name}. You can now add patients and access all features.`
+          `You have successfully upgraded to ${plan.name} for ${currentTestPlans.name}.`
         )
         setShowConfirmation(false)
         setSelectedPlan(null)
@@ -241,164 +351,6 @@ const Billing = () => {
         ))}
       </div>
 
-      {/* Genetic Testing Costs */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">Genetic Testing Costs</h2>
-            <p className="text-sm text-gray-600 mt-1">NGS Data Analysis pricing for genetic testing services</p>
-          </div>
-          <div className="text-sm text-gray-500">
-            Prices in Indian Rupees (₹)
-          </div>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Test Code
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Full Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Cost Range
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Cost Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              <tr className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-blue-600 font-bold text-xs">PGT-A</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-900">PGT-A</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 font-medium">Preimplantation Genetic Testing for Aneuploidy</div>
-                  <div className="text-xs text-gray-500 mt-1">Chromosomal abnormality screening</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-bold text-gray-900">₹2,000 – ₹8,000</div>
-                  <div className="text-xs text-gray-500">Average: ₹5,000</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                    Per embryo
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <button className="text-pink-600 hover:text-pink-700 font-medium mr-3">
-                    Request Quote
-                  </button>
-                  <button className="text-gray-600 hover:text-gray-700 font-medium">
-                    Details
-                  </button>
-                </td>
-              </tr>
-              
-              <tr className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-green-600 font-bold text-xs">PGT-M</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-900">PGT-M</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 font-medium">Preimplantation Genetic Testing for Monogenic Disorders</div>
-                  <div className="text-xs text-gray-500 mt-1">Single gene disorder testing</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-bold text-gray-900">₹5,000 – ₹20,000</div>
-                  <div className="text-xs text-gray-500">Average: ₹12,500</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                    Per case / family
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <button className="text-pink-600 hover:text-pink-700 font-medium mr-3">
-                    Request Quote
-                  </button>
-                  <button className="text-gray-600 hover:text-gray-700 font-medium">
-                    Details
-                  </button>
-                </td>
-              </tr>
-              
-              <tr className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-purple-600 font-bold text-xs">PGT-SR</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-900">PGT-SR</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 font-medium">Preimplantation Genetic Testing for Structural Rearrangements</div>
-                  <div className="text-xs text-gray-500 mt-1">Chromosomal structural abnormality testing</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-bold text-gray-900">₹4,000 – ₹15,000</div>
-                  <div className="text-xs text-gray-500">Average: ₹9,500</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
-                    Per embryo
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <button className="text-pink-600 hover:text-pink-700 font-medium mr-3">
-                    Request Quote
-                  </button>
-                  <button className="text-gray-600 hover:text-gray-700 font-medium">
-                    Details
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">Important Notes</h3>
-              <div className="mt-2 text-sm text-blue-700">
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Prices may vary based on complexity and laboratory requirements</li>
-                  <li>Bulk testing discounts available for multiple embryos</li>
-                  <li>Additional charges may apply for expedited processing</li>
-                  <li>Insurance coverage varies - please check with your provider</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Available Plans */}
         <div className="lg:col-span-2">
@@ -409,26 +361,57 @@ const Billing = () => {
             className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Available Plans</h2>
+              <h2 className="text-xl font-bold text-gray-900">Test-Based Pricing Plans</h2>
               <button className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors">
                 Change Plan
               </button>
             </div>
             
+            {/* Test Selection Tabs */}
+            <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 mb-6">
+              {Object.entries(testBasedPlans).map(([testKey, testData]) => (
+                <button
+                  key={testKey}
+                  onClick={() => setSelectedTest(testKey)}
+                  className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-md transition-all duration-200 ${
+                    selectedTest === testKey
+                      ? `bg-${testData.color}-600 text-white shadow-md`
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+                  }`}
+                >
+                  <span className="text-lg">{testData.icon}</span>
+                  <span className="font-medium text-sm">
+                    {testKey.toUpperCase().replace('-', '-')}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Selected Test Info */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {testBasedPlans[selectedTest as keyof typeof testBasedPlans].name}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {testBasedPlans[selectedTest as keyof typeof testBasedPlans].description}
+              </p>
+            </div>
+            
+            {/* Plans for Selected Test */}
             <div className="space-y-6">
-              {plans.map((plan) => (
+              {testBasedPlans[selectedTest as keyof typeof testBasedPlans].plans.map((plan) => (
                 <motion.div
                   key={plan.id}
                   whileHover={{ scale: 1.01 }}
                   className={`relative border-2 rounded-xl p-6 transition-all duration-200 ${
                     plan.popular 
-                      ? 'border-purple-300 bg-purple-50 shadow-lg' 
+                      ? `border-${testBasedPlans[selectedTest as keyof typeof testBasedPlans].color}-300 bg-${testBasedPlans[selectedTest as keyof typeof testBasedPlans].color}-50 shadow-lg` 
                       : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                   }`}
                 >
                   {plan.popular && (
                     <div className="absolute -top-4 left-6 z-10">
-                      <span className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                      <span className={`bg-${testBasedPlans[selectedTest as keyof typeof testBasedPlans].color}-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg`}>
                         Most Popular
                       </span>
                     </div>
@@ -443,30 +426,21 @@ const Billing = () => {
                       <div className="flex items-baseline mb-4">
                         <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                         <span className="text-gray-600 ml-2">{plan.unit}</span>
-                        {plan.originalPrice && (
-                          <span className="text-lg text-gray-500 line-through ml-3">{plan.originalPrice}</span>
-                        )}
                       </div>
                       
-                      {plan.bundles && (
-                        <div className="mb-4">
-                          <p className="text-sm font-medium text-gray-700 mb-3">Bundle Options:</p>
-                          <div className="grid grid-cols-1 gap-2">
-                            {plan.bundles.map((bundle, index) => (
-                              <div key={index} className="p-2 rounded-lg border border-purple-200 bg-white">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center">
-                                    <span className="font-bold text-purple-600 text-sm">{bundle.cycles}</span>
-                                    <span className="text-xs text-gray-600 ml-1">cycles</span>
-                                  </div>
-                                  <div className="text-right">
-                                    <div className="font-bold text-gray-900 text-sm">{bundle.price}</div>
-                                    <div className="text-xs text-green-600 font-medium">Save {bundle.discount}</div>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                      {(plan as any).bulkPrice && (
+                        <div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                          <p className="text-sm font-medium text-green-800">
+                            Bulk Pricing: {(plan as any).bulkPrice}
+                          </p>
+                        </div>
+                      )}
+
+                      {(plan as any).sampleLimit && (
+                        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          <p className="text-sm font-medium text-blue-800">
+                            Sample Limit: {(plan as any).sampleLimit}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -487,7 +461,7 @@ const Billing = () => {
                         className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
                           currentPlan.type === plan.id
                             ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                            : `bg-${plan.color}-600 text-white hover:bg-${plan.color}-700`
+                            : `bg-${testBasedPlans[selectedTest as keyof typeof testBasedPlans].color}-600 text-white hover:bg-${testBasedPlans[selectedTest as keyof typeof testBasedPlans].color}-700`
                         }`}
                         disabled={currentPlan.type === plan.id}
                       >
@@ -512,38 +486,85 @@ const Billing = () => {
           >
             <h2 className="text-xl font-bold text-gray-900 mb-4">Current Plan Status</h2>
             
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-900">{currentPlan.name}</h3>
-                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                  Active
+            {/* Current Test & Plan */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">PGT-A</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Per Sample Plan</h3>
+                    <p className="text-xs text-gray-600">PGT-A Testing</p>
+                  </div>
+                </div>
+                <span className={`px-2 py-1 text-xs rounded-full ${
+                  currentPlan.isActive 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {currentPlan.isActive ? 'Active' : 'Expired'}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">
-                Cycles Remaining: <span className="font-medium">{currentPlan.cyclesRemaining}</span>
-              </p>
-              <p className="text-sm text-gray-600">
-                Expires: <span className="font-medium">{new Date(currentPlan.expiryDate).toLocaleDateString()}</span>
-              </p>
+              
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-600">Pricing</p>
+                  <p className="font-medium text-gray-900">₹3,000 per embryo</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Usage</p>
+                  <p className="font-medium text-gray-900">Pay per use</p>
+                </div>
+              </div>
+              
+              <div className="mt-3 pt-3 border-t border-gray-200">
+                <p className="text-sm text-gray-600">
+                  Plan Status: <span className="font-medium">{currentPlan.isActive ? 'Active' : 'Expired'}</span>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Expires: <span className="font-medium">{new Date(currentPlan.expiryDate).toLocaleDateString()}</span>
+                </p>
+              </div>
             </div>
             
-            {typeof currentPlan.cyclesRemaining === 'number' && currentPlan.cyclesRemaining < 10 && (
+            {/* Plan Recommendations */}
+            {!currentPlan.isActive && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
                 <div className="flex items-center">
                   <AlertCircle className="h-4 w-4 text-yellow-600 mr-2" />
                   <p className="text-sm text-yellow-800">
-                    Low cycles remaining! Consider upgrading your plan.
+                    Your plan has expired. Upgrade to continue using our services.
                   </p>
                 </div>
               </div>
             )}
             
+            {currentPlan.isActive && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+                  <div>
+                    <p className="text-sm text-blue-800 font-medium">
+                      Consider upgrading to Monthly or Yearly plans for better value
+                    </p>
+                    <p className="text-xs text-blue-700 mt-1">
+                      Monthly plans offer up to 50 embryos with advanced features
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="space-y-3">
-              <button className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors">
-                Upgrade Plan
+              <button 
+                onClick={() => setSelectedTest('pgt-a')}
+                className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
+              >
+                {currentPlan.isActive ? 'Upgrade Plan' : 'Activate Plan'}
               </button>
               <button className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                Add Cycles
+                Switch Test Type
               </button>
             </div>
           </motion.div>
@@ -681,18 +702,23 @@ const Billing = () => {
             className="bg-white rounded-xl p-8 max-w-md w-full mx-4"
           >
             {(() => {
-              const plan = plans.find(p => p.id === selectedPlan)
+              const currentTestPlans = testBasedPlans[selectedTest as keyof typeof testBasedPlans]
+              const plan = currentTestPlans?.plans.find(p => p.id === selectedPlan)
               return plan ? (
                 <>
                   <div className="text-center mb-6">
-                    <div className={`w-16 h-16 bg-gradient-to-r from-${plan.color}-400 to-${plan.color}-600 rounded-full flex items-center justify-center mx-auto mb-4`}>
-                      <CheckCircle className="h-8 w-8 text-white" />
+                    <div className={`w-16 h-16 bg-gradient-to-r from-${currentTestPlans.color}-400 to-${currentTestPlans.color}-600 rounded-full flex items-center justify-center mx-auto mb-4`}>
+                      <span className="text-2xl">{currentTestPlans.icon}</span>
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">Confirm Plan Selection</h3>
-                    <p className="text-gray-600">You've selected the {plan.name}</p>
+                    <p className="text-gray-600">You've selected {plan.name} for {currentTestPlans.name}</p>
                   </div>
 
                   <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-gray-700">Test:</span>
+                      <span className="font-bold text-gray-900">{selectedTest.toUpperCase().replace('-', '-')}</span>
+                    </div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium text-gray-700">Plan:</span>
                       <span className="font-bold text-gray-900">{plan.name}</span>
@@ -701,14 +727,16 @@ const Billing = () => {
                       <span className="font-medium text-gray-700">Price:</span>
                       <span className="font-bold text-gray-900">{plan.price} {plan.unit}</span>
                     </div>
-                    {plan.bundles && (
+                    {(plan as any).bulkPrice && (
                       <div className="mt-3 pt-3 border-t border-gray-200">
-                        <p className="text-sm font-medium text-gray-700 mb-2">Bundle Options Available:</p>
-                        {plan.bundles.map((bundle, index) => (
-                          <div key={index} className="text-xs text-gray-600 mb-1">
-                            • {bundle.cycles} cycles for {bundle.price} (Save {bundle.discount})
-                          </div>
-                        ))}
+                        <p className="text-sm font-medium text-gray-700 mb-1">Bulk Pricing:</p>
+                        <p className="text-xs text-gray-600">{(plan as any).bulkPrice}</p>
+                      </div>
+                    )}
+                    {(plan as any).sampleLimit && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <p className="text-sm font-medium text-gray-700 mb-1">Sample Limit:</p>
+                        <p className="text-xs text-gray-600">{(plan as any).sampleLimit}</p>
                       </div>
                     )}
                   </div>
@@ -725,7 +753,7 @@ const Billing = () => {
                     </button>
                     <button
                       onClick={confirmPlanSelection}
-                      className={`flex-1 py-3 px-4 bg-${plan.color}-600 text-white rounded-lg hover:bg-${plan.color}-700 transition-colors`}
+                      className={`flex-1 py-3 px-4 bg-${currentTestPlans.color}-600 text-white rounded-lg hover:bg-${currentTestPlans.color}-700 transition-colors`}
                     >
                       Confirm Selection
                     </button>
