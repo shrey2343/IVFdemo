@@ -8,12 +8,11 @@ interface Plan {
   description: string
   price: string
   unit: string
-  originalPrice?: string
-  bundles?: Array<{
-    cycles: number
-    price: string
-    discount: string
-  }>
+  testType: string
+  testName: string
+  testIcon: string
+  bulkPrice?: string
+  sampleLimit?: string
   features: string[]
   color: string
   popular: boolean
@@ -26,87 +25,272 @@ interface PlanSelectionProps {
 }
 
 const PlanSelection = ({ onPlanSelect, selectedPlan }: PlanSelectionProps) => {
-  const [selectedBundle, setSelectedBundle] = useState<number | null>(null)
+  const [selectedTest, setSelectedTest] = useState<string>('pgt-a')
 
-  const plans: Plan[] = [
-    {
-      id: 'per-cycle',
-      name: 'Per Cycle Plan',
-      description: 'Perfect for occasional users',
-      price: '₹2,075',
-      unit: 'per cycle',
-      features: [
-        'Single cycle analysis',
-        'Basic reporting',
-        'Email support',
-        'Standard processing time',
-        'Basic data export'
-      ],
+  const testBasedPlans = {
+    'pgt-a': {
+      name: 'PGT-A (Preimplantation Genetic Testing for Aneuploidy)',
+      description: 'Screens embryos for chromosomal abnormalities',
+      icon: '🧬',
       color: 'blue',
-      popular: false,
-      icon: Zap
+      plans: [
+        {
+          id: 'pgt-a-per-sample',
+          name: 'Per Sample Plan',
+          description: 'Pay per embryo analysis',
+          price: '₹3,000',
+          unit: 'per embryo',
+          testType: 'pgt-a',
+          testName: 'PGT-A',
+          testIcon: '🧬',
+          bulkPrice: '₹3,00,000 for 100 samples',
+          features: [
+            'Single embryo analysis',
+            'Basic reporting',
+            'Email support',
+            'Standard processing time'
+          ],
+          color: 'blue',
+          popular: false,
+          icon: Zap
+        },
+        {
+          id: 'pgt-a-monthly',
+          name: 'Monthly Subscription',
+          description: 'Fixed monthly cost with sample limit',
+          price: '₹1,50,000',
+          unit: 'per month',
+          testType: 'pgt-a',
+          testName: 'PGT-A',
+          testIcon: '🧬',
+          sampleLimit: 'up to 50 embryos',
+          features: [
+            'Up to 50 embryos per month',
+            'Advanced reporting',
+            'Priority support',
+            'Faster processing',
+            'Data export'
+          ],
+          color: 'blue',
+          popular: true,
+          icon: Star
+        },
+        {
+          id: 'pgt-a-yearly',
+          name: 'Yearly Subscription',
+          description: 'Best value for high-volume users',
+          price: '₹15,00,000',
+          unit: 'per year',
+          testType: 'pgt-a',
+          testName: 'PGT-A',
+          testIcon: '🧬',
+          features: [
+            'Unlimited embryos',
+            'Premium reporting',
+            '24/7 phone support',
+            'Fastest processing',
+            'Advanced analytics',
+            'API access'
+          ],
+          color: 'blue',
+          popular: false,
+          icon: Crown
+        }
+      ]
     },
-    {
-      id: 'cycle-bundle',
-      name: 'Cycle Bundle',
-      description: 'Best value for regular users',
-      price: '₹1,245',
-      unit: 'per cycle',
-      originalPrice: '₹2,075',
-      bundles: [
-        { cycles: 100, price: '₹1,24,500', discount: '40%' },
-        { cycles: 200, price: '₹2,07,500', discount: '50%' },
-        { cycles: 300, price: '₹2,49,000', discount: '60%' }
-      ],
-      features: [
-        'Bulk cycle purchase',
-        'Advanced reporting',
-        'Priority support',
-        'Faster processing',
-        'Advanced data export',
-        'Custom reports'
-      ],
-      color: 'purple',
-      popular: true,
-      icon: Star
-    },
-    {
-      id: 'annual',
-      name: 'Annual Subscription',
-      description: 'Unlimited access for professionals',
-      price: '₹82,917',
-      unit: 'per year',
-      features: [
-        'Unlimited cycles',
-        'Premium reporting',
-        '24/7 phone support',
-        'Fastest processing',
-        'Advanced analytics',
-        'API access',
-        'Custom integrations',
-        'Dedicated account manager'
-      ],
+    'pgt-m': {
+      name: 'PGT-M (Preimplantation Genetic Testing for Monogenic Disorders)',
+      description: 'Tests for specific genetic disorders',
+      icon: '🔬',
       color: 'green',
-      popular: false,
-      icon: Crown
+      plans: [
+        {
+          id: 'pgt-m-per-sample',
+          name: 'Per Case Plan',
+          description: 'Pay per case analysis',
+          price: '₹10,000',
+          unit: 'per case',
+          testType: 'pgt-m',
+          testName: 'PGT-M',
+          testIcon: '🔬',
+          bulkPrice: '₹10,00,000 for 100 samples',
+          features: [
+            'Single case analysis',
+            'Basic reporting',
+            'Email support',
+            'Standard processing time'
+          ],
+          color: 'green',
+          popular: false,
+          icon: Zap
+        },
+        {
+          id: 'pgt-m-monthly',
+          name: 'Monthly Subscription',
+          description: 'Fixed monthly cost for regular testing',
+          price: '₹2,50,000',
+          unit: 'per month',
+          testType: 'pgt-m',
+          testName: 'PGT-M',
+          testIcon: '🔬',
+          features: [
+            'Unlimited cases per month',
+            'Advanced reporting',
+            'Priority support',
+            'Faster processing',
+            'Data export'
+          ],
+          color: 'green',
+          popular: true,
+          icon: Star
+        },
+        {
+          id: 'pgt-m-yearly',
+          name: 'Yearly Subscription',
+          description: 'Best value for specialized clinics',
+          price: '₹25,00,000',
+          unit: 'per year',
+          testType: 'pgt-m',
+          testName: 'PGT-M',
+          testIcon: '🔬',
+          features: [
+            'Unlimited cases',
+            'Premium reporting',
+            '24/7 phone support',
+            'Fastest processing',
+            'Advanced analytics',
+            'API access'
+          ],
+          color: 'green',
+          popular: false,
+          icon: Crown
+        }
+      ]
+    },
+    'pgt-sr': {
+      name: 'PGT-SR (Preimplantation Genetic Testing for Structural Rearrangements)',
+      description: 'Detects chromosomal structural abnormalities',
+      icon: '🧪',
+      color: 'purple',
+      plans: [
+        {
+          id: 'pgt-sr-per-sample',
+          name: 'Per Sample Plan',
+          description: 'Pay per embryo analysis',
+          price: '₹6,000',
+          unit: 'per embryo',
+          testType: 'pgt-sr',
+          testName: 'PGT-SR',
+          testIcon: '🧪',
+          bulkPrice: '₹6,00,000 for 100 samples',
+          features: [
+            'Single embryo analysis',
+            'Basic reporting',
+            'Email support',
+            'Standard processing time'
+          ],
+          color: 'purple',
+          popular: false,
+          icon: Zap
+        },
+        {
+          id: 'pgt-sr-monthly',
+          name: 'Monthly Subscription',
+          description: 'Fixed monthly cost with comprehensive coverage',
+          price: '₹2,00,000',
+          unit: 'per month',
+          testType: 'pgt-sr',
+          testName: 'PGT-SR',
+          testIcon: '🧪',
+          features: [
+            'Unlimited embryos per month',
+            'Advanced reporting',
+            'Priority support',
+            'Faster processing',
+            'Data export'
+          ],
+          color: 'purple',
+          popular: true,
+          icon: Star
+        },
+        {
+          id: 'pgt-sr-yearly',
+          name: 'Yearly Subscription',
+          description: 'Best value for structural analysis',
+          price: '₹20,00,000',
+          unit: 'per year',
+          testType: 'pgt-sr',
+          testName: 'PGT-SR',
+          testIcon: '🧪',
+          features: [
+            'Unlimited embryos',
+            'Premium reporting',
+            '24/7 phone support',
+            'Fastest processing',
+            'Advanced analytics',
+            'API access'
+          ],
+          color: 'purple',
+          popular: false,
+          icon: Crown
+        }
+      ]
     }
-  ]
+  }
 
   const handlePlanSelect = (plan: Plan) => {
     onPlanSelect(plan)
   }
 
+  const currentTestPlans = testBasedPlans[selectedTest as keyof typeof testBasedPlans]
+
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="text-center mb-12">
+      <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-white mb-4">Choose Your Plan</h2>
-        <p className="text-lg text-white/80">
-          Select the plan that best fits your needs. You can upgrade or change plans anytime.
+        <p className="text-lg text-white/80 mb-6">
+          First select your genetic test type, then choose the pricing plan that fits your needs.
         </p>
+        
+        {/* Test Selection Tabs */}
+        <div className="flex justify-center space-x-2 bg-white/10 backdrop-blur-sm rounded-xl p-2 mb-8 max-w-2xl mx-auto">
+          {Object.entries(testBasedPlans).map(([testKey, testData]) => (
+            <button
+              key={testKey}
+              onClick={() => setSelectedTest(testKey)}
+              className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg transition-all duration-200 ${
+                selectedTest === testKey
+                  ? testData.color === 'blue'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : testData.color === 'green'
+                      ? 'bg-green-600 text-white shadow-md'
+                      : testData.color === 'purple'
+                        ? 'bg-purple-600 text-white shadow-md'
+                        : 'bg-gray-600 text-white shadow-md'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <span className="text-lg">{testData.icon}</span>
+              <span className="font-medium text-sm">
+                {testKey.toUpperCase().replace('-', '-')}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Selected Test Info */}
+        <div className="mb-8 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 max-w-2xl mx-auto">
+          <h3 className="text-xl font-semibold text-white mb-2">
+            {currentTestPlans.name}
+          </h3>
+          <p className="text-white/80 text-sm">
+            {currentTestPlans.description}
+          </p>
+        </div>
       </div>
 
       <div className="space-y-6">
-        {plans.map((plan) => (
+        {currentTestPlans.plans.map((plan) => (
           <motion.div
             key={plan.id}
             whileHover={{ scale: 1.01 }}
@@ -115,14 +299,28 @@ const PlanSelection = ({ onPlanSelect, selectedPlan }: PlanSelectionProps) => {
               selectedPlan?.id === plan.id
                 ? 'border-pink-400 bg-white/30 shadow-lg'
                 : plan.popular 
-                  ? 'border-purple-400 bg-white/20 shadow-md' 
+                  ? plan.color === 'blue'
+                    ? 'border-blue-400 bg-white/20 shadow-md'
+                    : plan.color === 'green'
+                      ? 'border-green-400 bg-white/20 shadow-md'
+                      : plan.color === 'purple'
+                        ? 'border-purple-400 bg-white/20 shadow-md'
+                        : 'border-gray-400 bg-white/20 shadow-md'
                   : 'border-white/30 bg-white/10 hover:border-white/50 hover:shadow-md hover:bg-white/20'
             }`}
             onClick={() => handlePlanSelect(plan)}
           >
             {plan.popular && (
               <div className="absolute -top-4 left-8 z-10">
-                <span className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center shadow-lg">
+                <span className={`text-white px-4 py-2 rounded-full text-sm font-bold flex items-center shadow-lg ${
+                  plan.color === 'blue'
+                    ? 'bg-blue-600'
+                    : plan.color === 'green'
+                      ? 'bg-green-600'
+                      : plan.color === 'purple'
+                        ? 'bg-purple-600'
+                        : 'bg-gray-600'
+                }`}>
                   <Star className="h-4 w-4 mr-1" />
                   Most Popular
                 </span>
@@ -140,8 +338,16 @@ const PlanSelection = ({ onPlanSelect, selectedPlan }: PlanSelectionProps) => {
             <div className="flex items-start justify-between">
               {/* Plan Info */}
               <div className="flex items-center space-x-6">
-                <div className={`w-16 h-16 bg-gradient-to-r from-${plan.color}-400 to-${plan.color}-600 rounded-2xl flex items-center justify-center flex-shrink-0`}>
-                  <plan.icon className="h-8 w-8 text-white" />
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                  plan.color === 'blue'
+                    ? 'bg-gradient-to-r from-blue-400 to-blue-600'
+                    : plan.color === 'green'
+                      ? 'bg-gradient-to-r from-green-400 to-green-600'
+                      : plan.color === 'purple'
+                        ? 'bg-gradient-to-r from-purple-400 to-purple-600'
+                        : 'bg-gradient-to-r from-gray-400 to-gray-600'
+                }`}>
+                  <span className="text-2xl">{plan.testIcon}</span>
                 </div>
                 
                 <div className="flex-1">
@@ -151,42 +357,21 @@ const PlanSelection = ({ onPlanSelect, selectedPlan }: PlanSelectionProps) => {
                   <div className="flex items-baseline mb-4">
                     <span className="text-4xl font-bold text-white">{plan.price}</span>
                     <span className="text-white/80 ml-2">{plan.unit}</span>
-                    {plan.originalPrice && (
-                      <span className="text-lg text-white/60 line-through ml-3">{plan.originalPrice}</span>
-                    )}
                   </div>
                   
-                  {plan.bundles && (
-                    <div className="mb-6">
-                      <p className="text-sm font-medium text-white/90 mb-3">Bundle Options:</p>
-                      <div className="grid grid-cols-1 gap-2">
-                        {plan.bundles.map((bundle, index) => (
-                          <motion.div 
-                            key={index}
-                            whileHover={{ scale: 1.02 }}
-                            className={`p-2 rounded-lg border cursor-pointer transition-all backdrop-blur-sm ${
-                              selectedBundle === index 
-                                ? 'border-purple-400 bg-white/30' 
-                                : 'border-white/30 bg-white/10 hover:border-purple-400/50 hover:bg-white/20'
-                            }`}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setSelectedBundle(index)
-                            }}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                <span className="font-bold text-purple-300 text-sm">{bundle.cycles}</span>
-                                <span className="text-xs text-white/70 ml-1">cycles</span>
-                              </div>
-                              <div className="text-right">
-                                <div className="font-bold text-white text-sm">{bundle.price}</div>
-                                <div className="text-xs text-green-300 font-medium">Save {bundle.discount}</div>
-                              </div>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
+                  {plan.bulkPrice && (
+                    <div className="mb-4 p-3 bg-green-500/20 backdrop-blur-sm rounded-lg border border-green-400/30">
+                      <p className="text-sm font-medium text-green-300">
+                        Bulk Pricing: {plan.bulkPrice}
+                      </p>
+                    </div>
+                  )}
+
+                  {plan.sampleLimit && (
+                    <div className="mb-4 p-3 bg-blue-500/20 backdrop-blur-sm rounded-lg border border-blue-400/30">
+                      <p className="text-sm font-medium text-blue-300">
+                        Sample Limit: {plan.sampleLimit}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -207,7 +392,13 @@ const PlanSelection = ({ onPlanSelect, selectedPlan }: PlanSelectionProps) => {
                   className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${
                     selectedPlan?.id === plan.id
                       ? 'bg-pink-600 text-white shadow-lg hover:bg-pink-700'
-                      : `bg-${plan.color}-600 text-white hover:bg-${plan.color}-700 hover:shadow-md`
+                      : plan.color === 'blue'
+                        ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md'
+                        : plan.color === 'green'
+                          ? 'bg-green-600 text-white hover:bg-green-700 hover:shadow-md'
+                          : plan.color === 'purple'
+                            ? 'bg-purple-600 text-white hover:bg-purple-700 hover:shadow-md'
+                            : 'bg-gray-600 text-white hover:bg-gray-700 hover:shadow-md'
                   }`}
                 >
                   {selectedPlan?.id === plan.id ? 'Selected' : 'Select Plan'}
@@ -227,7 +418,7 @@ const PlanSelection = ({ onPlanSelect, selectedPlan }: PlanSelectionProps) => {
           <div className="flex items-center justify-center">
             <CheckCircle className="h-6 w-6 text-green-400 mr-3" />
             <p className="text-lg font-medium text-white">
-              {selectedPlan.name} selected! Continue with payment to activate your account.
+              {selectedPlan.name} for {selectedPlan.testName} selected! Continue with payment to activate your account.
             </p>
           </div>
         </motion.div>
