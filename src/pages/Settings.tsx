@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   User, 
@@ -11,20 +11,40 @@ import {
   Plus,
   Trash2
 } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 
 const Settings = () => {
+  const { user, updateProfile, isLoading } = useAuth()
+  const { showSuccess, showError } = useToast()
   const [activeTab, setActiveTab] = useState('profile')
   const [showPassword, setShowPassword] = useState(false)
   const [profileData, setProfileData] = useState({
-    firstName: 'Dr. Sarah',
-    lastName: 'Johnson',
-    email: 'doctor@example.com',
-    phone: '+1 (555) 123-4567',
-    specialization: 'Reproductive Endocrinology',
-    hospital: 'City Medical Center',
-    licenseNumber: 'MD123456',
-    bio: 'Experienced fertility specialist with over 10 years in reproductive medicine.'
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    specialization: '',
+    hospital: '',
+    licenseNumber: '',
+    bio: ''
   })
+
+  // Initialize profile data from user context
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        firstName: user.profile.firstName || '',
+        lastName: user.profile.lastName || '',
+        email: user.email || '',
+        phone: user.profile.phone || '',
+        specialization: user.profile.specialization || '',
+        hospital: user.profile.hospital || '',
+        licenseNumber: user.profile.licenseNumber || '',
+        bio: user.profile.bio || ''
+      })
+    }
+  }, [user])
 
   const [paymentMethods, setPaymentMethods] = useState([
     {
@@ -66,6 +86,39 @@ const Settings = () => {
       ...prev,
       [field]: value
     }))
+  }
+
+  const handleSaveProfile = async () => {
+    try {
+      const success = await updateProfile({
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        name: `${profileData.firstName} ${profileData.lastName}`,
+        email: profileData.email,
+        phone: profileData.phone,
+        specialization: profileData.specialization,
+        hospital: profileData.hospital,
+        licenseNumber: profileData.licenseNumber,
+        bio: profileData.bio
+      })
+
+      if (success) {
+        showSuccess(
+          'Profile Updated Successfully!',
+          'Your profile information has been saved.'
+        )
+      } else {
+        showError(
+          'Update Failed',
+          'There was an error updating your profile. Please try again.'
+        )
+      }
+    } catch (error) {
+      showError(
+        'Update Failed',
+        'There was an error updating your profile. Please try again.'
+      )
+    }
   }
 
   const handleNotificationToggle = (field: string) => {
@@ -137,7 +190,9 @@ const Settings = () => {
             {activeTab === 'profile' && (
               <ProfileTab 
                 profileData={profileData} 
-                onUpdate={handleProfileUpdate} 
+                onUpdate={handleProfileUpdate}
+                onSave={handleSaveProfile}
+                isLoading={isLoading}
               />
             )}
 
@@ -173,7 +228,7 @@ const Settings = () => {
 }
 
 // Profile Tab Component
-const ProfileTab = ({ profileData, onUpdate }: any) => (
+const ProfileTab = ({ profileData, onUpdate, onSave, isLoading }: any) => (
   <div>
     <div className="flex items-center mb-6">
       <User className="h-6 w-6 text-pink-600 mr-3" />
@@ -282,12 +337,18 @@ const ProfileTab = ({ profileData, onUpdate }: any) => (
       
       <div className="flex justify-end">
         <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="flex items-center px-6 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
+          onClick={onSave}
+          disabled={isLoading}
+          whileHover={!isLoading ? { scale: 1.02 } : {}}
+          whileTap={!isLoading ? { scale: 0.98 } : {}}
+          className={`flex items-center px-6 py-3 rounded-lg transition-colors ${
+            isLoading
+              ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+              : 'bg-pink-600 text-white hover:bg-pink-700'
+          }`}
         >
           <Save className="h-4 w-4 mr-2" />
-          Save Changes
+          {isLoading ? 'Saving...' : 'Save Changes'}
         </motion.button>
       </div>
     </div>

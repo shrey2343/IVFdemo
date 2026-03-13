@@ -5,6 +5,15 @@ interface User {
   name: string
   email: string
   role: 'doctor' | 'admin'
+  profile: {
+    firstName: string
+    lastName: string
+    phone?: string
+    specialization?: string
+    hospital?: string
+    licenseNumber?: string
+    bio?: string
+  }
   plan: {
     type: 'per-cycle' | 'cycle-bundle' | 'annual'
     name: string
@@ -24,6 +33,7 @@ interface AuthContextType {
   useCycle: () => boolean
   updatePlan: (planId: string, planData: any) => void
   getCurrentPlan: () => User['plan'] | null
+  updateProfile: (profileData: Partial<User['profile']> & { name?: string; email?: string }) => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -66,6 +76,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         name: 'Dr. Sarah Johnson',
         email: email,
         role: 'doctor',
+        profile: {
+          firstName: 'Dr. Sarah',
+          lastName: 'Johnson',
+          phone: '+1 (555) 123-4567',
+          specialization: 'Reproductive Endocrinology',
+          hospital: 'City Medical Center',
+          licenseNumber: 'MD123456',
+          bio: 'Experienced fertility specialist with over 10 years in reproductive medicine.'
+        },
         plan: {
           type: 'per-cycle',
           name: 'Per Cycle Plan',
@@ -96,6 +115,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       name: name,
       email: email,
       role: 'doctor',
+      profile: {
+        firstName: name.split(' ')[0] || name,
+        lastName: name.split(' ').slice(1).join(' ') || '',
+        phone: '',
+        specialization: '',
+        hospital: '',
+        licenseNumber: '',
+        bio: ''
+      },
       plan: plan ? {
         type: plan.id,
         name: plan.name,
@@ -195,6 +223,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.setItem('user', JSON.stringify(updatedUser))
   }
 
+  const updateProfile = async (profileData: Partial<User['profile']> & { name?: string; email?: string }): Promise<boolean> => {
+    if (!user) return false
+    
+    setIsLoading(true)
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    try {
+      const updatedUser: User = {
+        ...user,
+        name: profileData.name || user.name,
+        email: profileData.email || user.email,
+        profile: {
+          ...user.profile,
+          ...profileData
+        }
+      }
+      
+      setUser(updatedUser)
+      localStorage.setItem('user', JSON.stringify(updatedUser))
+      setIsLoading(false)
+      return true
+    } catch (error) {
+      setIsLoading(false)
+      return false
+    }
+  }
+
   const getCurrentPlan = () => {
     return user?.plan || null
   }
@@ -213,7 +270,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     canAddPatient,
     useCycle,
     updatePlan,
-    getCurrentPlan
+    getCurrentPlan,
+    updateProfile
   }
 
   return (

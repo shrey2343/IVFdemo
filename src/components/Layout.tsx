@@ -1,6 +1,5 @@
 import { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import { 
   LayoutDashboard, 
   UserPlus, 
@@ -10,7 +9,8 @@ import {
   X,
   LogOut,
   Settings,
-  CreditCard
+  CreditCard,
+  Bell
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
@@ -98,8 +98,38 @@ const Layout = ({ children }: LayoutProps) => {
             >
               <Menu className="h-6 w-6" />
             </button>
-            <div className="flex items-center space-x-2 lg:space-x-4 ml-auto">
-              <span className="text-xs lg:text-sm text-gray-500 truncate max-w-32 lg:max-w-none">{user?.name}</span>
+            
+            {/* Enhanced User Profile Section */}
+            <div className="flex items-center space-x-3 ml-auto">
+              {/* User Avatar and Info */}
+              <div className="flex items-center space-x-3 bg-gradient-to-r from-pink-50 to-purple-50 px-4 py-2 rounded-full border border-pink-100 hover:shadow-md transition-all duration-200">
+                {/* Avatar */}
+                <div className="relative">
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-white font-semibold text-sm lg:text-base">
+                      {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                  {/* Online Status Indicator */}
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></div>
+                </div>
+                
+                {/* User Info */}
+                <div className="hidden sm:block text-left">
+                  <div className="flex items-center space-x-2">
+                    <p className="text-sm font-semibold text-gray-900 leading-tight">
+                      {user?.name || 'User'}
+                    </p>
+                    {/* Role Badge */}
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                      {user?.role === 'doctor' ? 'Doctor' : 'Admin'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 leading-tight">
+                    {user?.profile?.specialization || 'IVF Specialist'}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </header>
