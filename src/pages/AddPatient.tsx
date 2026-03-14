@@ -33,6 +33,22 @@ const AddPatient = () => {
     emergencyContact: '',
     emergencyPhone: '',
     
+    // Wetlab Sample Details
+    patientId: '',
+    referringDoctor: '',
+    witness: '',
+    reportDate: '',
+    lotNumber: '',
+    testedBy: '',
+    notes: '',
+    
+    // Wetlab Biopsy Information
+    biopsyMethod: '',
+    biopsyDay: '',
+    embryoGrade: '',
+    morphologyAssessment: '',
+    handlingInstructions: '',
+    
     // Comorbidities
     diabetes: false,
     hypertension: false,
@@ -112,6 +128,18 @@ const AddPatient = () => {
       address: '',
       emergencyContact: '',
       emergencyPhone: '',
+      patientId: '',
+      referringDoctor: '',
+      witness: '',
+      reportDate: '',
+      lotNumber: '',
+      testedBy: '',
+      notes: '',
+      biopsyMethod: '',
+      biopsyDay: '',
+      embryoGrade: '',
+      morphologyAssessment: '',
+      handlingInstructions: '',
       diabetes: false,
       hypertension: false,
       thyroid: false,
@@ -272,211 +300,451 @@ const AddPatient = () => {
 }
 
 // Personal Details Section Component
-const PersonalDetailsSection = ({ formData, onChange }: any) => (
-  <div>
-    <div className="flex items-center mb-6">
-      <User className="h-6 w-6 text-pink-600 mr-3" />
-      <h2 className="text-2xl font-bold text-gray-900">Personal Details</h2>
-    </div>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          First Name *
-        </label>
-        <input
-          type="text"
-          value={formData.firstName}
-          onChange={(e) => onChange('firstName', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          placeholder="Enter first name"
-        />
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Last Name *
-        </label>
-        <input
-          type="text"
-          value={formData.lastName}
-          onChange={(e) => onChange('lastName', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          placeholder="Enter last name"
-        />
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Date of Birth *
-        </label>
-        <input
-          type="date"
-          value={formData.dateOfBirth}
-          onChange={(e) => onChange('dateOfBirth', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-        />
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Gender *
-        </label>
-        <select
-          value={formData.gender}
-          onChange={(e) => onChange('gender', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-        >
-          <option value="">Select gender</option>
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Phone Number *
-        </label>
-        <input
-          type="tel"
-          value={formData.phone}
-          onChange={(e) => onChange('phone', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          placeholder="Enter phone number"
-        />
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Email Address
-        </label>
-        <input
-          type="email"
-          value={formData.email}
-          onChange={(e) => onChange('email', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          placeholder="Enter email address"
-        />
-      </div>
-    </div>
-    
-    <div className="mt-6">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Address
-      </label>
-      <textarea
-        value={formData.address}
-        onChange={(e) => onChange('address', e.target.value)}
-        rows={3}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-        placeholder="Enter full address"
-      />
-    </div>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Emergency Contact Name
-        </label>
-        <input
-          type="text"
-          value={formData.emergencyContact}
-          onChange={(e) => onChange('emergencyContact', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          placeholder="Enter emergency contact name"
-        />
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Emergency Contact Phone
-        </label>
-        <input
-          type="tel"
-          value={formData.emergencyPhone}
-          onChange={(e) => onChange('emergencyPhone', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          placeholder="Enter emergency contact phone"
-        />
-      </div>
-    </div>
-  </div>
-)
+const PersonalDetailsSection = ({ formData, onChange }: any) => {
+  const { user } = useAuth()
+  const isWetLab = user?.role === 'wetlab'
 
-// Comorbidities Section Component
-const ComorbiditiesSection = ({ formData, onChange }: any) => (
-  <div>
-    <div className="flex items-center mb-6">
-      <Heart className="h-6 w-6 text-pink-600 mr-3" />
-      <h2 className="text-2xl font-bold text-gray-900">Medical History & Comorbidities</h2>
-    </div>
-    
-    <div className="space-y-6">
+  if (isWetLab) {
+    // Wetlab Sample Details Form
+    return (
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Existing Conditions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            { key: 'diabetes', label: 'Diabetes' },
-            { key: 'hypertension', label: 'Hypertension' },
-            { key: 'thyroid', label: 'Thyroid Disorders' },
-            { key: 'pcod', label: 'PCOD' },
-            { key: 'endometriosis', label: 'Endometriosis' }
-          ].map((condition) => (
-            <label key={condition.key} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-              <input
-                type="checkbox"
-                checked={formData[condition.key]}
-                onChange={(e) => onChange(condition.key, e.target.checked)}
-                className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
-              />
-              <span className="text-sm font-medium text-gray-700">{condition.label}</span>
+        <div className="flex items-center mb-6">
+          <User className="h-6 w-6 text-pink-600 mr-3" />
+          <h2 className="text-2xl font-bold text-gray-900">Sample Details</h2>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Patient ID *
             </label>
-          ))}
+            <input
+              type="text"
+              value={formData.patientId}
+              onChange={(e) => onChange('patientId', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter patient ID"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Patient First Name *
+            </label>
+            <input
+              type="text"
+              value={formData.firstName}
+              onChange={(e) => onChange('firstName', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter patient first name"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Patient Last Name *
+            </label>
+            <input
+              type="text"
+              value={formData.lastName}
+              onChange={(e) => onChange('lastName', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter patient last name"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Referring Doctor *
+            </label>
+            <input
+              type="text"
+              value={formData.referringDoctor}
+              onChange={(e) => onChange('referringDoctor', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter referring doctor name"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Witness for Testing *
+            </label>
+            <input
+              type="text"
+              value={formData.witness}
+              onChange={(e) => onChange('witness', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter witness name"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Report Date *
+            </label>
+            <input
+              type="date"
+              value={formData.reportDate}
+              onChange={(e) => onChange('reportDate', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Lot No. of Washing/Tubing Buffer Used
+            </label>
+            <input
+              type="text"
+              value={formData.lotNumber}
+              onChange={(e) => onChange('lotNumber', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter lot number"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Testing Carried Out By *
+            </label>
+            <input
+              type="text"
+              value={formData.testedBy}
+              onChange={(e) => onChange('testedBy', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter technician name"
+            />
+          </div>
+        </div>
+        
+        <div className="mt-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Additional Notes
+          </label>
+          <textarea
+            value={formData.notes}
+            onChange={(e) => onChange('notes', e.target.value)}
+            rows={3}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            placeholder="Enter any additional notes or observations"
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // Original Doctor Patient Details Form
+  return (
+    <div>
+      <div className="flex items-center mb-6">
+        <User className="h-6 w-6 text-pink-600 mr-3" />
+        <h2 className="text-2xl font-bold text-gray-900">Personal Details</h2>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            First Name *
+          </label>
+          <input
+            type="text"
+            value={formData.firstName}
+            onChange={(e) => onChange('firstName', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            placeholder="Enter first name"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Last Name *
+          </label>
+          <input
+            type="text"
+            value={formData.lastName}
+            onChange={(e) => onChange('lastName', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            placeholder="Enter last name"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Date of Birth *
+          </label>
+          <input
+            type="date"
+            value={formData.dateOfBirth}
+            onChange={(e) => onChange('dateOfBirth', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Gender *
+          </label>
+          <select
+            value={formData.gender}
+            onChange={(e) => onChange('gender', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+          >
+            <option value="">Select gender</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Phone Number *
+          </label>
+          <input
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => onChange('phone', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            placeholder="Enter phone number"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Email Address
+          </label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => onChange('email', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            placeholder="Enter email address"
+          />
         </div>
       </div>
       
-      <div>
+      <div className="mt-6">
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Other Medical Conditions
+          Address
         </label>
         <textarea
-          value={formData.otherConditions}
-          onChange={(e) => onChange('otherConditions', e.target.value)}
+          value={formData.address}
+          onChange={(e) => onChange('address', e.target.value)}
           rows={3}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          placeholder="Describe any other medical conditions"
+          placeholder="Enter full address"
         />
       </div>
       
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Current Medications
-        </label>
-        <textarea
-          value={formData.medications}
-          onChange={(e) => onChange('medications', e.target.value)}
-          rows={3}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          placeholder="List current medications and dosages"
-        />
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Known Allergies
-        </label>
-        <textarea
-          value={formData.allergies}
-          onChange={(e) => onChange('allergies', e.target.value)}
-          rows={2}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          placeholder="List any known allergies"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Emergency Contact Name
+          </label>
+          <input
+            type="text"
+            value={formData.emergencyContact}
+            onChange={(e) => onChange('emergencyContact', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            placeholder="Enter emergency contact name"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Emergency Contact Phone
+          </label>
+          <input
+            type="tel"
+            value={formData.emergencyPhone}
+            onChange={(e) => onChange('emergencyPhone', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            placeholder="Enter emergency contact phone"
+          />
+        </div>
       </div>
     </div>
-  </div>
-)
+  )
+}
+
+// Comorbidities Section Component
+const ComorbiditiesSection = ({ formData, onChange }: any) => {
+  const { user } = useAuth()
+  const isWetLab = user?.role === 'wetlab'
+
+  if (isWetLab) {
+    // Wetlab Biopsy Information
+    return (
+      <div>
+        <div className="flex items-center mb-6">
+          <Heart className="h-6 w-6 text-pink-600 mr-3" />
+          <h2 className="text-2xl font-bold text-gray-900">Biopsy Information</h2>
+        </div>
+        
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Biopsy Method</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <input
+                  type="radio"
+                  name="biopsyMethod"
+                  value="trophectoderm"
+                  checked={formData.biopsyMethod === 'trophectoderm'}
+                  onChange={(e) => onChange('biopsyMethod', e.target.value)}
+                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300"
+                />
+                <span className="text-sm font-medium text-gray-700">Trophectoderm Biopsy</span>
+              </label>
+              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <input
+                  type="radio"
+                  name="biopsyMethod"
+                  value="blastomere"
+                  checked={formData.biopsyMethod === 'blastomere'}
+                  onChange={(e) => onChange('biopsyMethod', e.target.value)}
+                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300"
+                />
+                <span className="text-sm font-medium text-gray-700">Blastomere Biopsy</span>
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Day of Biopsy
+            </label>
+            <select
+              value={formData.biopsyDay}
+              onChange={(e) => onChange('biopsyDay', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            >
+              <option value="">Select day</option>
+              <option value="day3">Day 3</option>
+              <option value="day5">Day 5</option>
+              <option value="day6">Day 6</option>
+              <option value="day7">Day 7</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Embryo Quality/Grade
+            </label>
+            <input
+              type="text"
+              value={formData.embryoGrade}
+              onChange={(e) => onChange('embryoGrade', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter embryo grade (e.g., 4AA, 3BB)"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Morphology Assessment
+            </label>
+            <textarea
+              value={formData.morphologyAssessment}
+              onChange={(e) => onChange('morphologyAssessment', e.target.value)}
+              rows={3}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Describe embryo morphology and quality observations"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Special Handling Instructions
+            </label>
+            <textarea
+              value={formData.handlingInstructions}
+              onChange={(e) => onChange('handlingInstructions', e.target.value)}
+              rows={2}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Any special handling or processing instructions"
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Original Doctor Comorbidities Form
+  return (
+    <div>
+      <div className="flex items-center mb-6">
+        <Heart className="h-6 w-6 text-pink-600 mr-3" />
+        <h2 className="text-2xl font-bold text-gray-900">Medical History & Comorbidities</h2>
+      </div>
+      
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Existing Conditions</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { key: 'diabetes', label: 'Diabetes' },
+              { key: 'hypertension', label: 'Hypertension' },
+              { key: 'thyroid', label: 'Thyroid Disorders' },
+              { key: 'pcod', label: 'PCOD' },
+              { key: 'endometriosis', label: 'Endometriosis' }
+            ].map((condition) => (
+              <label key={condition.key} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={formData[condition.key]}
+                  onChange={(e) => onChange(condition.key, e.target.checked)}
+                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                />
+                <span className="text-sm font-medium text-gray-700">{condition.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Other Medical Conditions
+          </label>
+          <textarea
+            value={formData.otherConditions}
+            onChange={(e) => onChange('otherConditions', e.target.value)}
+            rows={3}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            placeholder="Describe any other medical conditions"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Current Medications
+          </label>
+          <textarea
+            value={formData.medications}
+            onChange={(e) => onChange('medications', e.target.value)}
+            rows={3}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            placeholder="List current medications and dosages"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Known Allergies
+          </label>
+          <textarea
+            value={formData.allergies}
+            onChange={(e) => onChange('allergies', e.target.value)}
+            rows={2}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            placeholder="List any known allergies"
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
 // Tests Section Component
 const TestsSection = ({ formData, onFileUpload }: any) => {
   const [selectedGeneticTests, setSelectedGeneticTests] = useState<string[]>(
