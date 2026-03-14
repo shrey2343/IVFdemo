@@ -145,8 +145,12 @@ const AddPatient = () => {
                 !canAddPatient()
                   ? 'text-gray-400 cursor-not-allowed'
                   : currentSection === section.id
-                    ? 'bg-pink-100 text-pink-700 border-2 border-pink-300'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                    ? section.id === 2 // Tests section
+                      ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white border-2 border-pink-400 shadow-lg'
+                      : 'bg-pink-100 text-pink-700 border-2 border-pink-300'
+                    : section.id === 2 // Tests section when not active
+                      ? 'text-pink-600 hover:text-pink-700 hover:bg-pink-50 border border-pink-200'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
               }`}
             >
               <section.icon className="h-4 w-4 lg:h-5 lg:w-5 mr-1 lg:mr-2" />
