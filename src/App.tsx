@@ -15,6 +15,8 @@ import Terms from './pages/Terms'
 import TestAnalysis from './pages/TestAnalysis'
 import PatientRecords from './pages/PatientRecords'
 import PatientDetails from './pages/PatientDetails'
+import NewTest from './pages/NewTest'
+import Retest from './pages/Retest'
 import AddPatient from './pages/AddPatient'
 import Settings from './pages/Settings'
 import Billing from './pages/Billing'
@@ -83,6 +85,27 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <PatientDetails />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/patients/:patientId/new-test" element={
+              <ProtectedRoute>
+                <Layout>
+                  <NewTest />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/patients/:patientId/retest" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Retest />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/patient-records" element={
+              <ProtectedRoute>
+                <Layout>
+                  <PatientRecords />
                 </Layout>
               </ProtectedRoute>
             } />

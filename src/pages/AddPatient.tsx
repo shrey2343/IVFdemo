@@ -10,7 +10,8 @@ import {
   Save,
   AlertCircle,
   Lock,
-  CreditCard
+  CreditCard,
+  X
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
@@ -36,7 +37,7 @@ const AddPatient = () => {
     diabetes: false,
     hypertension: false,
     thyroid: false,
-    pcos: false,
+    pcod: false,
     endometriosis: false,
     otherConditions: '',
     medications: '',
@@ -114,7 +115,7 @@ const AddPatient = () => {
       diabetes: false,
       hypertension: false,
       thyroid: false,
-      pcos: false,
+      pcod: false,
       endometriosis: false,
       otherConditions: '',
       medications: '',
@@ -415,7 +416,7 @@ const ComorbiditiesSection = ({ formData, onChange }: any) => (
             { key: 'diabetes', label: 'Diabetes' },
             { key: 'hypertension', label: 'Hypertension' },
             { key: 'thyroid', label: 'Thyroid Disorders' },
-            { key: 'pcos', label: 'PCOS' },
+            { key: 'pcod', label: 'PCOD' },
             { key: 'endometriosis', label: 'Endometriosis' }
           ].map((condition) => (
             <label key={condition.key} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
@@ -480,6 +481,7 @@ const TestsSection = ({ formData, onFileUpload }: any) => {
   const [selectedStructuralTest, setSelectedStructuralTest] = useState<string | null>(
     formData.selectedStructuralTest || null
   )
+  const [showUploadModal, setShowUploadModal] = useState(false)
 
   const geneticTests = [
     {
@@ -602,12 +604,27 @@ const TestsSection = ({ formData, onFileUpload }: any) => {
   }
 
   const selectedTests = [...selectedGeneticTests, ...(selectedStructuralTest ? [selectedStructuralTest] : [])]
+  const hasSelectedTests = selectedTests.length > 0
 
   return (
     <div>
-      <div className="flex items-center mb-6">
-        <TestTube className="h-6 w-6 text-pink-600 mr-3" />
-        <h2 className="text-2xl font-bold text-gray-900">Genetic Tests</h2>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <TestTube className="h-6 w-6 text-pink-600 mr-3" />
+          <h2 className="text-2xl font-bold text-gray-900">Genetic Tests</h2>
+        </div>
+        <button
+          onClick={() => setShowUploadModal(true)}
+          disabled={!hasSelectedTests}
+          className={`flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            hasSelectedTests
+              ? 'bg-pink-600 text-white hover:bg-pink-700 shadow-md hover:shadow-lg'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
+        >
+          <Upload className="h-4 w-4 mr-2" />
+          Upload Report
+        </button>
       </div>
       
       <div className="space-y-8">
@@ -767,104 +784,113 @@ const TestsSection = ({ formData, onFileUpload }: any) => {
             )
           })()}
         </div>
+      </div>
 
-        {/* File Upload Section - Show for each selected test */}
-        {selectedTests.length > 0 && (
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Upload Test Reports
-            </h3>
-            
-            {selectedTests.map((testKey) => {
-              const test = [...geneticTests, structuralTest].find(t => t.key === testKey)
-              const fileData = getFileForTest(testKey)
-              
-              return (
-                <motion.div
-                  key={testKey}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white border border-gray-200 rounded-xl p-6"
-                >
-                  <h4 className="text-md font-semibold text-gray-900 mb-4">
-                    {test?.title} Report
-                  </h4>
-                  
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.fastq,.fq,.fastq.gz,.fq.gz"
-                      onChange={(e) => handleFileChange(testKey, e)}
-                      className="hidden"
-                      id={`test-report-file-${testKey}`}
-                    />
-                    <label
-                      htmlFor={`test-report-file-${testKey}`}
-                      className="flex items-center justify-center w-full px-6 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-pink-400 hover:bg-pink-50 transition-all duration-200"
-                    >
-                      <div className="text-center">
-                        <Upload className="h-10 w-10 text-gray-400 mx-auto mb-3" />
-                        <p className="text-md font-medium text-gray-700 mb-1">
-                          {fileData ? 'Change Report File' : 'Click to upload test report'}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          PDF, DOC, DOCX, Images, FastQ files (Max: 100MB)
-                        </p>
-                      </div>
-                    </label>
-                  </div>
-                  
-                  {fileData && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <FileText className="h-5 w-5 text-green-600 mr-3" />
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              {fileData.fileName}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Size: {(fileData.file.size / 1024 / 1024).toFixed(2)} MB
-                            </p>
-                          </div>
+      {/* Upload Report Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900">Upload Test Reports</h2>
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {selectedTests.map((testKey) => {
+                const test = [...geneticTests, structuralTest].find(t => t.key === testKey)
+                const fileData = getFileForTest(testKey)
+                
+                return (
+                  <motion.div
+                    key={testKey}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-gray-50 border border-gray-200 rounded-xl p-6"
+                  >
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <FileText className="h-5 w-5 mr-2 text-pink-600" />
+                      {test?.title} Report
+                    </h4>
+                    
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.fastq,.fq,.fastq.gz,.fq.gz"
+                        onChange={(e) => handleFileChange(testKey, e)}
+                        className="hidden"
+                        id={`modal-test-report-file-${testKey}`}
+                      />
+                      <label
+                        htmlFor={`modal-test-report-file-${testKey}`}
+                        className="flex items-center justify-center w-full px-6 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-pink-400 hover:bg-pink-50 transition-all duration-200"
+                      >
+                        <div className="text-center">
+                          <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-lg font-medium text-gray-700 mb-2">
+                            {fileData ? 'Change Report File' : 'Click to upload test report'}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            PDF, DOC, DOCX, Images, FastQ files (Max: 100MB)
+                          </p>
                         </div>
-                        <button
-                          onClick={() => removeFileForTest(testKey)}
-                          className="text-red-600 hover:text-red-700 text-sm font-medium"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </motion.div>
-              )
-            })}
-          </div>
-        )}
-        
-        {/* Guidelines */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <AlertCircle className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
-            <div>
-              <h4 className="text-sm font-semibold text-blue-800 mb-2">Test Selection Rules</h4>
-              <ul className="text-sm text-blue-700 space-y-1">
-                <li>• <strong>Valid combinations:</strong> PGT-A only, PGT-M only, PGT-A + PGT-M together, or PGT-SR only</li>
-                <li>• <strong>Cannot combine:</strong> Genetic tests (PGT-A/PGT-M) with structural test (PGT-SR)</li>
-                <li>• Upload separate report files for each selected test</li>
-                <li>• Ensure file quality is clear and readable</li>
-                <li>• Include patient ID and test date in filenames if possible</li>
-              </ul>
+                      </label>
+                    </div>
+                    
+                    {fileData && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <FileText className="h-5 w-5 text-green-600 mr-3" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">
+                                {fileData.fileName}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Size: {(fileData.file.size / 1024 / 1024).toFixed(2)} MB
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => removeFileForTest(testKey)}
+                            className="text-red-600 hover:text-red-700 text-sm font-medium px-3 py-1 rounded hover:bg-red-50"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                )
+              })}
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 font-medium"
+              >
+                Done
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

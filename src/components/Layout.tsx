@@ -26,9 +26,9 @@ const Layout = ({ children }: LayoutProps) => {
   const getNavigation = () => {
     if (user?.role === 'wetlab') {
       return [
-        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Sample Records', href: '/patient-records', icon: Users },
         { name: 'Add Sample', href: '/add-patient', icon: UserPlus },
-        { name: 'Sample Records', href: '/patients', icon: Users },
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Billing', href: '/billing', icon: CreditCard },
         { name: 'Settings', href: '/settings', icon: Settings },
       ]
@@ -36,9 +36,9 @@ const Layout = ({ children }: LayoutProps) => {
     
     // Default doctor navigation
     return [
-      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { name: 'Patient Records', href: '/patient-records', icon: Users },
       { name: 'Add Patient', href: '/add-patient', icon: UserPlus },
-      { name: 'Patient Records', href: '/patients', icon: Users },
+      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
       { name: 'Billing', href: '/billing', icon: CreditCard },
       { name: 'Settings', href: '/settings', icon: Settings },
     ]

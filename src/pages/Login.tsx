@@ -24,7 +24,12 @@ const Login = () => {
 
     const success = await login(email, password, userType)
     if (success) {
-      navigate('/dashboard')
+      // Redirect based on user type - doctors and wetlab users go to patient records
+      if (userType === 'doctor' || userType === 'wetlab') {
+        navigate('/patient-records')
+      } else {
+        navigate('/dashboard')
+      }
     } else {
       setError('Invalid email or password')
     }

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { 
   ArrowLeft,
   Calendar,
@@ -19,13 +19,31 @@ import {
   AlertCircle,
   CheckCircle,
   TrendingUp,
-  Filter
+  Filter,
+  Upload
 } from 'lucide-react'
 
 const PatientDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState('overview')
+  const [showAddReportModal, setShowAddReportModal] = useState(false)
+  const [newReport, setNewReport] = useState({
+    type: '',
+    date: new Date().toISOString().split('T')[0],
+    notes: '',
+    results: {},
+    file: null as File | null
+  })
+
+  // Check for tab parameter in URL and set active tab accordingly
+  useEffect(() => {
+    const tabParam = searchParams.get('tab')
+    if (tabParam && ['overview', 'reports', 'appointments', 'treatment'].includes(tabParam)) {
+      setActiveTab(tabParam)
+    }
+  }, [searchParams])
 
   // Mock patient data - in real app, this would come from API
   const patient = {
@@ -157,6 +175,33 @@ const PatientDetails = () => {
       default:
         return 'text-gray-600 bg-gray-50'
     }
+  }
+
+  const handleAddReport = () => {
+    setShowAddReportModal(true)
+  }
+
+  const handleReportSubmit = () => {
+    // Here you would typically send the data to your backend
+    console.log('New report:', newReport)
+    
+    // Reset form and close modal
+    setNewReport({
+      type: '',
+      date: new Date().toISOString().split('T')[0],
+      notes: '',
+      results: {},
+      file: null
+    })
+    setShowAddReportModal(false)
+    
+    // Show success message (you can use a toast notification here)
+    alert('Report added successfully!')
+  }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null
+    setNewReport(prev => ({ ...prev, file }))
   }
 
   const tabs = [
@@ -414,7 +459,10 @@ const PatientDetails = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900">Test Reports & Results</h3>
-              <button className="btn-primary flex items-center space-x-2">
+              <button 
+                onClick={handleAddReport}
+                className="btn-primary flex items-center space-x-2"
+              >
                 <Plus className="h-4 w-4" />
                 <span>Add Report</span>
               </button>
@@ -587,6 +635,147 @@ const PatientDetails = () => {
           </div>
         )}
       </motion.div>
+
+      {/* Add Report Modal */}
+      {showAddReportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900">Add New Report</h2>
+              <button
+                onClick={() => setShowAddReportModal(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Report Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Report Type *
+                </label>
+                <select
+                  value={newReport.type}
+                  onChange={(e) => setNewReport(prev => ({ ...prev, type: e.target.value }))}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  required
+                >
+                  <option value="">Select report type</option>
+                  <option value="Hormone Panel">Hormone Panel</option>
+                  <option value="Ultrasound">Ultrasound</option>
+                  <option value="Blood Work">Blood Work</option>
+                  <option value="PGT-A">PGT-A Report</option>
+                  <option value="PGT-M">PGT-M Report</option>
+                  <option value="PGT-SR">PGT-SR Report</option>
+                  <option value="Baseline Assessment">Baseline Assessment</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              {/* Report Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Report Date *
+                </label>
+                <input
+                  type="date"
+                  value={newReport.date}
+                  onChange={(e) => setNewReport(prev => ({ ...prev, date: e.target.value }))}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  required
+                />
+              </div>
+
+              {/* File Upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Upload Report File
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.fastq,.fq,.fastq.gz"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="report-file-upload"
+                  />
+                  <label
+                    htmlFor="report-file-upload"
+                    className="flex items-center justify-center w-full px-6 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-pink-400 hover:bg-pink-50 transition-all duration-200"
+                  >
+                    <div className="text-center">
+                      <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-lg font-medium text-gray-700 mb-2">
+                        {newReport.file ? 'Change File' : 'Click to upload report file'}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        PDF, DOC, DOCX, Images, FastQ files (Max: 100MB)
+                      </p>
+                    </div>
+                  </label>
+                </div>
+                
+                {newReport.file && (
+                  <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <FileText className="h-5 w-5 text-green-600 mr-3" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {newReport.file.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Size: {(newReport.file.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setNewReport(prev => ({ ...prev, file: null }))}
+                        className="text-red-600 hover:text-red-700 text-sm font-medium px-3 py-1 rounded hover:bg-red-50"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Notes & Observations
+                </label>
+                <textarea
+                  value={newReport.notes}
+                  onChange={(e) => setNewReport(prev => ({ ...prev, notes: e.target.value }))}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  placeholder="Add any notes, observations, or comments about this report..."
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowAddReportModal(false)}
+                className="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReportSubmit}
+                disabled={!newReport.type || !newReport.date}
+                className="px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Add Report
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -9,12 +9,15 @@ import {
   Calendar,
   Phone,
   Mail,
-  FileText
+  FileText,
+  TestTube
 } from 'lucide-react'
 
 const PatientRecords = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedFilter, setSelectedFilter] = useState('all')
+  const [showTestModal, setShowTestModal] = useState(false)
+  const [selectedPatient, setSelectedPatient] = useState<any>(null)
   const navigate = useNavigate()
 
   const patients = [
@@ -28,7 +31,12 @@ const PatientRecords = () => {
       status: 'active',
       treatmentStage: 'Stimulation',
       nextAppointment: '2024-03-15',
-      recentTests: ['AMH', 'FSH', 'Estradiol']
+      recentTests: ['AMH', 'FSH', 'Estradiol'],
+      previousReports: [
+        { date: '2024-03-10', type: 'Blood Test', result: 'Normal' },
+        { date: '2024-03-05', type: 'Ultrasound', result: 'Good Response' },
+        { date: '2024-02-28', type: 'Hormone Panel', result: 'Within Range' }
+      ]
     },
     {
       id: 2,
@@ -40,7 +48,11 @@ const PatientRecords = () => {
       status: 'monitoring',
       treatmentStage: 'Baseline',
       nextAppointment: '2024-03-12',
-      recentTests: ['FSH', 'LH']
+      recentTests: ['FSH', 'LH'],
+      previousReports: [
+        { date: '2024-03-08', type: 'Baseline Scan', result: 'Ready for Treatment' },
+        { date: '2024-03-01', type: 'Initial Assessment', result: 'Good Candidate' }
+      ]
     },
     {
       id: 3,
@@ -52,9 +64,28 @@ const PatientRecords = () => {
       status: 'completed',
       treatmentStage: 'Transfer',
       nextAppointment: '2024-03-20',
-      recentTests: ['Progesterone', 'Beta HCG']
+      recentTests: ['Progesterone', 'Beta HCG'],
+      previousReports: [
+        { date: '2024-03-05', type: 'Beta HCG', result: 'Positive' },
+        { date: '2024-02-28', type: 'Transfer Day', result: 'Successful' },
+        { date: '2024-02-25', type: 'Embryo Quality', result: 'Grade A' }
+      ]
     },
   ]
+
+  const handleAddPatient = () => {
+    navigate('/add-patient')
+  }
+
+  const filteredPatients = patients.filter(patient => {
+    const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         patient.phone.includes(searchTerm)
+    
+    const matchesFilter = selectedFilter === 'all' || patient.status === selectedFilter
+    
+    return matchesSearch && matchesFilter
+  })
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -69,6 +100,23 @@ const PatientRecords = () => {
     }
   }
 
+  const handleTestOptions = (patient: any) => {
+    setSelectedPatient(patient)
+    setShowTestModal(true)
+  }
+
+  const handleNewTest = () => {
+    setShowTestModal(false)
+    // Navigate to test scheduling page
+    navigate(`/patients/${selectedPatient.id}/new-test`)
+  }
+
+  const handleRetest = () => {
+    setShowTestModal(false)
+    // Navigate to retest page
+    navigate(`/patients/${selectedPatient.id}/retest`)
+  }
+
   return (
     <div className="space-y-6">
       <motion.div
@@ -81,7 +129,10 @@ const PatientRecords = () => {
           <h1 className="text-3xl font-bold text-gray-900">Patient Records</h1>
           <p className="text-gray-600 mt-2">Manage and track patient information and treatment progress</p>
         </div>
-        <button className="btn-primary flex items-center space-x-2">
+        <button 
+          onClick={handleAddPatient}
+          className="btn-primary flex items-center space-x-2"
+        >
           <Plus className="h-4 w-4" />
           <span>Add Patient</span>
         </button>
@@ -126,7 +177,7 @@ const PatientRecords = () => {
 
       {/* Patient Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {patients.map((patient, index) => (
+        {filteredPatients.map((patient, index) => (
           <motion.div
             key={patient.id}
             initial={{ opacity: 0, y: 20 }}
@@ -150,9 +201,18 @@ const PatientRecords = () => {
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <Mail className="h-4 w-4" />
-                <span>{patient.email}</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Mail className="h-4 w-4" />
+                  <span>{patient.email}</span>
+                </div>
+                <button 
+                  onClick={() => handleTestOptions(patient)}
+                  className="btn-secondary text-xs flex items-center space-x-1 px-2 py-1"
+                >
+                  <TestTube className="h-3 w-3" />
+                  <span>Test</span>
+                </button>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <Phone className="h-4 w-4" />
@@ -195,15 +255,63 @@ const PatientRecords = () => {
                 >
                   View Details
                 </button>
-                <button className="btn-secondary text-sm flex items-center space-x-1">
+                <button 
+                  onClick={() => navigate(`/patients/${patient.id}?tab=reports`)}
+                  className="btn-secondary text-sm flex items-center space-x-1"
+                >
                   <FileText className="h-3 w-3" />
-                  <span>Records</span>
+                  <span>Reports</span>
                 </button>
               </div>
             </div>
           </motion.div>
         ))}
       </div>
+
+      {/* Test Options Modal */}
+      {showTestModal && selectedPatient && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Test Options - {selectedPatient.name}
+              </h2>
+              <button
+                onClick={() => setShowTestModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-3">
+              <button 
+                onClick={handleNewTest}
+                className="w-full p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <TestTube className="h-5 w-5 text-pink-600" />
+                  <div>
+                    <h3 className="font-medium text-gray-900">New Test</h3>
+                    <p className="text-sm text-gray-500">Schedule a new test for the patient</p>
+                  </div>
+                </div>
+              </button>
+              <button 
+                onClick={handleRetest}
+                className="w-full p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <FileText className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <h3 className="font-medium text-gray-900">Retest</h3>
+                    <p className="text-sm text-gray-500">Repeat a previous test</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

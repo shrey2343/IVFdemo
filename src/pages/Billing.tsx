@@ -398,51 +398,57 @@ const Billing = () => {
                 <p className="text-gray-600">Volume discounts for regular testing</p>
               </div>
 
-              <div className="max-w-md mx-auto space-y-4">
+              <div className="max-w-2xl mx-auto space-y-4">
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">Select Test Type:</label>
-                  <div className="relative">
-                    <select
-                      value={selectedTests[0] || ''}
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          setSelectedTests([e.target.value])
-                        } else {
-                          setSelectedTests([])
-                        }
-                      }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none bg-white"
-                    >
-                      <option value="">Choose a test...</option>
-                      {Object.entries(testTypes).map(([testKey, test]) => (
-                        <option key={testKey} value={testKey}>
-                          {test.icon} {test.name} - ₹{test.price.toLocaleString()}/sample
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                  </div>
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Select Test Type:</label>
+                      <div className="relative">
+                        <select
+                          value={selectedTests[0] || ''}
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              setSelectedTests([e.target.value])
+                            } else {
+                              setSelectedTests([])
+                            }
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none bg-white"
+                        >
+                          <option value="">Choose a test...</option>
+                          {Object.entries(testTypes).map(([testKey, test]) => (
+                            <option key={testKey} value={testKey}>
+                              {test.icon} {test.name} - ₹{test.price.toLocaleString()}/sample
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                      </div>
+                    </div>
 
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-3 text-center">
-                    Monthly Samples: {volumeSamples}
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="200"
-                    step="20"
-                    value={volumeSamples}
-                    onChange={(e) => setVolumeSamples(Number(e.target.value))}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                  />
-                  <div className="flex justify-between text-xs text-gray-600 mt-2">
-                    <span>0</span>
-                    <span className="font-medium text-green-600">
-                      {calculateVolumeDiscount(volumeSamples)}% discount
-                    </span>
-                    <span>200</span>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Monthly Samples: {volumeSamples}
+                      </label>
+                      <div className="space-y-2">
+                        <input
+                          type="range"
+                          min="0"
+                          max="200"
+                          step="20"
+                          value={volumeSamples}
+                          onChange={(e) => setVolumeSamples(Number(e.target.value))}
+                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                        />
+                        <div className="flex justify-between text-xs text-gray-600">
+                          <span>0</span>
+                          <span className="font-medium text-green-600">
+                            {calculateVolumeDiscount(volumeSamples)}% discount
+                          </span>
+                          <span>200</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
