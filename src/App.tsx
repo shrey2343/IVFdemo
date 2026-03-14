@@ -5,13 +5,13 @@ import { ToastProvider } from './contexts/ToastContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import PublicLayout from './components/PublicLayout'
+import DashboardRouter from './components/DashboardRouter'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Blog from './pages/Blog'
 import Contact from './pages/Contact'
 import Terms from './pages/Terms'
-import Dashboard from './pages/Dashboard'
 import TestAnalysis from './pages/TestAnalysis'
 import PatientRecords from './pages/PatientRecords'
 import PatientDetails from './pages/PatientDetails'
@@ -61,7 +61,7 @@ function App() {
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Layout>
-                  <Dashboard />
+                  <DashboardRouter />
                 </Layout>
               </ProtectedRoute>
             } />

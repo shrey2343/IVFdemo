@@ -51,8 +51,11 @@ const AddPatient = () => {
     embryoImages: []
   })
 
+  const isWetLab = user?.role === 'wetlab'
+  const entityName = isWetLab ? 'Sample' : 'Patient'
+
   const sections = [
-    { id: 0, title: 'Personal Details', icon: User },
+    { id: 0, title: `${entityName} Details`, icon: User },
     { id: 1, title: 'Comorbidities', icon: Heart },
     { id: 2, title: 'Tests', icon: TestTube },
     { id: 3, title: 'Embryo Images', icon: ImageIcon }
@@ -75,7 +78,7 @@ const AddPatient = () => {
   const handleSubmit = () => {
     if (!canAddPatient()) {
       showError(
-        'Cannot Add Patient',
+        `Cannot Add ${entityName}`,
         'Your plan has expired or you have no cycles remaining. Please upgrade your plan to continue.'
       )
       return
@@ -85,16 +88,16 @@ const AddPatient = () => {
     const cycleUsed = useCycle()
     if (!cycleUsed) {
       showError(
-        'Failed to Add Patient',
+        `Failed to Add ${entityName}`,
         'Unable to use cycle. Please check your plan status.'
       )
       return
     }
     
-    console.log('Patient data:', formData)
+    console.log(`${entityName} data:`, formData)
     showSuccess(
-      'Patient Added Successfully!',
-      'Patient information has been saved and a cycle has been used from your plan.'
+      `${entityName} Added Successfully!`,
+      `${entityName} information has been saved and a cycle has been used from your plan.`
     )
     
     // Reset form
@@ -126,86 +129,62 @@ const AddPatient = () => {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Add New Patient</h1>
-        <p className="text-gray-600 mt-2">Enter patient information and upload test files</p>
-      </div>
+      {/* Header with Section Navigation and Plan Badge */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 space-y-4 lg:space-y-0">
+        {/* Section Navigation */}
+        <div className="flex flex-wrap items-center gap-2 lg:gap-4">
+          {sections.map((section) => (
+            <motion.button
+              key={section.id}
+              onClick={() => canAddPatient() && setCurrentSection(section.id)}
+              whileHover={canAddPatient() ? { scale: 1.02 } : {}}
+              whileTap={canAddPatient() ? { scale: 0.98 } : {}}
+              disabled={!canAddPatient()}
+              className={`flex items-center py-2 px-3 lg:px-4 rounded-lg font-medium text-xs lg:text-sm transition-all duration-200 ${
+                !canAddPatient()
+                  ? 'text-gray-400 cursor-not-allowed'
+                  : currentSection === section.id
+                    ? 'bg-pink-100 text-pink-700 border-2 border-pink-300'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+              }`}
+            >
+              <section.icon className="h-4 w-4 lg:h-5 lg:w-5 mr-1 lg:mr-2" />
+              <span className="hidden sm:inline">{section.title}</span>
+              <span className="sm:hidden">{section.title.split(' ')[0]}</span>
+            </motion.button>
+          ))}
+        </div>
 
-      {/* Plan Status Alert */}
-      {user && (
-        <div className="mb-6">
-          {!canAddPatient() ? (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-6">
-              <div className="flex items-center">
-                <Lock className="h-6 w-6 text-red-600 mr-3" />
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-red-800">Cannot Add Patients</h3>
-                  <p className="text-red-700 mt-1">
-                    {user.plan.cyclesRemaining === 0 
-                      ? 'You have no cycles remaining in your current plan.'
-                      : new Date() > new Date(user.plan.expiryDate)
-                        ? 'Your plan has expired.'
-                        : 'Your plan is not active.'
-                    }
-                  </p>
-                </div>
+        {/* Plan Status Badge */}
+        {user && (
+          <div className="flex items-center justify-end">
+            {!canAddPatient() ? (
+              <div className="flex items-center bg-red-100 text-red-800 px-3 py-2 rounded-full border border-red-200">
+                <Lock className="h-4 w-4 mr-2" />
+                <span className="text-sm font-medium">Plan Inactive</span>
                 <Link
                   to="/billing"
-                  className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  className="ml-3 flex items-center px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-xs"
                 >
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Upgrade Plan
+                  <CreditCard className="h-3 w-3 mr-1" />
+                  Upgrade
                 </Link>
               </div>
-            </div>
-          ) : (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                  <span className="text-green-800 font-medium">
-                    Plan Active: {user.plan.name}
-                  </span>
-                </div>
-                <span className="text-green-700 text-sm">
+            ) : (
+              <div className="flex items-center bg-green-100 text-green-800 px-3 py-2 rounded-full border border-green-200">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                <span className="text-sm font-medium">{user.plan.name}</span>
+                <span className="ml-2 text-xs text-green-600">
                   {user.plan.cyclesRemaining === 'unlimited' 
-                    ? 'Unlimited cycles' 
-                    : `${user.plan.cyclesRemaining} cycles remaining`
-                  }
+                    ? '∞' 
+                    : user.plan.cyclesRemaining
+                  } cycles
                 </span>
               </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Section Navigation - Top Tabs */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-        <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6">
-            {sections.map((section) => (
-              <motion.button
-                key={section.id}
-                onClick={() => canAddPatient() && setCurrentSection(section.id)}
-                whileHover={canAddPatient() ? { scale: 1.02 } : {}}
-                whileTap={canAddPatient() ? { scale: 0.98 } : {}}
-                disabled={!canAddPatient()}
-                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 ${
-                  !canAddPatient()
-                    ? 'border-transparent text-gray-400 cursor-not-allowed'
-                    : currentSection === section.id
-                      ? 'border-pink-500 text-pink-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <section.icon className="h-5 w-5 mr-2" />
-                {section.title}
-              </motion.button>
-            ))}
-          </nav>
-        </div>
+            )}
+          </div>
+        )}
       </div>
-
       {/* Form Content */}
       <div className={`${!canAddPatient() ? 'opacity-50 pointer-events-none' : ''}`}>
           <motion.div

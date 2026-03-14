@@ -1,6 +1,6 @@
-# IVF Analysis Platform
+# IVF 360 Platform
 
-A comprehensive React + TypeScript application for IVF test analysis with authentication and public pages, designed for medical professionals.
+A comprehensive React + TypeScript application for IVF 360 platform with authentication and public pages, designed for medical professionals.
 
 ## Features
 

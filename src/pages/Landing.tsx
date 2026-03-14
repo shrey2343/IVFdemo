@@ -88,7 +88,7 @@ const Landing = () => {
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
               Nurturing Dreams with
-              <span className="text-pink-300 drop-shadow-lg"> IVF Analytics</span>
+              <span className="text-pink-300 drop-shadow-lg"> IVF 360</span>
             </h1>
             <div className="bg-white/60 backdrop-blur-md rounded-2xl px-6 py-6 mb-8 max-w-4xl mx-auto shadow-lg border border-white/30">
               <p className="text-xl text-gray-900 drop-shadow-sm font-medium">

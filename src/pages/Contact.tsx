@@ -36,7 +36,7 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email',
-      details: 'support@ivfanalytics.com',
+      details: 'support@ivf360.com',
       description: 'Send us an email anytime',
       color: 'from-pink-500 to-rose-500'
     },

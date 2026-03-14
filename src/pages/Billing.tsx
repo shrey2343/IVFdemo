@@ -8,18 +8,20 @@ import {
   FileText,
   CheckCircle,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Info,
+  ChevronDown
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
 
 const Billing = () => {
-  const { updatePlan, getCurrentPlan } = useAuth()
-  const { showSuccess, showError } = useToast()
+  const { getCurrentPlan } = useAuth()
+  const { showSuccess } = useToast()
   const [selectedPeriod, setSelectedPeriod] = useState('monthly')
-  const [selectedTest, setSelectedTest] = useState<string>('pgt-a') // Default to PGT-A
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
-  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [activeTab, setActiveTab] = useState('pay-per-sample')
+  const [showAllInvoices, setShowAllInvoices] = useState(false)
+  const [showFeatures, setShowFeatures] = useState<string | null>(null)
   
   const currentPlan = getCurrentPlan() || {
     type: 'per-cycle',
@@ -29,171 +31,92 @@ const Billing = () => {
     isActive: false
   }
 
-  const testBasedPlans = {
+  const [selectedTests, setSelectedTests] = useState<string[]>(['pgt-a'])
+  const [volumeSamples, setVolumeSamples] = useState(20)
+  const [showEnterpriseForm, setShowEnterpriseForm] = useState(false)
+  const [enterpriseFormData, setEnterpriseFormData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    phone: '',
+    message: ''
+  })
+
+  const testTypes = {
     'pgt-a': {
-      name: 'PGT-A (Preimplantation Genetic Testing for Aneuploidy)',
+      name: 'PGT-A',
+      fullName: 'Preimplantation Genetic Testing for Aneuploidy',
       description: 'Screens embryos for chromosomal abnormalities',
       icon: '🧬',
-      color: 'blue',
-      plans: [
-        {
-          id: 'pgt-a-per-sample',
-          name: 'Per Sample Plan',
-          description: 'Pay per embryo analysis',
-          price: '₹3,000',
-          unit: 'per embryo',
-          bulkPrice: '₹3,00,000 for 100 samples',
-          features: [
-            'Single embryo analysis',
-            'Basic reporting',
-            'Email support',
-            'Standard processing time'
-          ],
-          popular: false
-        },
-        {
-          id: 'pgt-a-monthly',
-          name: 'Monthly Subscription',
-          description: 'Fixed monthly cost with sample limit',
-          price: '₹1,50,000',
-          unit: 'per month',
-          sampleLimit: 'up to 50 embryos',
-          features: [
-            'Up to 50 embryos per month',
-            'Advanced reporting',
-            'Priority support',
-            'Faster processing',
-            'Data export'
-          ],
-          popular: true
-        },
-        {
-          id: 'pgt-a-yearly',
-          name: 'Yearly Subscription',
-          description: 'Best value for high-volume users',
-          price: '₹15,00,000',
-          unit: 'per year',
-          features: [
-            'Unlimited embryos',
-            'Premium reporting',
-            '24/7 phone support',
-            'Fastest processing',
-            'Advanced analytics',
-            'API access'
-          ],
-          popular: false
-        }
-      ]
+      price: 5000
     },
     'pgt-m': {
-      name: 'PGT-M (Preimplantation Genetic Testing for Monogenic Disorders)',
+      name: 'PGT-M',
+      fullName: 'Preimplantation Genetic Testing for Monogenic Disorders',
       description: 'Tests for specific genetic disorders',
       icon: '🔬',
-      color: 'green',
-      plans: [
-        {
-          id: 'pgt-m-per-sample',
-          name: 'Per Case Plan',
-          description: 'Pay per case analysis',
-          price: '₹10,000',
-          unit: 'per case',
-          bulkPrice: '₹10,00,000 for 100 samples',
-          features: [
-            'Single case analysis',
-            'Basic reporting',
-            'Email support',
-            'Standard processing time'
-          ],
-          popular: false
-        },
-        {
-          id: 'pgt-m-monthly',
-          name: 'Monthly Subscription',
-          description: 'Fixed monthly cost for regular testing',
-          price: '₹2,50,000',
-          unit: 'per month',
-          features: [
-            'Unlimited cases per month',
-            'Advanced reporting',
-            'Priority support',
-            'Faster processing',
-            'Data export'
-          ],
-          popular: true
-        },
-        {
-          id: 'pgt-m-yearly',
-          name: 'Yearly Subscription',
-          description: 'Best value for specialized clinics',
-          price: '₹25,00,000',
-          unit: 'per year',
-          features: [
-            'Unlimited cases',
-            'Premium reporting',
-            '24/7 phone support',
-            'Fastest processing',
-            'Advanced analytics',
-            'API access'
-          ],
-          popular: false
-        }
-      ]
+      price: 12000
     },
     'pgt-sr': {
-      name: 'PGT-SR (Preimplantation Genetic Testing for Structural Rearrangements)',
+      name: 'PGT-SR',
+      fullName: 'Preimplantation Genetic Testing for Structural Rearrangements',
       description: 'Detects chromosomal structural abnormalities',
       icon: '🧪',
-      color: 'purple',
-      plans: [
-        {
-          id: 'pgt-sr-per-sample',
-          name: 'Per Sample Plan',
-          description: 'Pay per embryo analysis',
-          price: '₹6,000',
-          unit: 'per embryo',
-          bulkPrice: '₹6,00,000 for 100 samples',
-          features: [
-            'Single embryo analysis',
-            'Basic reporting',
-            'Email support',
-            'Standard processing time'
-          ],
-          popular: false
-        },
-        {
-          id: 'pgt-sr-monthly',
-          name: 'Monthly Subscription',
-          description: 'Fixed monthly cost with comprehensive coverage',
-          price: '₹2,00,000',
-          unit: 'per month',
-          features: [
-            'Unlimited embryos per month',
-            'Advanced reporting',
-            'Priority support',
-            'Faster processing',
-            'Data export'
-          ],
-          popular: true
-        },
-        {
-          id: 'pgt-sr-yearly',
-          name: 'Yearly Subscription',
-          description: 'Best value for structural analysis',
-          price: '₹20,00,000',
-          unit: 'per year',
-          features: [
-            'Unlimited embryos',
-            'Premium reporting',
-            '24/7 phone support',
-            'Fastest processing',
-            'Advanced analytics',
-            'API access'
-          ],
-          popular: false
-        }
-      ]
+      price: 8000
     }
   }
+
+  const pricingPlans = [
+    {
+      id: 'pay-per-sample',
+      name: 'Pay Per Sample',
+      description: 'Perfect for occasional testing needs',
+      icon: '💳',
+      color: 'blue',
+      popular: false,
+      features: [
+        'Pay only for what you use',
+        'No monthly commitments',
+        'Basic reporting',
+        'Email support',
+        'Standard processing time'
+      ]
+    },
+    {
+      id: 'clinic-volume',
+      name: 'Clinic Volume Plan',
+      description: 'Volume discounts for regular testing',
+      icon: '📊',
+      color: 'green',
+      popular: true,
+      features: [
+        '2% discount per 20 samples',
+        'Flexible sample selection',
+        'Advanced reporting',
+        'Priority support',
+        'Faster processing',
+        'Monthly billing'
+      ]
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise Package',
+      description: 'Annual subscription with premium features',
+      icon: '🏢',
+      color: 'purple',
+      popular: false,
+      features: [
+        'Custom pricing',
+        'Unlimited samples',
+        'Premium reporting',
+        '24/7 phone support',
+        'Fastest processing',
+        'Advanced analytics',
+        'API access',
+        'Dedicated account manager'
+      ]
+    }
+  ]
 
   const billingStats = [
     { label: 'Current Plan', value: currentPlan.name, icon: CheckCircle, color: currentPlan.isActive ? 'green' : 'red' },
@@ -237,55 +160,49 @@ const Billing = () => {
     }
   ]
 
-  const paymentMethods = [
-    {
-      id: 1,
-      type: 'visa',
-      last4: '4242',
-      expiryMonth: '12',
-      expiryYear: '2025',
-      isDefault: true
-    },
-    {
-      id: 2,
-      type: 'mastercard',
-      last4: '8888',
-      expiryMonth: '06',
-      expiryYear: '2026',
-      isDefault: false
-    }
-  ]
-
-  const handlePlanSelect = (planId: string) => {
-    setSelectedPlan(planId)
-    setShowConfirmation(true)
+  const calculatePayPerSamplePrice = () => {
+    return selectedTests.reduce((total, testKey) => {
+      return total + testTypes[testKey as keyof typeof testTypes].price
+    }, 0)
   }
 
-  const confirmPlanSelection = () => {
-    const currentTestPlans = testBasedPlans[selectedTest as keyof typeof testBasedPlans]
-    const plan = currentTestPlans?.plans.find(p => p.id === selectedPlan)
-    if (plan && selectedPlan) {
-      try {
-        updatePlan(selectedPlan, plan)
-        showSuccess(
-          'Plan Updated Successfully!', 
-          `You have successfully upgraded to ${plan.name} for ${currentTestPlans.name}. You can now add patients and use the platform features.`
-        )
-        setShowConfirmation(false)
-        setSelectedPlan(null)
-      } catch (error) {
-        console.error('Plan update error:', error)
-        showError(
-          'Plan Update Failed', 
-          'There was an error updating your plan. Please try again or contact support.'
-        )
-      }
-    } else {
-      showError(
-        'Invalid Plan Selection', 
-        'Please select a valid plan and try again.'
-      )
-    }
+  const calculateVolumeDiscount = (samples: number) => {
+    const discountTiers = Math.floor(samples / 20)
+    return discountTiers * 2 // 2% per 20 samples
+  }
+
+  const calculateVolumePrice = () => {
+    const basePrice = selectedTests.reduce((total, testKey) => {
+      return total + (testTypes[testKey as keyof typeof testTypes].price * volumeSamples)
+    }, 0)
+    
+    const discount = calculateVolumeDiscount(volumeSamples)
+    const discountAmount = (basePrice * discount) / 100
+    return basePrice - discountAmount
+  }
+
+  const handleEnterpriseFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setEnterpriseFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const handleEnterpriseSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Simulate form submission
+    showSuccess(
+      'Form Submitted Successfully!',
+      'Thank you for your interest. Our sales team will get back to you within 24 hours.'
+    )
+    setShowEnterpriseForm(false)
+    setEnterpriseFormData({
+      name: '',
+      email: '',
+      company: '',
+      phone: '',
+      message: ''
+    })
   }
 
   const getStatusIcon = (status: string) => {
@@ -357,270 +274,277 @@ const Billing = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Available Plans */}
-        <div className="lg:col-span-2">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Test-Based Pricing Plans</h2>
-              <button className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors">
-                Change Plan
-              </button>
-            </div>
-            
-            {/* Test Selection Tabs */}
-            <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 mb-6">
-              {Object.entries(testBasedPlans).map(([testKey, testData]) => (
-                <button
-                  key={testKey}
-                  onClick={() => setSelectedTest(testKey)}
-                  className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-md transition-all duration-200 ${
-                    selectedTest === testKey
-                      ? `bg-${testData.color}-600 text-white shadow-md`
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-white'
-                  }`}
-                >
-                  <span className="text-lg">{testData.icon}</span>
-                  <span className="font-medium text-sm">
-                    {testKey.toUpperCase().replace('-', '-')}
-                  </span>
-                </button>
-              ))}
-            </div>
+      {/* Pricing Plans with Tabs */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900">Choose Your Pricing Plan</h2>
+        </div>
+        
+        {/* Tab Navigation */}
+        <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 mb-6">
+          {pricingPlans.map((plan) => (
+            <button
+              key={plan.id}
+              onClick={() => setActiveTab(plan.id)}
+              className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-md transition-all duration-200 ${
+                activeTab === plan.id
+                  ? `bg-${plan.color}-600 text-white shadow-md`
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+              }`}
+            >
+              <span className="text-lg">{plan.icon}</span>
+              <span className="font-medium text-sm">
+                {plan.id === 'pay-per-sample' ? 'Pay Per Sample' : 
+                 plan.id === 'clinic-volume' ? 'Volume Plan' : 'Enterprise'}
+              </span>
+            </button>
+          ))}
+        </div>
 
-            {/* Selected Test Info */}
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {testBasedPlans[selectedTest as keyof typeof testBasedPlans].name}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {testBasedPlans[selectedTest as keyof typeof testBasedPlans].description}
-              </p>
-            </div>
-            
-            {/* Plans for Selected Test */}
-            <div className="space-y-6">
-              {testBasedPlans[selectedTest as keyof typeof testBasedPlans].plans.map((plan) => (
-                <motion.div
-                  key={plan.id}
-                  whileHover={{ scale: 1.01 }}
-                  className={`relative border-2 rounded-xl p-6 transition-all duration-200 ${
-                    plan.popular 
-                      ? `border-${testBasedPlans[selectedTest as keyof typeof testBasedPlans].color}-300 bg-${testBasedPlans[selectedTest as keyof typeof testBasedPlans].color}-50 shadow-lg` 
-                      : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-6 z-10">
-                      <span className={`bg-${testBasedPlans[selectedTest as keyof typeof testBasedPlans].color}-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg`}>
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-start justify-between">
-                    {/* Plan Info */}
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                      <p className="text-gray-600 mb-4">{plan.description}</p>
-                      
-                      <div className="flex items-baseline mb-4">
-                        <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                        <span className="text-gray-600 ml-2">{plan.unit}</span>
-                      </div>
-                      
-                      {(plan as any).bulkPrice && (
-                        <div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                          <p className="text-sm font-medium text-green-800">
-                            Bulk Pricing: {(plan as any).bulkPrice}
-                          </p>
-                        </div>
-                      )}
+        {/* Tab Content */}
+        <div className="min-h-[400px]">
+          {activeTab === 'pay-per-sample' && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Pay Per Sample</h3>
+                <p className="text-gray-600">Perfect for occasional testing needs</p>
+              </div>
 
-                      {(plan as any).sampleLimit && (
-                        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                          <p className="text-sm font-medium text-blue-800">
-                            Sample Limit: {(plan as any).sampleLimit}
-                          </p>
-                        </div>
-                      )}
+              <div className="max-w-md mx-auto space-y-4">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Select Test Type:</label>
+                  <div className="relative">
+                    <select
+                      value={selectedTests[0] || ''}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          setSelectedTests([e.target.value])
+                        } else {
+                          setSelectedTests([])
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+                    >
+                      <option value="">Choose a test...</option>
+                      {Object.entries(testTypes).map(([testKey, test]) => (
+                        <option key={testKey} value={testKey}>
+                          {test.icon} {test.name} - ₹{test.price.toLocaleString()}/sample
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                {selectedTests.length > 0 && (
+                  <div className="bg-blue-50 rounded-lg p-6 border border-blue-200 text-center">
+                    <div className="text-sm text-blue-700 mb-2">Price per sample:</div>
+                    <div className="text-3xl font-bold text-blue-900 mb-4">
+                      ₹{calculatePayPerSamplePrice().toLocaleString()}
                     </div>
-                    
-                    {/* Features and Button */}
-                    <div className="ml-8 min-w-0 flex-shrink-0" style={{ width: '300px' }}>
-                      <ul className="space-y-2 mb-6">
-                        {plan.features.map((feature, index) => (
-                          <li key={index} className="flex items-center text-sm text-gray-700">
-                            <CheckCircle className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      
-                      <button 
-                        onClick={() => handlePlanSelect(plan.id)}
-                        className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
-                          currentPlan.type === plan.id
-                            ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                            : `bg-${testBasedPlans[selectedTest as keyof typeof testBasedPlans].color}-600 text-white hover:bg-${testBasedPlans[selectedTest as keyof typeof testBasedPlans].color}-700`
-                        }`}
-                        disabled={currentPlan.type === plan.id}
+                    <div className="flex items-center justify-center space-x-2 text-sm text-blue-700 mb-4">
+                      <span>Features</span>
+                      <button
+                        onClick={() => setShowFeatures(showFeatures === 'pay' ? null : 'pay')}
+                        className="text-blue-600 hover:text-blue-800"
                       >
-                        {currentPlan.type === plan.id ? 'Current Plan' : 'Select Plan'}
+                        <Info className="h-4 w-4" />
                       </button>
                     </div>
+                    {showFeatures === 'pay' && (
+                      <div className="bg-white rounded-lg p-3 text-left text-sm text-gray-700 mb-4">
+                        <ul className="space-y-1">
+                          <li>• Pay only for what you use</li>
+                          <li>• No monthly commitments</li>
+                          <li>• Basic reporting</li>
+                          <li>• Email support</li>
+                          <li>• Standard processing time</li>
+                        </ul>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        showSuccess('Plan Selected!', 'You have selected the Pay Per Sample plan.')
+                      }}
+                      className="w-full py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      Select Plan
+                    </button>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
+                )}
+              </div>
+            </motion.div>
+          )}
 
-        {/* Current Plan & Payment Methods */}
-        <div className="space-y-6">
-          {/* Current Plan Status */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-          >
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Current Plan Status</h2>
-            
-            {/* Current Test & Plan */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">PGT-A</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">Per Sample Plan</h3>
-                    <p className="text-xs text-gray-600">PGT-A Testing</p>
-                  </div>
-                </div>
-                <span className={`px-2 py-1 text-xs rounded-full ${
-                  currentPlan.isActive 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
-                }`}>
-                  {currentPlan.isActive ? 'Active' : 'Expired'}
-                </span>
+          {activeTab === 'clinic-volume' && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Clinic Volume Plan</h3>
+                <p className="text-gray-600">Volume discounts for regular testing</p>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-gray-600">Pricing</p>
-                  <p className="font-medium text-gray-900">₹3,000 per embryo</p>
-                </div>
-                <div>
-                  <p className="text-gray-600">Usage</p>
-                  <p className="font-medium text-gray-900">Pay per use</p>
-                </div>
-              </div>
-              
-              <div className="mt-3 pt-3 border-t border-gray-200">
-                <p className="text-sm text-gray-600">
-                  Plan Status: <span className="font-medium">{currentPlan.isActive ? 'Active' : 'Expired'}</span>
-                </p>
-                <p className="text-sm text-gray-600">
-                  Expires: <span className="font-medium">{new Date(currentPlan.expiryDate).toLocaleDateString()}</span>
-                </p>
-              </div>
-            </div>
-            
-            {/* Plan Recommendations */}
-            {!currentPlan.isActive && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-                <div className="flex items-center">
-                  <AlertCircle className="h-4 w-4 text-yellow-600 mr-2" />
-                  <p className="text-sm text-yellow-800">
-                    Your plan has expired. Upgrade to continue using our services.
-                  </p>
-                </div>
-              </div>
-            )}
-            
-            {currentPlan.isActive && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                <div className="flex items-center">
-                  <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
-                  <div>
-                    <p className="text-sm text-blue-800 font-medium">
-                      Consider upgrading to Monthly or Yearly plans for better value
-                    </p>
-                    <p className="text-xs text-blue-700 mt-1">
-                      Monthly plans offer up to 50 embryos with advanced features
-                    </p>
+
+              <div className="max-w-md mx-auto space-y-4">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Select Test Type:</label>
+                  <div className="relative">
+                    <select
+                      value={selectedTests[0] || ''}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          setSelectedTests([e.target.value])
+                        } else {
+                          setSelectedTests([])
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none bg-white"
+                    >
+                      <option value="">Choose a test...</option>
+                      {Object.entries(testTypes).map(([testKey, test]) => (
+                        <option key={testKey} value={testKey}>
+                          {test.icon} {test.name} - ₹{test.price.toLocaleString()}/sample
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
-              </div>
-            )}
-            
-            <div className="space-y-3">
-              <button 
-                onClick={() => setSelectedTest('pgt-a')}
-                className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
-              >
-                {currentPlan.isActive ? 'Upgrade Plan' : 'Activate Plan'}
-              </button>
-              <button className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                Switch Test Type
-              </button>
-            </div>
-          </motion.div>
-          {/* Payment Methods */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Payment Methods</h2>
-              <button className="text-pink-600 hover:text-pink-700 text-sm font-medium">
-                Add New
-              </button>
-            </div>
-            
-            <div className="space-y-3">
-              {paymentMethods.map((method) => (
-                <div key={method.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                  <div className="flex items-center">
-                    <div className={`w-10 h-6 rounded ${
-                      method.type === 'visa' ? 'bg-blue-600' : 'bg-red-600'
-                    } flex items-center justify-center mr-3`}>
-                      <span className="text-white text-xs font-bold uppercase">
-                        {method.type}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        •••• {method.last4}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {method.expiryMonth}/{method.expiryYear}
-                      </p>
-                    </div>
-                  </div>
-                  {method.isDefault && (
-                    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                      Default
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3 text-center">
+                    Monthly Samples: {volumeSamples}
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="200"
+                    step="20"
+                    value={volumeSamples}
+                    onChange={(e) => setVolumeSamples(Number(e.target.value))}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                  />
+                  <div className="flex justify-between text-xs text-gray-600 mt-2">
+                    <span>0</span>
+                    <span className="font-medium text-green-600">
+                      {calculateVolumeDiscount(volumeSamples)}% discount
                     </span>
-                  )}
+                    <span>200</span>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </div>
 
-      {/* Invoice History */}
+                {selectedTests.length > 0 && (
+                  <div className="bg-green-50 rounded-lg p-6 border border-green-200 text-center">
+                    <div className="text-sm text-green-700 mb-2">Monthly total:</div>
+                    <div className="text-3xl font-bold text-green-900 mb-4">
+                      ₹{calculateVolumePrice().toLocaleString()}
+                    </div>
+                    <div className="flex items-center justify-center space-x-2 text-sm text-green-700 mb-4">
+                      <span>Features</span>
+                      <button
+                        onClick={() => setShowFeatures(showFeatures === 'volume' ? null : 'volume')}
+                        className="text-green-600 hover:text-green-800"
+                      >
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </div>
+                    {showFeatures === 'volume' && (
+                      <div className="bg-white rounded-lg p-3 text-left text-sm text-gray-700 mb-4">
+                        <ul className="space-y-1">
+                          <li>• 2% discount per 20 samples</li>
+                          <li>• Flexible sample selection</li>
+                          <li>• Advanced reporting</li>
+                          <li>• Priority support</li>
+                          <li>• Faster processing</li>
+                          <li>• Monthly billing</li>
+                        </ul>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        showSuccess('Plan Selected!', 'You have selected the Clinic Volume Plan.')
+                      }}
+                      className="w-full py-3 px-6 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                    >
+                      Select Plan
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'enterprise' && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise Package</h3>
+                <p className="text-gray-600">Annual subscription with premium features</p>
+              </div>
+
+              <div className="max-w-md mx-auto">
+                <div className="bg-purple-50 rounded-lg p-6 border border-purple-200 text-center">
+                  <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <span className="text-3xl">🏢</span>
+                  </div>
+                  <h4 className="font-semibold text-purple-900 mb-2">Custom Enterprise Solution</h4>
+                  <p className="text-sm text-purple-700 mb-4">
+                    Get a tailored pricing plan based on your specific needs and volume requirements.
+                  </p>
+                  <div className="flex items-center justify-center space-x-2 text-sm text-purple-700 mb-4">
+                    <span>Features</span>
+                    <button
+                      onClick={() => setShowFeatures(showFeatures === 'enterprise' ? null : 'enterprise')}
+                      className="text-purple-600 hover:text-purple-800"
+                    >
+                      <Info className="h-4 w-4" />
+                    </button>
+                  </div>
+                  {showFeatures === 'enterprise' && (
+                    <div className="bg-white rounded-lg p-3 text-left text-sm text-gray-700 mb-4">
+                      <ul className="space-y-1">
+                        <li>• Custom pricing</li>
+                        <li>• Unlimited samples</li>
+                        <li>• Premium reporting</li>
+                        <li>• 24/7 phone support</li>
+                        <li>• Fastest processing</li>
+                        <li>• Advanced analytics</li>
+                        <li>• API access</li>
+                        <li>• Dedicated account manager</li>
+                      </ul>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => setShowEnterpriseForm(true)}
+                    className="w-full py-3 px-6 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                  >
+                    Contact Sales Team
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Invoice History - Compact */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -628,145 +552,222 @@ const Billing = () => {
         className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Invoice History</h2>
-          <button className="flex items-center px-4 py-2 text-pink-600 hover:text-pink-700 font-medium">
-            <Download className="h-4 w-4 mr-2" />
-            Download All
+          <h2 className="text-xl font-bold text-gray-900">Recent Invoices</h2>
+          <button 
+            onClick={() => setShowAllInvoices(true)}
+            className="text-pink-600 hover:text-pink-700 text-sm font-medium flex items-center"
+          >
+            View All →
           </button>
         </div>
         
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Invoice
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {invoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {invoice.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(invoice.date).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {invoice.description}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {invoice.amount}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      {getStatusIcon(invoice.status)}
-                      <span className={`ml-2 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(invoice.status)}`}>
-                        {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex items-center space-x-2">
-                      <button className="text-pink-600 hover:text-pink-700 font-medium">
-                        View
-                      </button>
-                      <button className="text-gray-600 hover:text-gray-700 font-medium">
-                        Download
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-3">
+          {invoices.slice(0, 3).map((invoice) => (
+            <div key={invoice.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                {getStatusIcon(invoice.status)}
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{invoice.id}</p>
+                  <p className="text-xs text-gray-500">{new Date(invoice.date).toLocaleDateString()}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-medium text-gray-900">{invoice.amount}</p>
+                <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(invoice.status)}`}>
+                  {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </motion.div>
 
-      {/* Plan Selection Confirmation Modal */}
-      {showConfirmation && selectedPlan && (
+      {/* All Invoices Modal */}
+      {showAllInvoices && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl p-8 max-w-md w-full mx-4"
+            className="bg-white rounded-xl p-6 max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto"
           >
-            {(() => {
-              const currentTestPlans = testBasedPlans[selectedTest as keyof typeof testBasedPlans]
-              const plan = currentTestPlans?.plans.find(p => p.id === selectedPlan)
-              return plan ? (
-                <>
-                  <div className="text-center mb-6">
-                    <div className={`w-16 h-16 bg-gradient-to-r from-${currentTestPlans.color}-400 to-${currentTestPlans.color}-600 rounded-full flex items-center justify-center mx-auto mb-4`}>
-                      <span className="text-2xl">{currentTestPlans.icon}</span>
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Confirm Plan Selection</h3>
-                    <p className="text-gray-600">You've selected {plan.name} for {currentTestPlans.name}</p>
-                  </div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-900">All Invoices</h3>
+              <div className="flex items-center space-x-4">
+                <button className="flex items-center px-4 py-2 text-pink-600 hover:text-pink-700 font-medium">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download All
+                </button>
+                <button
+                  onClick={() => setShowAllInvoices(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Invoice
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Description
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Amount
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {invoices.map((invoice) => (
+                    <tr key={invoice.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {invoice.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(invoice.date).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {invoice.description}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {invoice.amount}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          {getStatusIcon(invoice.status)}
+                          <span className={`ml-2 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(invoice.status)}`}>
+                            {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="flex items-center space-x-2">
+                          <button className="text-pink-600 hover:text-pink-700 font-medium">
+                            View
+                          </button>
+                          <button className="text-gray-600 hover:text-gray-700 font-medium">
+                            Download
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
-                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-gray-700">Test:</span>
-                      <span className="font-bold text-gray-900">{selectedTest.toUpperCase().replace('-', '-')}</span>
-                    </div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-gray-700">Plan:</span>
-                      <span className="font-bold text-gray-900">{plan.name}</span>
-                    </div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-gray-700">Price:</span>
-                      <span className="font-bold text-gray-900">{plan.price} {plan.unit}</span>
-                    </div>
-                    {(plan as any).bulkPrice && (
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <p className="text-sm font-medium text-gray-700 mb-1">Bulk Pricing:</p>
-                        <p className="text-xs text-gray-600">{(plan as any).bulkPrice}</p>
-                      </div>
-                    )}
-                    {(plan as any).sampleLimit && (
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <p className="text-sm font-medium text-gray-700 mb-1">Sample Limit:</p>
-                        <p className="text-xs text-gray-600">{(plan as any).sampleLimit}</p>
-                      </div>
-                    )}
-                  </div>
+      {/* Enterprise Contact Form Modal */}
+      {showEnterpriseForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl p-8 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto"
+          >
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🏢</span>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Contact Sales Team</h3>
+              <p className="text-gray-600">Fill out the form below and our team will get back to you within 24 hours.</p>
+            </div>
 
-                  <div className="flex space-x-4">
-                    <button
-                      onClick={() => {
-                        setShowConfirmation(false)
-                        setSelectedPlan(null)
-                      }}
-                      className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={confirmPlanSelection}
-                      className={`flex-1 py-3 px-4 bg-${currentTestPlans.color}-600 text-white rounded-lg hover:bg-${currentTestPlans.color}-700 transition-colors`}
-                    >
-                      Confirm Selection
-                    </button>
-                  </div>
-                </>
-              ) : null
-            })()}
+            <form onSubmit={handleEnterpriseSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={enterpriseFormData.name}
+                  onChange={handleEnterpriseFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Enter your full name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={enterpriseFormData.email}
+                  onChange={handleEnterpriseFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Enter your email"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Company Name *</label>
+                <input
+                  type="text"
+                  name="company"
+                  required
+                  value={enterpriseFormData.company}
+                  onChange={handleEnterpriseFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Enter your company name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={enterpriseFormData.phone}
+                  onChange={handleEnterpriseFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Enter your phone number"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                <textarea
+                  name="message"
+                  rows={3}
+                  value={enterpriseFormData.message}
+                  onChange={handleEnterpriseFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Tell us about your requirements..."
+                />
+              </div>
+
+              <div className="flex space-x-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEnterpriseForm(false)}
+                  className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Submit Request
+                </button>
+              </div>
+            </form>
           </motion.div>
         </div>
       )}

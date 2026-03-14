@@ -4,7 +4,7 @@ interface User {
   id: string
   name: string
   email: string
-  role: 'doctor' | 'admin'
+  role: 'doctor' | 'admin' | 'wetlab'
   profile: {
     firstName: string
     lastName: string
@@ -25,7 +25,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null
-  login: (email: string, password: string) => Promise<boolean>
+  login: (email: string, password: string, userType?: 'doctor' | 'wetlab') => Promise<boolean>
   signup: (name: string, email: string, password: string, plan?: any) => Promise<boolean>
   logout: () => void
   isLoading: boolean
@@ -63,15 +63,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsLoading(false)
   }, [])
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string, userType: 'doctor' | 'wetlab' = 'doctor'): Promise<boolean> => {
     setIsLoading(true)
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
     
     // Mock authentication - in real app, this would be an API call
-    if (email === 'doctor@example.com' && password === 'password') {
-      const mockUser: User = {
+    let mockUser: User | null = null
+    
+    if (email === 'doctor@example.com' && password === 'password' && userType === 'doctor') {
+      mockUser = {
         id: '1',
         name: 'Dr. Sarah Johnson',
         email: email,
@@ -88,11 +90,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         plan: {
           type: 'per-cycle',
           name: 'Demo Plan',
-          cyclesRemaining: 5, // Give demo user 5 cycles to test
-          expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
+          cyclesRemaining: 5,
+          expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           isActive: true
         }
       }
+    } else if (email === 'wetlab@example.com' && password === 'password' && userType === 'wetlab') {
+      mockUser = {
+        id: '2',
+        name: 'IVF 360 Wet Lab',
+        email: email,
+        role: 'wetlab',
+        profile: {
+          firstName: 'IVF 360',
+          lastName: 'Wet Lab',
+          phone: '+1 (555) 987-6543',
+          specialization: 'IVF Testing & Analysis',
+          hospital: 'Reproductive Testing Center',
+          licenseNumber: 'WL789012',
+          bio: 'Leading wet laboratory specializing in IVF testing, embryo analysis, and genetic screening.'
+        },
+        plan: {
+          type: 'per-cycle',
+          name: 'Demo Plan',
+          cyclesRemaining: 5,
+          expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          isActive: true
+        }
+      }
+    }
+    
+    if (mockUser) {
       setUser(mockUser)
       localStorage.setItem('user', JSON.stringify(mockUser))
       setIsLoading(false)

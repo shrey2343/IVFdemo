@@ -9,8 +9,7 @@ import {
   X,
   LogOut,
   Settings,
-  CreditCard,
-  Bell
+  CreditCard
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
@@ -24,13 +23,43 @@ const Layout = ({ children }: LayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { user, logout } = useAuth()
 
-  const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Add Patient', href: '/add-patient', icon: UserPlus },
-    { name: 'Patient Records', href: '/patients', icon: Users },
-    { name: 'Billing', href: '/billing', icon: CreditCard },
-    { name: 'Settings', href: '/settings', icon: Settings },
-  ]
+  const getNavigation = () => {
+    if (user?.role === 'wetlab') {
+      return [
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Add Sample', href: '/add-patient', icon: UserPlus },
+        { name: 'Sample Records', href: '/patients', icon: Users },
+        { name: 'Billing', href: '/billing', icon: CreditCard },
+        { name: 'Settings', href: '/settings', icon: Settings },
+      ]
+    }
+    
+    // Default doctor navigation
+    return [
+      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { name: 'Add Patient', href: '/add-patient', icon: UserPlus },
+      { name: 'Patient Records', href: '/patients', icon: Users },
+      { name: 'Billing', href: '/billing', icon: CreditCard },
+      { name: 'Settings', href: '/settings', icon: Settings },
+    ]
+  }
+
+  const navigation = getNavigation()
+
+  const getRoleBadge = () => {
+    switch (user?.role) {
+      case 'wetlab':
+        return { text: 'Wet Lab', color: 'bg-blue-100 text-blue-800' }
+      case 'doctor':
+        return { text: 'Doctor', color: 'bg-pink-100 text-pink-800' }
+      case 'admin':
+        return { text: 'Admin', color: 'bg-purple-100 text-purple-800' }
+      default:
+        return { text: 'User', color: 'bg-gray-100 text-gray-800' }
+    }
+  }
+
+  const roleBadge = getRoleBadge()
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -43,7 +72,7 @@ const Layout = ({ children }: LayoutProps) => {
         <div className="flex items-center justify-between h-16 px-4 lg:px-6 border-b border-gray-200">
           <div className="flex items-center space-x-2">
             <Activity className="h-6 w-6 lg:h-8 lg:w-8 text-pink-600" />
-            <span className="text-lg lg:text-xl font-bold text-gray-900">IVF Analytics</span>
+            <span className="text-lg lg:text-xl font-bold text-gray-900">IVF 360</span>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -121,8 +150,8 @@ const Layout = ({ children }: LayoutProps) => {
                       {user?.name || 'User'}
                     </p>
                     {/* Role Badge */}
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
-                      {user?.role === 'doctor' ? 'Doctor' : 'Admin'}
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${roleBadge.color}`}>
+                      {roleBadge.text}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 leading-tight">

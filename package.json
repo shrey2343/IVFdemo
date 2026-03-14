@@ -1,7 +1,7 @@
 {
-  "name": "ivf-analysis-platform",
+  "name": "ivf-360-platform",
   "version": "1.0.0",
-  "description": "IVF test analysis platform for medical professionals",
+  "description": "IVF 360 platform for medical professionals",
   "private": true,
   "type": "module",
   "engines": {

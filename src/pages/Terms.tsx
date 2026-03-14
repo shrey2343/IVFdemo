@@ -35,14 +35,14 @@ const Terms = () => {
               <section>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>
                 <p className="text-gray-700 leading-relaxed">
-                  By accessing and using the IVF Analytics platform ("Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+                  By accessing and using the IVF 360 platform ("Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Description of Service</h2>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  IVF Analytics provides a comprehensive platform for fertility specialists to:
+                  IVF 360 provides a comprehensive platform for fertility specialists to:
                 </p>
                 <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
                   <li>Analyze and track IVF-related test results</li>
@@ -95,21 +95,21 @@ const Terms = () => {
               <section>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Medical Disclaimer</h2>
                 <p className="text-gray-700 leading-relaxed">
-                  The IVF Analytics platform is designed to assist healthcare professionals in analyzing and managing fertility treatment data. The Service does not provide medical advice, diagnosis, or treatment recommendations. All clinical decisions should be made by qualified healthcare professionals based on their clinical judgment and patient-specific factors.
+                  The IVF 360 platform is designed to assist healthcare professionals in analyzing and managing fertility treatment data. The Service does not provide medical advice, diagnosis, or treatment recommendations. All clinical decisions should be made by qualified healthcare professionals based on their clinical judgment and patient-specific factors.
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Intellectual Property</h2>
                 <p className="text-gray-700 leading-relaxed">
-                  The Service and its original content, features, and functionality are owned by IVF Analytics and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws. You may not reproduce, distribute, modify, or create derivative works of our content without explicit permission.
+                  The Service and its original content, features, and functionality are owned by IVF 360 and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws. You may not reproduce, distribute, modify, or create derivative works of our content without explicit permission.
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Limitation of Liability</h2>
                 <p className="text-gray-700 leading-relaxed">
-                  In no event shall IVF Analytics, its directors, employees, partners, agents, suppliers, or affiliates be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your use of the Service.
+                  In no event shall IVF 360, its directors, employees, partners, agents, suppliers, or affiliates be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your use of the Service.
                 </p>
               </section>
 
@@ -134,7 +134,7 @@ const Terms = () => {
                 </p>
                 <div className="bg-gray-50 rounded-lg p-4 mt-4">
                   <p className="text-gray-700">
-                    <strong>Email:</strong> legal@ivfanalytics.com<br />
+                    <strong>Email:</strong> legal@ivf360.com<br />
                     <strong>Phone:</strong> +1 (555) 123-4567<br />
                     <strong>Address:</strong> 123 Medical Center Dr, Suite 100, San Francisco, CA 94102
                   </p>

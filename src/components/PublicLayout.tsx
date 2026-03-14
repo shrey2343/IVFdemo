@@ -29,7 +29,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
               <Activity className="h-8 w-8 text-pink-400" />
-              <span className="text-xl font-bold text-white">IVF Analytics</span>
+              <span className="text-xl font-bold text-white">IVF 360</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -132,7 +132,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <Activity className="h-8 w-8 text-pink-400" />
-                <span className="text-xl font-bold text-white">IVF Analytics</span>
+                <span className="text-xl font-bold text-white">IVF 360</span>
               </div>
               <p className="text-gray-300 max-w-md">
                 Advanced IVF analysis platform designed for medical professionals to track, 
@@ -154,14 +154,14 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                 Support
               </h3>
               <ul className="space-y-2">
-                <li><a href="mailto:support@ivfanalytics.com" className="text-gray-300 hover:text-white transition-colors">Email Support</a></li>
+                <li><a href="mailto:support@ivf360.com" className="text-gray-300 hover:text-white transition-colors">Email Support</a></li>
                 <li><a href="tel:+1234567890" className="text-gray-300 hover:text-white transition-colors">Phone Support</a></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8">
             <p className="text-center text-gray-400 text-sm">
-              © 2024 IVF Analytics. All rights reserved.
+              © 2024 IVF 360. All rights reserved.
             </p>
           </div>
         </div>

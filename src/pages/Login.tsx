@@ -9,6 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [userType, setUserType] = useState<'doctor' | 'wetlab'>('doctor')
   const { login, isLoading } = useAuth()
   const navigate = useNavigate()
 
@@ -21,7 +22,7 @@ const Login = () => {
       return
     }
 
-    const success = await login(email, password)
+    const success = await login(email, password, userType)
     if (success) {
       navigate('/dashboard')
     } else {
@@ -62,7 +63,7 @@ const Login = () => {
           <div className="flex justify-center">
             <Link to="/" className="flex items-center space-x-2">
               <Activity className="h-10 w-10 text-white drop-shadow-lg" />
-              <span className="text-2xl font-bold text-white drop-shadow-lg">IVF Analytics</span>
+              <span className="text-2xl font-bold text-white drop-shadow-lg">IVF 360</span>
             </Link>
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold text-white drop-shadow-lg">
@@ -87,6 +88,34 @@ const Login = () => {
         >
           {/* Glassmorphism Card */}
           <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl py-8 px-4 sm:px-10">
+            {/* User Type Tabs */}
+            <div className="mb-6">
+              <div className="flex space-x-1 bg-white/10 backdrop-blur-sm rounded-xl p-1">
+                <button
+                  type="button"
+                  onClick={() => setUserType('doctor')}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                    userType === 'doctor'
+                      ? 'bg-pink-500 text-white shadow-lg'
+                      : 'text-white/80 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  Login as Doctor
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUserType('wetlab')}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                    userType === 'wetlab'
+                      ? 'bg-pink-500 text-white shadow-lg'
+                      : 'text-white/80 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  Login as Wet Lab
+                </button>
+              </div>
+            </div>
+
             <form className="space-y-6" onSubmit={handleSubmit}>
               {error && (
                 <motion.div 
@@ -200,8 +229,13 @@ const Login = () => {
                 </div>
               </div>
               <div className="mt-3 text-sm text-white bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
-                <p><strong>Email:</strong> doctor@example.com</p>
-                <p><strong>Password:</strong> password</p>
+                <p><strong>Doctor Login:</strong></p>
+                <p>Email: doctor@example.com</p>
+                <p>Password: password</p>
+                <br />
+                <p><strong>Wet Lab Login:</strong></p>
+                <p>Email: wetlab@example.com</p>
+                <p>Password: password</p>
               </div>
             </div>
           </div>
