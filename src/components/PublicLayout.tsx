@@ -13,8 +13,10 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Blog', href: '/blog' },
+    { name: 'IVF Genetic Tests', href: '/ivf-genetic-tests' },
+    { name: 'About Us', href: '/about' },
+    { name: 'Partner', href: '/partner' },
+    { name: 'Research Services', href: '/research-services' },
     { name: 'Contact', href: '/contact' },
   ]
 
@@ -59,9 +61,15 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
               </Link>
               <Link
                 to="/signup"
-                className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors"
               >
                 Sign Up
+              </Link>
+              <Link
+                to="/ivf-genetic-tests"
+                className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                Book Your Test
               </Link>
             </div>
 
@@ -144,6 +152,10 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                 Company
               </h3>
               <ul className="space-y-2">
+                <li><Link to="/about" className="text-gray-300 hover:text-white transition-colors">About Us</Link></li>
+                <li><Link to="/partner" className="text-gray-300 hover:text-white transition-colors">Partner</Link></li>
+                <li><Link to="/research-services" className="text-gray-300 hover:text-white transition-colors">Research Services</Link></li>
+                <li><Link to="/ivf-genetic-tests" className="text-gray-300 hover:text-white transition-colors">IVF Genetic Tests</Link></li>
                 <li><Link to="/blog" className="text-gray-300 hover:text-white transition-colors">Blog</Link></li>
                 <li><Link to="/contact" className="text-gray-300 hover:text-white transition-colors">Contact</Link></li>
                 <li><Link to="/terms" className="text-gray-300 hover:text-white transition-colors">Terms</Link></li>
