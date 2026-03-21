@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 # IVF360 Platform
 
 A comprehensive React + TypeScript application for IVF360 platform with authentication and public pages, designed for medical professionals.
+=======
+# IVF 360 Platform
+
+A comprehensive React + TypeScript application for IVF 360 platform with authentication and public pages, designed for medical professionals.
+>>>>>>> a6c94e7b45ab67ffa3ad7de7b7836d2f180eee21
 
 ## Features
 

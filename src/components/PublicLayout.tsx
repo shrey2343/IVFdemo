@@ -13,10 +13,8 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navigation = [
-    { name: 'IVF Genetic Tests', href: '/ivf-genetic-tests' },
-    { name: 'About Us', href: '/about' },
-    { name: 'Partner', href: '/partner' },
-    { name: 'Research Services', href: '/research-services' },
+    { name: 'Home', href: '/' },
+    { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
   ]
 
@@ -65,12 +63,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
               >
                 Sign Up
               </Link>
-              <Link
-                to="/contact"
-                className="bg-white hover:bg-gray-100 text-gray-900 px-4 py-2 rounded-lg text-sm font-semibold transition-colors border border-gray-200"
-              >
-                Book a Test
-              </Link>
             </div>
 
             {/* Mobile menu button */}
@@ -109,14 +101,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                   {item.name}
                 </Link>
               ))}
-              <div className="border-t border-gray-700 pt-4 pb-3 space-y-1">
-                <Link
-                  to="/contact"
-                  className="block px-3 py-2 text-base font-semibold text-gray-900 bg-white rounded-lg mx-1 text-center transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Book a Test
-                </Link>
+              <div className="border-t border-gray-700 pt-4 pb-3">
                 <Link
                   to="/login"
                   className="block px-3 py-2 text-base font-medium text-gray-300 hover:text-white transition-colors"
@@ -159,9 +144,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                 Company
               </h3>
               <ul className="space-y-2">
-                <li><Link to="/about" className="text-gray-300 hover:text-white transition-colors">About Us</Link></li>
-                <li><Link to="/partner" className="text-gray-300 hover:text-white transition-colors">Partner</Link></li>
-                <li><Link to="/research-services" className="text-gray-300 hover:text-white transition-colors">Research Services</Link></li>
+                <li><Link to="/blog" className="text-gray-300 hover:text-white transition-colors">Blog</Link></li>
                 <li><Link to="/contact" className="text-gray-300 hover:text-white transition-colors">Contact</Link></li>
                 <li><Link to="/terms" className="text-gray-300 hover:text-white transition-colors">Terms</Link></li>
               </ul>
@@ -178,7 +161,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8">
             <p className="text-center text-gray-400 text-sm">
-              © 2024 IVF360. All rights reserved.
+              © 2026 IVF360. All rights reserved.
             </p>
           </div>
         </div>

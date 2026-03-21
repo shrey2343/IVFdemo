@@ -60,8 +60,8 @@ const Landing = () => {
               transition={{ duration: 0.7 }}
               className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4"
             >
-              Making Advanced Genomics{' '}
-              <span className="text-pink-600">Accessible to Everyone</span>
+              Making Advanced IVF Genomics{' '}
+              <span className="text-pink-600">Affordable & Accessible to Everyone</span>
             </motion.h1>
 
             <motion.p
@@ -70,32 +70,10 @@ const Landing = () => {
               transition={{ duration: 0.7, delay: 0.15 }}
               className="text-lg text-gray-600 mb-10"
             >
-              Delivering accurate, affordable, and cutting-edge genetic insights worldwide.
+              Delivering accurate, affordable, and cutting-edge genetic solution for Hospitals & WetLabs worldwide.
             </motion.p>
 
-            {/* Stats row */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="flex flex-wrap gap-0 mb-10"
-            >
-              {[
-                { value: '10+', label: 'Years of Excellence' },
-                { value: '1M+', label: 'Patients Served' },
-                { value: '600+', label: 'Locations Covered' },
-                { value: '40+', label: 'Countries Reached' },
-              ].map((stat, i, arr) => (
-                <div
-                  key={stat.value}
-                  className={`pr-6 ${i !== arr.length - 1 ? 'border-r border-gray-300 mr-6' : ''}`}
-                >
-                  <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                  <div className="text-sm text-gray-500 mt-0.5">{stat.label}</div>
-                </div>
-              ))}
-            </motion.div>
-
+           
             {/* CTA */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -264,7 +242,7 @@ const Landing = () => {
               {[
                 { icon: Microscope, title: "AI Analysis", color: "from-blue-400 to-cyan-400" },
                 { icon: Activity, title: "Real-time Data", color: "from-green-400 to-emerald-400" },
-                { icon: BarChart3, title: "Analytics", color: "from-yellow-400 to-orange-400" },
+                { icon: BarChart3, title: "Dashboard", color: "from-yellow-400 to-orange-400" },
                 { icon: Shield, title: "Security", color: "from-red-400 to-pink-400" }
               ].map((item, index) => (
                 <motion.div
@@ -302,7 +280,7 @@ const Landing = () => {
               
               <div className="space-y-6">
                 {[
-                  { icon: Microscope, title: "AI-Powered Analysis", desc: "Advanced algorithms analyze test results with 99.9% accuracy" },
+                  { icon: Microscope, title: "AI-Powered Pipeline", desc: "Advanced algorithms analyze test results with 99.9% accuracy" },
                   { icon: Activity, title: "Real-time Monitoring", desc: "Continuous tracking of patient progress and treatment outcomes" },
                   { icon: Shield, title: "Secure Data", desc: "Bank-level encryption ensures complete patient privacy" }
                 ].map((feature, index) => (
