@@ -402,6 +402,10 @@ const Contact = () => {
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none transition-all duration-300 text-lg"
                     >
                       <option value="">Select a subject</option>
+                      <option value="pgt-a">PGT-A (Aneuploidy Screening)</option>
+                      <option value="pgt-m">PGT-M (Monogenic Disorders)</option>
+                      <option value="pgt-sr">PGT-SR (Structural Rearrangements)</option>
+                      <option value="academic">Academic Project</option>
                       <option value="demo">Request a Demo</option>
                       <option value="support">Technical Support</option>
                       <option value="consultation">Fertility Consultation</option>

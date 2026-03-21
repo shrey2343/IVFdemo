@@ -17,7 +17,7 @@ const partnerTypes = [
 ]
 
 const whyPoints = [
-  { label: 'Quality', desc: 'Cost-effective global quality offerings. CAP accredited & NABL certified clinical sequencing lab.' },
+  { label: 'Quality', desc: 'Cost-effective global quality offerings.' },
   { label: 'Science', desc: 'Comprehensive diagnostic coverage across all major disease areas.' },
   { label: 'Innovation', desc: 'Scientific research backed innovative genomics offerings.' },
   { label: 'Technology', desc: 'Proprietary AI/ML enabled automated, scalable analysis tools.' },

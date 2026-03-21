@@ -337,12 +337,7 @@ const Landing = () => {
               >
                 Book Your Test
               </Link>
-              <Link 
-                to="/contact" 
-                className="border-2 border-green-600 text-green-700 hover:bg-green-50 px-8 py-3 rounded-lg font-medium transition-all duration-200"
-              >
-                Learn More
-              </Link>
+             
             </div>
           </motion.div>
         </div>
