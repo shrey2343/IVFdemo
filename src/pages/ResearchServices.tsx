@@ -5,13 +5,21 @@ import { Link } from 'react-router-dom'
 
 
 const whyPoints = [
-  { label: 'Study Design Support', desc: 'Our clinical genetics team can help you design IVF research protocols, select appropriate testing methodologies, and define patient cohorts for meaningful outcomes.' },
-  { label: 'Advanced Bioinformatics', desc: 'Our bioinformaticians deliver deep analysis of genetic data using validated, reproducible pipelines purpose-built for reproductive genomics research.' },
-  { label: 'High-Accuracy Platforms', desc: 'We use the latest NGS platforms with rigorous QC at every stage, ensuring data you can publish and trust.' },
-  { label: 'Custom Research Panels', desc: 'We can design bespoke gene panels and analysis packages tailored to your specific IVF research questions.' },
-  { label: 'Proven Data Quality', desc: 'Our track record in peer-reviewed publications reflects our commitment to high-quality, reproducible genetic data with guaranteed accuracy metrics.' },
-  { label: 'Comprehensive Reporting', desc: 'Receive clear, clinician-friendly reports with interactive data views, enabling you to explore findings at a glance.' },
-  { label: 'Expert Interpretation', desc: 'Our genetics experts walk you through results in detail, supporting better clinical decision-making and research conclusions.' },
+  { label: 'Project Design Support', desc: 'Our experts provide guidance in experimental design, sample preparation, and methodology selection to ensure successful research outcomes.' },
+  { label: 'Next-Generation Sequencing (NGS) Services', desc: 'Comprehensive DNA-Seq, RNA-Seq, and whole-genome sequencing solutions using advanced technologies and standardized workflows.' },
+  { label: 'Clinical Genomics & PGT Services', desc: 'Specialized support for PGT-A, PGT-M, and PGT-SR, including embryo screening, CNV analysis, and clinical report generation.' },
+  { label: 'Advanced Bioinformatics Pipelines', desc: 'Development and execution of robust pipelines using GATK, Nextflow, Snakemake, and Docker for scalable and reproducible analysis.' },
+  { label: 'Genomic & Multi-Omics Analysis', desc: 'Expertise in variant calling, GWAS, gene expression analysis, CNV detection, and integration of genomics, proteomics, and multi-omics datasets.' },
+  { label: 'AI-Powered Bioinformatics Solutions', desc: 'Development of intelligent, automated pipelines for genomics, proteomics, and bioinformatics workflows using machine learning and AI-based models.' },
+  { label: 'AI-Driven Variant Interpretation', desc: 'Enhancing accuracy and efficiency in variant detection, annotation, and clinical interpretation using AI techniques.' },
+  { label: 'Custom Analysis Solutions', desc: 'Tailored bioinformatics and AI workflows designed to meet specific research and clinical requirements.' },
+  { label: 'High-Quality Data Processing', desc: 'Ensuring accurate, reliable, and reproducible results through stringent quality control and validated pipelines.' },
+  { label: 'Interactive Reports & Visualization', desc: 'User-friendly reports with graphical representations for easy interpretation of complex genomic data.' },
+  { label: 'Academic & Research Support', desc: 'End-to-end support for students and researchers, including project guidance, dissertation work, and publication-ready analysis.' },
+  { label: 'PhD & Higher Education Support', desc: 'Dedicated support for PhD, M.Tech, B.Tech, M.Sc, B.Sc, and Pharmacy students in bioinformatics and related life science fields, including project development, thesis work, data analysis, and research publication assistance.' },
+  { label: 'PhD & Publication Support', desc: 'Assistance in research paper writing, data analysis, interpretation, and journal submission.' },
+  { label: 'Training & Courses', desc: 'Hands-on training programs in bioinformatics, genomics, NGS pipelines, and AI-based data analysis for students and professionals.' },
+  { label: 'End-to-End Project Execution', desc: 'Complete support from raw data processing to final report generation for academic, clinical, and industry projects.' },
 ]
 
 const platforms = [
@@ -58,7 +66,7 @@ const ResearchServices = () => {
       <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">What We Can Do For Your Academic Projects</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {whyPoints.map((pt, i) => (
               <motion.div
                 key={pt.label}
