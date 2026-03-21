@@ -14,7 +14,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 
   const navigation = [
     { name: 'IVF Genetic Tests', href: '/ivf-genetic-tests' },
-    { name: 'About Us', href: '/about' },
     { name: 'Partner', href: '/partner' },
     { name: 'Research Services', href: '/research-services' },
     { name: 'Contact', href: '/contact' },
@@ -152,7 +151,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                 Company
               </h3>
               <ul className="space-y-2">
-                <li><Link to="/about" className="text-gray-300 hover:text-white transition-colors">About Us</Link></li>
                 <li><Link to="/partner" className="text-gray-300 hover:text-white transition-colors">Partner</Link></li>
                 <li><Link to="/research-services" className="text-gray-300 hover:text-white transition-colors">Research Services</Link></li>
                 <li><Link to="/ivf-genetic-tests" className="text-gray-300 hover:text-white transition-colors">IVF Genetic Tests</Link></li>

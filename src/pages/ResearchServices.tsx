@@ -2,62 +2,7 @@ import { motion } from 'framer-motion'
 import { FlaskConical, CheckCircle, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const services = [
-  {
-    title: 'Preimplantation Genetic Testing (PGT-A)',
-    items: [
-      'Chromosomal aneuploidy screening of embryos',
-      'Next-generation sequencing (NGS) based analysis',
-      'Mosaic embryo detection and reporting',
-      'Compatible with fresh and frozen biopsy cycles',
-    ],
-  },
-  {
-    title: 'PGT-M (Monogenic Disorders)',
-    items: [
-      'Single-gene disorder detection (e.g. cystic fibrosis, sickle cell)',
-      'Custom probe design for family-specific mutations',
-      'Huntington\'s disease and BRCA mutation testing',
-      'Combined with PGT-A for comprehensive screening',
-    ],
-  },
-  {
-    title: 'PGT-SR (Structural Rearrangements)',
-    items: [
-      'Detection of chromosomal translocations and inversions',
-      'Balanced and unbalanced rearrangement identification',
-      'Carrier parent karyotype-informed analysis',
-      'Reduces recurrent miscarriage risk',
-    ],
-  },
-  {
-    title: 'Carrier Screening',
-    items: [
-      'Expanded carrier screening for 200+ conditions',
-      'Autosomal recessive and X-linked disorder panels',
-      'Couple-based risk assessment and reporting',
-      'Pre-conception and pre-IVF screening options',
-    ],
-  },
-  {
-    title: 'Non-Invasive Prenatal Testing (NIPT)',
-    items: [
-      'Cell-free fetal DNA analysis from maternal blood',
-      'Trisomy 21, 18, and 13 screening',
-      'Sex chromosome aneuploidy detection',
-      'Microdeletion syndrome panels available',
-    ],
-  },
-  {
-    title: 'Sperm DNA Fragmentation & Analysis',
-    items: [
-      'Sperm DNA fragmentation index (DFI) testing',
-      'TUNEL and SCSA-based assays',
-      'Correlation with IVF and ICSI outcomes',
-      'Guidance on treatment optimization',
-    ],
-  },
-]
+
 
 const whyPoints = [
   { label: 'Study Design Support', desc: 'Our clinical genetics team can help you design IVF research protocols, select appropriate testing methodologies, and define patient cohorts for meaningful outcomes.' },
@@ -106,40 +51,13 @@ const ResearchServices = () => {
         </div>
       </section>
 
-      {/* Our Services */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">Our Testing Services</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((svc, i) => (
-              <motion.div
-                key={svc.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-gray-50 rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow"
-              >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">{svc.title}</h3>
-                {svc.items && (
-                  <ul className="space-y-2">
-                    {svc.items.map((item) => (
-                      <li key={item} className="flex items-start gap-2 text-sm text-gray-600">
-                        <CheckCircle className="h-4 w-4 text-pink-500 flex-shrink-0 mt-0.5" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+ 
+      
 
       {/* Why Choose */}
       <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">Why Choose IVF 360 For Your Academic Projects?</h2>
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">What We Can Do For Your Academic Projects</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {whyPoints.map((pt, i) => (
               <motion.div
