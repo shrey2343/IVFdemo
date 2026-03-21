@@ -750,17 +750,7 @@ const Contact = () => {
               >
                 Get Started Today
               </motion.button>
-              <motion.button
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: "0 25px 50px rgba(236, 72, 153, 0.3)",
-                  y: -5
-                }}
-                whileTap={{ scale: 0.95 }}
-                className="border-2 border-white text-white px-10 py-5 rounded-2xl font-bold text-xl hover:bg-white hover:text-purple-900 transition-all duration-300"
-              >
-                Book Demo Call
-              </motion.button>
+              
             </motion.div>
           </motion.div>
         </div>
