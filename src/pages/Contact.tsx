@@ -308,7 +308,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">Email</p>
-                      <p className="text-pink-600 font-medium">Contact@ivf360.life</p>
+                      <p className="text-pink-600 font-medium">contact@ivf360.life</p>
                       <p className="text-sm text-gray-600">We'll respond within 24 hours</p>
                     </div>
                   </motion.div>

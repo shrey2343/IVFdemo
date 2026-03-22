@@ -164,14 +164,27 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                 Support
               </h3>
               <ul className="space-y-2">
-                <li><a href="mailto:support@ivf360.com" className="text-gray-300 hover:text-white transition-colors">Email Support</a></li>
-                <li><a href="tel:+1234567890" className="text-gray-300 hover:text-white transition-colors">Phone Support</a></li>
+                <li className="flex items-center space-x-2">
+                  <span className="text-gray-400 text-sm">Email:</span>
+                  <a href="mailto:Contact@ivf360.life" className="text-gray-300 hover:text-white transition-colors">contact@ivf360.life</a>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <span className="text-gray-400 text-sm">Phone:</span>
+                  <a href="tel:+918904830562" className="text-gray-300 hover:text-white transition-colors">+91 89048 30562</a>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="text-gray-400 text-sm mt-1">Address:</span>
+                  <div className="text-gray-300">
+                    <p>206, Atulya IT Park, Indore</p>
+                    <p>Madhya Pradesh, India</p>
+                  </div>
+                </li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8">
             <p className="text-center text-gray-400 text-sm">
-              © 2026 IVF360. All rights reserved.
+              2026 IVF360. All rights reserved.
             </p>
           </div>
         </div>
