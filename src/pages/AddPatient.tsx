@@ -3,35 +3,45 @@ import { motion } from 'framer-motion'
 import { 
   User, 
   Heart, 
-  Upload, 
-  FileText, 
   TestTube,
   Image as ImageIcon,
-  Save,
-  AlertCircle,
-  Lock,
-  CreditCard,
-  X
+  ClipboardList,
+  Table2,
+  Save
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
-import { Link } from 'react-router-dom'
+const emptyEmbryoDetailRow = () => ({
+  tubeNo: '',
+  sampleId: '',
+  noOfCells: '',
+  gradeOfCells: '',
+  comments: '',
+  typeOfCells: ''
+})
+
+const initialEmbryoDetailRows = () =>
+  Array.from({ length: 15 }, emptyEmbryoDetailRow)
 
 const AddPatient = () => {
   const { user, canAddPatient, useCycle } = useAuth()
   const { showSuccess, showError } = useToast()
   const [currentSection, setCurrentSection] = useState(0)
   const [formData, setFormData] = useState({
-    // Personal Details
-    firstName: '',
-    lastName: '',
-    dateOfBirth: '',
-    gender: '',
-    phone: '',
+    // Patient Details
+    patientName: '',
+    dob: '',
+    age: '',
+    ethnicity: '',
+    partnerName: '',
+    partnerDob: '',
+    partnerAge: '',
     email: '',
+    contactNo: '',
+    height: '',
+    weight: '',
+    bloodType: '',
     address: '',
-    emergencyContact: '',
-    emergencyPhone: '',
     
     // Wetlab Sample Details
     patientId: '',
@@ -49,23 +59,72 @@ const AddPatient = () => {
     morphologyAssessment: '',
     handlingInstructions: '',
     
-    // Comorbidities
-    diabetes: false,
-    hypertension: false,
-    thyroid: false,
-    pcod: false,
-    endometriosis: false,
-    otherConditions: '',
-    medications: '',
-    allergies: '',
+    // Referring Clinician
+    clinicianName: '',
+    embryologistName: '',
+    hospitalClinicName: '',
+    emailId: '',
+    contactNo1: '',
+    emailIdContactPerson: '',
+    contactNo2: '',
     
-    // Genetic Test Selection
-    selectedGeneticTests: [], // Array for PGT-A and PGT-M
-    selectedStructuralTest: null, // For PGT-SR
-    testReportFiles: [], // Array of files for selected tests
+    // Sample Details
+    sampleCollectionDate: '',
+    sampleCollectionTime: '',
+    edtaBlood: false,
+    couple: false,
+    affectedIndividual: false,
+    embryos: false,
+    noOfEmbryos: '',
+    dayOfBiopsy: '',
+    donorYes: false,
+    donorNo: false,
+    donorEgg: false,
+    donorSperm: false,
+    ageOfDonor: '',
+    spentCultureMedium: '',
+    rebiopsyYes: false,
+    rebiopsyNo: false,
+    previousPatientId: '',
     
-    // Embryo Images
-    embryoImages: []
+    // Cycle History (matches NCGM requisition PDF layout)
+    hyperstimulationYes: false,
+    hyperstimulationNo: false,
+    fertilisationIVF: false,
+    fertilisationICSI: false,
+    eggRetrievalDd: '',
+    eggRetrievalMm: '',
+    eggRetrievalYyyy: '',
+    noOfEmbryosRetrieved: '',
+    noOfBiopsiedEmbryos: '',
+    embryoTransferDd: '',
+    embryoTransferMm: '',
+    embryoTransferYyyy: '',
+    embryoTransferTime: '',
+
+    // Test Requested (NCGM form)
+    testPgtA: false,
+    testNiPgt: false,
+    testPgtSr: false,
+    testPgtM: false,
+    testPrePgtWorkup: false,
+    pgtMGene: '',
+    pgtMVariant: '',
+    prePgtMLabId: '',
+    karyotypeCoupleYes: false,
+    karyotypeCoupleNo: false,
+    indicationRecurrentPregnancyLoss: false,
+    indicationAdvancedMaternalAge: false,
+    indicationIvfFailure: false,
+    indicationPrimaryInfertility: false,
+    indicationBoh: false,
+    indicationOthers: false,
+    indicationOthersText: '',
+    mosaicReportYes: false,
+    mosaicReportNoDesignate: false,
+    mosaicReportDoNot: false,
+
+    embryoDetailRows: initialEmbryoDetailRows()
   })
 
   const isWetLab = user?.role === 'wetlab'
@@ -73,22 +132,17 @@ const AddPatient = () => {
 
   const sections = [
     { id: 0, title: `${entityName} Details`, icon: User },
-    { id: 1, title: 'Comorbidities', icon: Heart },
-    { id: 2, title: 'Tests', icon: TestTube },
-    { id: 3, title: 'Embryo Images', icon: ImageIcon }
+    { id: 1, title: 'Referring Clinician', icon: Heart },
+    { id: 2, title: 'Sample Details', icon: TestTube },
+    { id: 3, title: 'Cycle History', icon: ImageIcon },
+    { id: 4, title: 'Test Requested', icon: ClipboardList },
+    { id: 5, title: 'Embryo Details', icon: Table2 }
   ]
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
-    }))
-  }
-
-  const handleFileUpload = (field: string, file: File | null) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: file
     }))
   }
 
@@ -119,15 +173,19 @@ const AddPatient = () => {
     
     // Reset form
     setFormData({
-      firstName: '',
-      lastName: '',
-      dateOfBirth: '',
-      gender: '',
-      phone: '',
+      patientName: '',
+      dob: '',
+      age: '',
+      ethnicity: '',
+      partnerName: '',
+      partnerDob: '',
+      partnerAge: '',
       email: '',
+      contactNo: '',
+      height: '',
+      weight: '',
+      bloodType: '',
       address: '',
-      emergencyContact: '',
-      emergencyPhone: '',
       patientId: '',
       referringDoctor: '',
       witness: '',
@@ -140,27 +198,72 @@ const AddPatient = () => {
       embryoGrade: '',
       morphologyAssessment: '',
       handlingInstructions: '',
-      diabetes: false,
-      hypertension: false,
-      thyroid: false,
-      pcod: false,
-      endometriosis: false,
-      otherConditions: '',
-      medications: '',
-      allergies: '',
-      selectedGeneticTests: [],
-      selectedStructuralTest: null,
-      testReportFiles: [],
-      embryoImages: []
+      clinicianName: '',
+      embryologistName: '',
+      hospitalClinicName: '',
+      emailId: '',
+      contactNo1: '',
+      emailIdContactPerson: '',
+      contactNo2: '',
+      sampleCollectionDate: '',
+      sampleCollectionTime: '',
+      edtaBlood: false,
+      couple: false,
+      affectedIndividual: false,
+      embryos: false,
+      noOfEmbryos: '',
+      dayOfBiopsy: '',
+      donorYes: false,
+      donorNo: false,
+      donorEgg: false,
+      donorSperm: false,
+      ageOfDonor: '',
+      spentCultureMedium: '',
+      rebiopsyYes: false,
+      rebiopsyNo: false,
+      previousPatientId: '',
+      hyperstimulationYes: false,
+      hyperstimulationNo: false,
+      fertilisationIVF: false,
+      fertilisationICSI: false,
+      eggRetrievalDd: '',
+      eggRetrievalMm: '',
+      eggRetrievalYyyy: '',
+      noOfEmbryosRetrieved: '',
+      noOfBiopsiedEmbryos: '',
+      embryoTransferDd: '',
+      embryoTransferMm: '',
+      embryoTransferYyyy: '',
+      embryoTransferTime: '',
+      testPgtA: false,
+      testNiPgt: false,
+      testPgtSr: false,
+      testPgtM: false,
+      testPrePgtWorkup: false,
+      pgtMGene: '',
+      pgtMVariant: '',
+      prePgtMLabId: '',
+      karyotypeCoupleYes: false,
+      karyotypeCoupleNo: false,
+      indicationRecurrentPregnancyLoss: false,
+      indicationAdvancedMaternalAge: false,
+      indicationIvfFailure: false,
+      indicationPrimaryInfertility: false,
+      indicationBoh: false,
+      indicationOthers: false,
+      indicationOthersText: '',
+      mosaicReportYes: false,
+      mosaicReportNoDesignate: false,
+      mosaicReportDoNot: false,
+      embryoDetailRows: initialEmbryoDetailRows()
     })
     setCurrentSection(0)
   }
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Header with Section Navigation and Plan Badge */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 space-y-4 lg:space-y-0">
-        {/* Section Navigation */}
+      {/* Section navigation */}
+      <div className="mb-8">
         <div className="flex flex-wrap items-center gap-2 lg:gap-4">
           {sections.map((section) => (
             <motion.button
@@ -187,36 +290,6 @@ const AddPatient = () => {
             </motion.button>
           ))}
         </div>
-
-        {/* Plan Status Badge */}
-        {user && (
-          <div className="flex items-center justify-end">
-            {!canAddPatient() ? (
-              <div className="flex items-center bg-red-100 text-red-800 px-3 py-2 rounded-full border border-red-200">
-                <Lock className="h-4 w-4 mr-2" />
-                <span className="text-sm font-medium">Plan Inactive</span>
-                <Link
-                  to="/billing"
-                  className="ml-3 flex items-center px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-xs"
-                >
-                  <CreditCard className="h-3 w-3 mr-1" />
-                  Upgrade
-                </Link>
-              </div>
-            ) : (
-              <div className="flex items-center bg-green-100 text-green-800 px-3 py-2 rounded-full border border-green-200">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                <span className="text-sm font-medium">{user.plan.name}</span>
-                <span className="ml-2 text-xs text-green-600">
-                  {user.plan.cyclesRemaining === 'unlimited' 
-                    ? '∞' 
-                    : user.plan.cyclesRemaining
-                  } cycles
-                </span>
-              </div>
-            )}
-          </div>
-        )}
       </div>
       {/* Form Content */}
       <div className={`${!canAddPatient() ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -235,7 +308,7 @@ const AddPatient = () => {
               />
             )}
 
-            {/* Comorbidities Section */}
+            {/* Referring Clinician Section */}
             {currentSection === 1 && (
               <ComorbiditiesSection 
                 formData={formData} 
@@ -243,20 +316,31 @@ const AddPatient = () => {
               />
             )}
 
-            {/* Tests Section */}
+            {/* Sample Details Section */}
             {currentSection === 2 && (
               <TestsSection 
                 formData={formData} 
-                onFileUpload={handleFileUpload} 
+                onChange={handleInputChange} 
               />
             )}
 
-            {/* Embryo Images Section */}
+            {/* Cycle History Section */}
             {currentSection === 3 && (
-              <EmbryoImagesSection 
+              <CycleHistorySection 
                 formData={formData} 
                 onChange={handleInputChange} 
               />
+            )}
+
+            {currentSection === 4 && (
+              <TestRequestedSection
+                formData={formData}
+                onChange={handleInputChange}
+              />
+            )}
+
+            {currentSection === 5 && (
+              <EmbryoDetailsSection formData={formData} onChange={handleInputChange} />
             )}
 
             {/* Navigation Buttons */}
@@ -301,266 +385,201 @@ const AddPatient = () => {
 
 // Personal Details Section Component
 const PersonalDetailsSection = ({ formData, onChange }: any) => {
-  const { user } = useAuth()
-  const isWetLab = user?.role === 'wetlab'
-
-  if (isWetLab) {
-    // Wetlab Sample Details Form
-    return (
-      <div>
-        <div className="flex items-center mb-6">
-          <User className="h-6 w-6 text-pink-600 mr-3" />
-          <h2 className="text-2xl font-bold text-gray-900">Sample Details</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Patient ID *
-            </label>
-            <input
-              type="text"
-              value={formData.patientId}
-              onChange={(e) => onChange('patientId', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-              placeholder="Enter patient ID"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Patient First Name *
-            </label>
-            <input
-              type="text"
-              value={formData.firstName}
-              onChange={(e) => onChange('firstName', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-              placeholder="Enter patient first name"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Patient Last Name *
-            </label>
-            <input
-              type="text"
-              value={formData.lastName}
-              onChange={(e) => onChange('lastName', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-              placeholder="Enter patient last name"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Referring Doctor *
-            </label>
-            <input
-              type="text"
-              value={formData.referringDoctor}
-              onChange={(e) => onChange('referringDoctor', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-              placeholder="Enter referring doctor name"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Witness for Testing *
-            </label>
-            <input
-              type="text"
-              value={formData.witness}
-              onChange={(e) => onChange('witness', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-              placeholder="Enter witness name"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Report Date *
-            </label>
-            <input
-              type="date"
-              value={formData.reportDate}
-              onChange={(e) => onChange('reportDate', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Lot No. of Washing/Tubing Buffer Used
-            </label>
-            <input
-              type="text"
-              value={formData.lotNumber}
-              onChange={(e) => onChange('lotNumber', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-              placeholder="Enter lot number"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Testing Carried Out By *
-            </label>
-            <input
-              type="text"
-              value={formData.testedBy}
-              onChange={(e) => onChange('testedBy', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-              placeholder="Enter technician name"
-            />
-          </div>
-        </div>
-        
-        <div className="mt-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Additional Notes
-          </label>
-          <textarea
-            value={formData.notes}
-            onChange={(e) => onChange('notes', e.target.value)}
-            rows={3}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            placeholder="Enter any additional notes or observations"
-          />
-        </div>
-      </div>
-    )
-  }
-
-  // Original Doctor Patient Details Form
+  // Same form for both doctor and wetlab users now
   return (
     <div>
       <div className="flex items-center mb-6">
         <User className="h-6 w-6 text-pink-600 mr-3" />
-        <h2 className="text-2xl font-bold text-gray-900">Personal Details</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Patient Details</h2>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-6">
+        {/* Patient Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            First Name *
+            Patient Name *
           </label>
           <input
             type="text"
-            value={formData.firstName}
-            onChange={(e) => onChange('firstName', e.target.value)}
+            value={formData.patientName}
+            onChange={(e) => onChange('patientName', e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            placeholder="Enter first name"
+            placeholder="Enter patient full name"
           />
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Last Name *
-          </label>
-          <input
-            type="text"
-            value={formData.lastName}
-            onChange={(e) => onChange('lastName', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            placeholder="Enter last name"
-          />
+
+        {/* DOB, Age, Ethnicity Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              DOB *
+            </label>
+            <input
+              type="date"
+              value={formData.dob}
+              onChange={(e) => onChange('dob', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Age
+            </label>
+            <input
+              type="number"
+              value={formData.age}
+              onChange={(e) => onChange('age', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Age"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Ethnicity
+            </label>
+            <input
+              type="text"
+              value={formData.ethnicity}
+              onChange={(e) => onChange('ethnicity', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter ethnicity"
+            />
+          </div>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Date of Birth *
-          </label>
-          <input
-            type="date"
-            value={formData.dateOfBirth}
-            onChange={(e) => onChange('dateOfBirth', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          />
+
+        {/* Partner's Name, DOB, Age Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Partner's Name
+            </label>
+            <input
+              type="text"
+              value={formData.partnerName}
+              onChange={(e) => onChange('partnerName', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter partner's name"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Partner's DOB
+            </label>
+            <input
+              type="date"
+              value={formData.partnerDob}
+              onChange={(e) => onChange('partnerDob', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Partner's Age
+            </label>
+            <input
+              type="number"
+              value={formData.partnerAge}
+              onChange={(e) => onChange('partnerAge', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Age"
+            />
+          </div>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Gender *
-          </label>
-          <select
-            value={formData.gender}
-            onChange={(e) => onChange('gender', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          >
-            <option value="">Select gender</option>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-            <option value="other">Other</option>
-          </select>
+
+        {/* Email and Contact Number Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              E-mail ID
+            </label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => onChange('email', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter email address"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Contact No. *
+            </label>
+            <input
+              type="tel"
+              value={formData.contactNo}
+              onChange={(e) => onChange('contactNo', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter contact number"
+            />
+          </div>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Phone Number *
-          </label>
-          <input
-            type="tel"
-            value={formData.phone}
-            onChange={(e) => onChange('phone', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            placeholder="Enter phone number"
-          />
+
+        {/* Height, Weight, Blood Type Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Height (cm)
+            </label>
+            <input
+              type="number"
+              value={formData.height}
+              onChange={(e) => onChange('height', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Height in cm"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Weight (kg)
+            </label>
+            <input
+              type="number"
+              value={formData.weight}
+              onChange={(e) => onChange('weight', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Weight in kg"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Blood Type
+            </label>
+            <select
+              value={formData.bloodType}
+              onChange={(e) => onChange('bloodType', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            >
+              <option value="">Select blood type</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
         </div>
-        
+
+        {/* Address */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email Address
+            Address
           </label>
-          <input
-            type="email"
-            value={formData.email}
-            onChange={(e) => onChange('email', e.target.value)}
+          <textarea
+            value={formData.address}
+            onChange={(e) => onChange('address', e.target.value)}
+            rows={3}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            placeholder="Enter email address"
-          />
-        </div>
-      </div>
-      
-      <div className="mt-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Address
-        </label>
-        <textarea
-          value={formData.address}
-          onChange={(e) => onChange('address', e.target.value)}
-          rows={3}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-          placeholder="Enter full address"
-        />
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Emergency Contact Name
-          </label>
-          <input
-            type="text"
-            value={formData.emergencyContact}
-            onChange={(e) => onChange('emergencyContact', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            placeholder="Enter emergency contact name"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Emergency Contact Phone
-          </label>
-          <input
-            type="tel"
-            value={formData.emergencyPhone}
-            onChange={(e) => onChange('emergencyPhone', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            placeholder="Enter emergency contact phone"
+            placeholder="Enter full address"
           />
         </div>
       </div>
@@ -568,689 +587,938 @@ const PersonalDetailsSection = ({ formData, onChange }: any) => {
   )
 }
 
-// Comorbidities Section Component
+// Referring Clinician Section Component
 const ComorbiditiesSection = ({ formData, onChange }: any) => {
-  const { user } = useAuth()
-  const isWetLab = user?.role === 'wetlab'
-
-  if (isWetLab) {
-    // Wetlab Biopsy Information
-    return (
-      <div>
-        <div className="flex items-center mb-6">
-          <Heart className="h-6 w-6 text-pink-600 mr-3" />
-          <h2 className="text-2xl font-bold text-gray-900">Biopsy Information</h2>
-        </div>
-        
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Biopsy Method</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                <input
-                  type="radio"
-                  name="biopsyMethod"
-                  value="trophectoderm"
-                  checked={formData.biopsyMethod === 'trophectoderm'}
-                  onChange={(e) => onChange('biopsyMethod', e.target.value)}
-                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300"
-                />
-                <span className="text-sm font-medium text-gray-700">Trophectoderm Biopsy</span>
-              </label>
-              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                <input
-                  type="radio"
-                  name="biopsyMethod"
-                  value="blastomere"
-                  checked={formData.biopsyMethod === 'blastomere'}
-                  onChange={(e) => onChange('biopsyMethod', e.target.value)}
-                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300"
-                />
-                <span className="text-sm font-medium text-gray-700">Blastomere Biopsy</span>
-              </label>
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Day of Biopsy
-            </label>
-            <select
-              value={formData.biopsyDay}
-              onChange={(e) => onChange('biopsyDay', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            >
-              <option value="">Select day</option>
-              <option value="day3">Day 3</option>
-              <option value="day5">Day 5</option>
-              <option value="day6">Day 6</option>
-              <option value="day7">Day 7</option>
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Embryo Quality/Grade
-            </label>
-            <input
-              type="text"
-              value={formData.embryoGrade}
-              onChange={(e) => onChange('embryoGrade', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-              placeholder="Enter embryo grade (e.g., 4AA, 3BB)"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Morphology Assessment
-            </label>
-            <textarea
-              value={formData.morphologyAssessment}
-              onChange={(e) => onChange('morphologyAssessment', e.target.value)}
-              rows={3}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-              placeholder="Describe embryo morphology and quality observations"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Special Handling Instructions
-            </label>
-            <textarea
-              value={formData.handlingInstructions}
-              onChange={(e) => onChange('handlingInstructions', e.target.value)}
-              rows={2}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-              placeholder="Any special handling or processing instructions"
-            />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Original Doctor Comorbidities Form
   return (
     <div>
       <div className="flex items-center mb-6">
         <Heart className="h-6 w-6 text-pink-600 mr-3" />
-        <h2 className="text-2xl font-bold text-gray-900">Medical History & Comorbidities</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Referring Clinician</h2>
+        <span className="text-sm text-gray-500 ml-2">(In BLOCK letters)</span>
       </div>
       
       <div className="space-y-6">
+        {/* Clinician Name */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Existing Conditions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { key: 'diabetes', label: 'Diabetes' },
-              { key: 'hypertension', label: 'Hypertension' },
-              { key: 'thyroid', label: 'Thyroid Disorders' },
-              { key: 'pcod', label: 'PCOD' },
-              { key: 'endometriosis', label: 'Endometriosis' }
-            ].map((condition) => (
-              <label key={condition.key} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                <input
-                  type="checkbox"
-                  checked={formData[condition.key]}
-                  onChange={(e) => onChange(condition.key, e.target.checked)}
-                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
-                />
-                <span className="text-sm font-medium text-gray-700">{condition.label}</span>
-              </label>
-            ))}
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Clinician Name *
+          </label>
+          <input
+            type="text"
+            value={formData.clinicianName}
+            onChange={(e) => onChange('clinicianName', e.target.value.toUpperCase())}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 uppercase"
+            placeholder="ENTER CLINICIAN NAME IN BLOCK LETTERS"
+          />
+        </div>
+
+        {/* Embryologist Name */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Embryologist Name
+          </label>
+          <input
+            type="text"
+            value={formData.embryologistName}
+            onChange={(e) => onChange('embryologistName', e.target.value.toUpperCase())}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 uppercase"
+            placeholder="ENTER EMBRYOLOGIST NAME IN BLOCK LETTERS"
+          />
+        </div>
+
+        {/* Hospital/Clinic Name */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Hospital/Clinic Name *
+          </label>
+          <input
+            type="text"
+            value={formData.hospitalClinicName}
+            onChange={(e) => onChange('hospitalClinicName', e.target.value.toUpperCase())}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 uppercase"
+            placeholder="ENTER HOSPITAL/CLINIC NAME IN BLOCK LETTERS"
+          />
+        </div>
+
+        {/* Email ID and Contact No. Row 1 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              E-mail ID *
+            </label>
+            <input
+              type="email"
+              value={formData.emailId}
+              onChange={(e) => onChange('emailId', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter email address"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Contact No. *
+            </label>
+            <input
+              type="tel"
+              value={formData.contactNo1}
+              onChange={(e) => onChange('contactNo1', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter contact number"
+            />
           </div>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Other Medical Conditions
-          </label>
-          <textarea
-            value={formData.otherConditions}
-            onChange={(e) => onChange('otherConditions', e.target.value)}
-            rows={3}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            placeholder="Describe any other medical conditions"
-          />
+
+        {/* Email ID and Contact No. Row 2 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              E-mail ID Of Contact Person *
+            </label>
+            <input
+              type="email"
+              value={formData.emailIdContactPerson}
+              onChange={(e) => onChange('emailIdContactPerson', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter contact person email"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Contact No.
+            </label>
+            <input
+              type="tel"
+              value={formData.contactNo2}
+              onChange={(e) => onChange('contactNo2', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              placeholder="Enter additional contact number"
+            />
+          </div>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Current Medications
-          </label>
-          <textarea
-            value={formData.medications}
-            onChange={(e) => onChange('medications', e.target.value)}
-            rows={3}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            placeholder="List current medications and dosages"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Known Allergies
-          </label>
-          <textarea
-            value={formData.allergies}
-            onChange={(e) => onChange('allergies', e.target.value)}
-            rows={2}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            placeholder="List any known allergies"
-          />
+
+        {/* Note */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-700">
+            <span className="font-medium">*Note:</span> Report will be sent to both Emails
+          </p>
         </div>
       </div>
     </div>
   )
 }
-// Tests Section Component
-const TestsSection = ({ formData, onFileUpload }: any) => {
-  const [selectedGeneticTests, setSelectedGeneticTests] = useState<string[]>(
-    formData.selectedGeneticTests || []
-  )
-  const [selectedStructuralTest, setSelectedStructuralTest] = useState<string | null>(
-    formData.selectedStructuralTest || null
-  )
-  const [showUploadModal, setShowUploadModal] = useState(false)
-
-  const geneticTests = [
-    {
-      key: 'pgt-a',
-      title: 'PGT-A (Preimplantation Genetic Testing for Aneuploidy)',
-      description: 'Screens embryos for chromosomal abnormalities',
-      cost: '₹2,000 – ₹8,000 per embryo',
-      colors: {
-        border: 'border-blue-500',
-        borderHover: 'hover:border-blue-300',
-        borderDefault: 'border-blue-200',
-        bg: 'bg-blue-50',
-        bgHover: 'hover:bg-blue-25',
-        iconBg: 'bg-blue-100',
-        text: 'text-blue-700',
-        badgeBg: 'bg-blue-100',
-        badgeText: 'text-blue-800'
-      },
-      icon: '🧬'
-    },
-    {
-      key: 'pgt-m',
-      title: 'PGT-M (Preimplantation Genetic Testing for Monogenic)',
-      description: 'Tests for specific genetic disorders',
-      cost: '₹5,000 – ₹20,000 per case/family',
-      colors: {
-        border: 'border-green-500',
-        borderHover: 'hover:border-green-300',
-        borderDefault: 'border-green-200',
-        bg: 'bg-green-50',
-        bgHover: 'hover:bg-green-25',
-        iconBg: 'bg-green-100',
-        text: 'text-green-700',
-        badgeBg: 'bg-green-100',
-        badgeText: 'text-green-800'
-      },
-      icon: '🔬'
-    }
-  ]
-
-  const structuralTest = {
-    key: 'pgt-sr',
-    title: 'PGT-SR (Preimplantation Genetic Testing for Structural Rearrangements)',
-    description: 'Detects chromosomal structural abnormalities',
-    cost: '₹4,000 – ₹15,000 per embryo',
-    colors: {
-      border: 'border-purple-500',
-      borderHover: 'hover:border-purple-300',
-      borderDefault: 'border-purple-200',
-      bg: 'bg-purple-50',
-      bgHover: 'hover:bg-purple-25',
-      iconBg: 'bg-purple-100',
-      text: 'text-purple-700',
-      badgeBg: 'bg-purple-100',
-      badgeText: 'text-purple-800'
-    },
-    icon: '🧪'
-  }
-
-  const handleGeneticTestSelection = (testKey: string) => {
-    const newSelection = selectedGeneticTests.includes(testKey)
-      ? selectedGeneticTests.filter(t => t !== testKey)
-      : [...selectedGeneticTests, testKey]
-    
-    setSelectedGeneticTests(newSelection)
-    onFileUpload('selectedGeneticTests', newSelection)
-    
-    // If selecting genetic tests, clear structural test
-    if (newSelection.length > 0 && selectedStructuralTest) {
-      setSelectedStructuralTest(null)
-      onFileUpload('selectedStructuralTest', null)
-      // Remove PGT-SR file if it exists
-      const currentFiles = formData.testReportFiles || []
-      const newFiles = currentFiles.filter((f: any) => f.testKey !== 'pgt-sr')
-      onFileUpload('testReportFiles', newFiles)
-    }
-  }
-
-  const handleStructuralTestSelection = (testKey: string) => {
-    const newSelection = selectedStructuralTest === testKey ? null : testKey
-    setSelectedStructuralTest(newSelection)
-    onFileUpload('selectedStructuralTest', newSelection)
-    
-    // If selecting structural test, clear genetic tests
-    if (newSelection && selectedGeneticTests.length > 0) {
-      setSelectedGeneticTests([])
-      onFileUpload('selectedGeneticTests', [])
-      // Remove genetic test files if they exist
-      const currentFiles = formData.testReportFiles || []
-      const newFiles = currentFiles.filter((f: any) => !['pgt-a', 'pgt-m'].includes(f.testKey))
-      onFileUpload('testReportFiles', newFiles)
-    }
-  }
-
-  const handleFileChange = (testKey: string, event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null
-    const currentFiles = formData.testReportFiles || []
-    
-    if (file) {
-      // Add or update file for this test
-      const newFiles = currentFiles.filter((f: any) => f.testKey !== testKey)
-      newFiles.push({ testKey, file, fileName: file.name })
-      onFileUpload('testReportFiles', newFiles)
-    } else {
-      // Remove file for this test
-      const newFiles = currentFiles.filter((f: any) => f.testKey !== testKey)
-      onFileUpload('testReportFiles', newFiles)
-    }
-  }
-
-  const getFileForTest = (testKey: string) => {
-    const files = formData.testReportFiles || []
-    return files.find((f: any) => f.testKey === testKey)
-  }
-
-  const removeFileForTest = (testKey: string) => {
-    const currentFiles = formData.testReportFiles || []
-    const newFiles = currentFiles.filter((f: any) => f.testKey !== testKey)
-    onFileUpload('testReportFiles', newFiles)
-  }
-
-  const selectedTests = [...selectedGeneticTests, ...(selectedStructuralTest ? [selectedStructuralTest] : [])]
-  const hasSelectedTests = selectedTests.length > 0
-
+// Sample Details Section Component
+const TestsSection = ({ formData, onChange }: any) => {
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <TestTube className="h-6 w-6 text-pink-600 mr-3" />
-          <h2 className="text-2xl font-bold text-gray-900">Genetic Tests</h2>
-        </div>
-        <button
-          onClick={() => setShowUploadModal(true)}
-          disabled={!hasSelectedTests}
-          className={`flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-            hasSelectedTests
-              ? 'bg-pink-600 text-white hover:bg-pink-700 shadow-md hover:shadow-lg'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          <Upload className="h-4 w-4 mr-2" />
-          Upload Report
-        </button>
+      <div className="flex items-center mb-6">
+        <TestTube className="h-6 w-6 text-pink-600 mr-3" />
+        <h2 className="text-2xl font-bold text-gray-900">Sample Details</h2>
       </div>
       
       <div className="space-y-8">
-        {/* Genetic Tests Section (PGT-A and PGT-M) */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Genetic Tests (Can select multiple)
-          </h3>
-          <p className="text-sm text-gray-600 mb-4">
-            You can select both PGT-A and PGT-M tests for comprehensive genetic analysis.
-            {selectedStructuralTest && (
-              <span className="text-orange-600 font-medium"> Note: Cannot combine with structural test below.</span>
-            )}
-          </p>
+        {/* Sample Details Section */}
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">SAMPLE DETAILS</h3>
           
-          <div className="grid grid-cols-1 gap-4">
-            {geneticTests.map((test) => {
-              const isDisabled = selectedStructuralTest !== null
-              const isSelected = selectedGeneticTests.includes(test.key)
+          <div className="space-y-6">
+            {/* Sample Collection Date and Time */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sample Collection Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.sampleCollectionDate}
+                  onChange={(e) => onChange('sampleCollectionDate', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                />
+              </div>
               
-              return (
-                <motion.div
-                  key={test.key}
-                  whileHover={!isDisabled ? { scale: 1.01 } : {}}
-                  whileTap={!isDisabled ? { scale: 0.99 } : {}}
-                  onClick={() => !isDisabled && handleGeneticTestSelection(test.key)}
-                  className={`relative border-2 rounded-xl p-6 transition-all duration-200 ${
-                    isDisabled
-                      ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
-                      : isSelected
-                        ? `${test.colors.border} ${test.colors.bg} shadow-md cursor-pointer`
-                        : `${test.colors.borderDefault} ${test.colors.borderHover} ${test.colors.bgHover} cursor-pointer`
-                  }`}
-                >
-                  {/* Selection Checkbox */}
-                  <div className="absolute top-4 right-4">
-                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                      isSelected && !isDisabled
-                        ? `${test.colors.border} bg-blue-500`
-                        : `border-gray-300`
-                    }`}>
-                      {isSelected && !isDisabled && (
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sample Collection Time
+                </label>
+                <input
+                  type="time"
+                  value={formData.sampleCollectionTime}
+                  onChange={(e) => onChange('sampleCollectionTime', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                />
+              </div>
+            </div>
 
-                  <div className="flex items-start space-x-4">
-                    <div className={`w-16 h-16 ${isDisabled ? 'bg-gray-200' : test.colors.iconBg} rounded-xl flex items-center justify-center text-2xl`}>
-                      {test.icon}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <h4 className={`text-lg font-semibold mb-2 ${
-                        isDisabled
-                          ? 'text-gray-400'
-                          : isSelected 
-                            ? test.colors.text 
-                            : 'text-gray-900'
-                      }`}>
-                        {test.title}
-                      </h4>
-                      <p className={`text-sm mb-3 ${isDisabled ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {test.description}
-                      </p>
-                      <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                        isDisabled
-                          ? 'bg-gray-200 text-gray-500'
-                          : isSelected
-                            ? `${test.colors.badgeBg} ${test.colors.badgeText}`
-                            : 'bg-gray-100 text-gray-700'
-                      }`}>
-                        Cost: {test.cost}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )
-            })}
-          </div>
-        </div>
+            {/* Sample Type Checkboxes */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={formData.edtaBlood}
+                  onChange={(e) => onChange('edtaBlood', e.target.checked)}
+                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                />
+                <span className="text-sm font-medium text-gray-700">EDTA Blood (For Pre-PGT-M work up; 4ml)</span>
+              </label>
+              
+              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={formData.couple}
+                  onChange={(e) => onChange('couple', e.target.checked)}
+                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                />
+                <span className="text-sm font-medium text-gray-700">Couple</span>
+              </label>
+              
+              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={formData.affectedIndividual}
+                  onChange={(e) => onChange('affectedIndividual', e.target.checked)}
+                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                />
+                <span className="text-sm font-medium text-gray-700">Affected Individual</span>
+              </label>
+            </div>
 
-        {/* Structural Test Section (PGT-SR) */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Structural Rearrangement Test (Separate selection)
-          </h3>
-          <p className="text-sm text-gray-600 mb-4">
-            This test is performed separately and cannot be combined with the genetic tests above.
-            {selectedGeneticTests.length > 0 && (
-              <span className="text-orange-600 font-medium"> Note: Cannot combine with genetic tests above.</span>
-            )}
-          </p>
-          
-          {(() => {
-            const isDisabled = selectedGeneticTests.length > 0
-            const isSelected = selectedStructuralTest === structuralTest.key
-            
-            return (
-              <motion.div
-                whileHover={!isDisabled ? { scale: 1.01 } : {}}
-                whileTap={!isDisabled ? { scale: 0.99 } : {}}
-                onClick={() => !isDisabled && handleStructuralTestSelection(structuralTest.key)}
-                className={`relative border-2 rounded-xl p-6 transition-all duration-200 ${
-                  isDisabled
-                    ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
-                    : isSelected
-                      ? `${structuralTest.colors.border} ${structuralTest.colors.bg} shadow-md cursor-pointer`
-                      : `${structuralTest.colors.borderDefault} ${structuralTest.colors.borderHover} ${structuralTest.colors.bgHover} cursor-pointer`
-                }`}
-              >
-                {/* Selection Radio Button */}
-                <div className="absolute top-4 right-4">
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    isSelected && !isDisabled
-                      ? `${structuralTest.colors.border} bg-purple-500`
-                      : `border-gray-300`
-                  }`}>
-                    {isSelected && !isDisabled && (
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    )}
-                  </div>
-                </div>
+            {/* Embryos Section */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <label className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={formData.embryos}
+                  onChange={(e) => onChange('embryos', e.target.checked)}
+                  className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                />
+                <span className="text-sm font-medium text-gray-700">Embryos</span>
+              </label>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  No of embryos
+                </label>
+                <input
+                  type="number"
+                  value={formData.noOfEmbryos}
+                  onChange={(e) => onChange('noOfEmbryos', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  placeholder="Enter number"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Day of biopsy
+                </label>
+                <input
+                  type="text"
+                  value={formData.dayOfBiopsy}
+                  onChange={(e) => onChange('dayOfBiopsy', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  placeholder="Enter day"
+                />
+              </div>
+            </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className={`w-16 h-16 ${isDisabled ? 'bg-gray-200' : structuralTest.colors.iconBg} rounded-xl flex items-center justify-center text-2xl`}>
-                    {structuralTest.icon}
-                  </div>
+            {/* Donor Section */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-6">
+                <span className="text-sm font-medium text-gray-700">Donor:</span>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="donor"
+                    checked={formData.donorYes}
+                    onChange={(e) => {
+                      onChange('donorYes', e.target.checked)
+                      if (e.target.checked) onChange('donorNo', false)
+                    }}
+                    className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300"
+                  />
+                  <span className="text-sm text-gray-700">Yes</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="donor"
+                    checked={formData.donorNo}
+                    onChange={(e) => {
+                      onChange('donorNo', e.target.checked)
+                      if (e.target.checked) onChange('donorYes', false)
+                    }}
+                    className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300"
+                  />
+                  <span className="text-sm text-gray-700">No</span>
+                </label>
+              </div>
+
+              {formData.donorYes && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-6">
+                  <label className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      checked={formData.donorEgg}
+                      onChange={(e) => onChange('donorEgg', e.target.checked)}
+                      className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                    />
+                    <span className="text-sm text-gray-700">Donor Egg</span>
+                  </label>
                   
-                  <div className="flex-1">
-                    <h4 className={`text-lg font-semibold mb-2 ${
-                      isDisabled
-                        ? 'text-gray-400'
-                        : isSelected 
-                          ? structuralTest.colors.text 
-                          : 'text-gray-900'
-                    }`}>
-                      {structuralTest.title}
-                    </h4>
-                    <p className={`text-sm mb-3 ${isDisabled ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {structuralTest.description}
-                    </p>
-                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                      isDisabled
-                        ? 'bg-gray-200 text-gray-500'
-                        : isSelected
-                          ? `${structuralTest.colors.badgeBg} ${structuralTest.colors.badgeText}`
-                          : 'bg-gray-100 text-gray-700'
-                    }`}>
-                      Cost: {structuralTest.cost}
-                    </div>
-                  </div>
+                  <label className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      checked={formData.donorSperm}
+                      onChange={(e) => onChange('donorSperm', e.target.checked)}
+                      className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                    />
+                    <span className="text-sm text-gray-700">Donor Sperm</span>
+                  </label>
                 </div>
-              </motion.div>
-            )
-          })()}
+              )}
+            </div>
+
+            {/* Age of Donor and Spent Culture Medium */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Age of the Donor
+                </label>
+                <input
+                  type="number"
+                  value={formData.ageOfDonor}
+                  onChange={(e) => onChange('ageOfDonor', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  placeholder="Enter age"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Spent Culture Medium
+                </label>
+                <input
+                  type="text"
+                  value={formData.spentCultureMedium}
+                  onChange={(e) => onChange('spentCultureMedium', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  placeholder="Enter medium details"
+                />
+              </div>
+            </div>
+
+            {/* Rebiopsy Section */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-6">
+                <span className="text-sm font-medium text-gray-700">Rebiopsy:</span>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="rebiopsy"
+                    checked={formData.rebiopsyYes}
+                    onChange={(e) => {
+                      onChange('rebiopsyYes', e.target.checked)
+                      if (e.target.checked) onChange('rebiopsyNo', false)
+                    }}
+                    className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300"
+                  />
+                  <span className="text-sm text-gray-700">Yes</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="rebiopsy"
+                    checked={formData.rebiopsyNo}
+                    onChange={(e) => {
+                      onChange('rebiopsyNo', e.target.checked)
+                      if (e.target.checked) onChange('rebiopsyYes', false)
+                    }}
+                    className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300"
+                  />
+                  <span className="text-sm text-gray-700">No</span>
+                </label>
+              </div>
+
+              {formData.rebiopsyYes && (
+                <div className="ml-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    If yes, please provide previous ID of the patient
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.previousPatientId}
+                    onChange={(e) => onChange('previousPatientId', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                    placeholder="Enter previous patient ID"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Upload Report Modal */}
-      {showUploadModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">Upload Test Reports</h2>
-              <button
-                onClick={() => setShowUploadModal(false)}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              {selectedTests.map((testKey) => {
-                const test = [...geneticTests, structuralTest].find(t => t.key === testKey)
-                const fileData = getFileForTest(testKey)
-                
-                return (
-                  <motion.div
-                    key={testKey}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="bg-gray-50 border border-gray-200 rounded-xl p-6"
-                  >
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                      <FileText className="h-5 w-5 mr-2 text-pink-600" />
-                      {test?.title} Report
-                    </h4>
-                    
-                    <div className="relative">
-                      <input
-                        type="file"
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.tiff,.fastq,.fq,.fastq.gz,.fq.gz"
-                        onChange={(e) => handleFileChange(testKey, e)}
-                        className="hidden"
-                        id={`modal-test-report-file-${testKey}`}
-                      />
-                      <label
-                        htmlFor={`modal-test-report-file-${testKey}`}
-                        className="flex items-center justify-center w-full px-6 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-pink-400 hover:bg-pink-50 transition-all duration-200"
-                      >
-                        <div className="text-center">
-                          <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-lg font-medium text-gray-700 mb-2">
-                            {fileData ? 'Change Report File' : 'Click to upload test report'}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            PDF, DOC, DOCX, Images, FastQ files (Max: 100MB)
-                          </p>
-                        </div>
-                      </label>
-                    </div>
-                    
-                    {fileData && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <FileText className="h-5 w-5 text-green-600 mr-3" />
-                            <div>
-                              <p className="text-sm font-medium text-gray-900">
-                                {fileData.fileName}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                Size: {(fileData.file.size / 1024 / 1024).toFixed(2)} MB
-                              </p>
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => removeFileForTest(testKey)}
-                            className="text-red-600 hover:text-red-700 text-sm font-medium px-3 py-1 rounded hover:bg-red-50"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </motion.div>
-                )
-              })}
-            </div>
-
-            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
-              <button
-                onClick={() => setShowUploadModal(false)}
-                className="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => setShowUploadModal(false)}
-                className="px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 font-medium"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
+const slashDateInputClass =
+  'w-14 sm:w-16 text-center px-2 py-2 border-0 border-b-2 border-gray-400 bg-transparent text-gray-900 focus:border-pink-500 focus:ring-0 focus:outline-none'
 
-// Embryo Images Section Component
-const EmbryoImagesSection = ({ formData, onChange }: any) => {
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || [])
-    onChange('embryoImages', [...formData.embryoImages, ...files])
-  }
-
-  const removeImage = (index: number) => {
-    const newImages = formData.embryoImages.filter((_: any, i: number) => i !== index)
-    onChange('embryoImages', newImages)
-  }
+// Cycle History tab: PDF-style CYCLE HISTORY fields
+const CycleHistorySection = ({ formData, onChange }: any) => {
+  const digitsOnly = (v: string, maxLen: number) => v.replace(/\D/g, '').slice(0, maxLen)
 
   return (
     <div>
       <div className="flex items-center mb-6">
         <ImageIcon className="h-6 w-6 text-pink-600 mr-3" />
-        <h2 className="text-2xl font-bold text-gray-900">Embryo Images</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Cycle History</h2>
       </div>
-      
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Upload Embryo Images
-          </label>
-          <div className="relative">
+
+      <div>
+        <div className="relative rounded-xl border-2 border-gray-300 bg-white px-4 py-8 sm:px-8">
+          <h3 className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-base font-semibold tracking-wide text-gray-900">
+            CYCLE HISTORY
+          </h3>
+
+          <div className="space-y-8 pt-2">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <span className="text-sm font-medium text-gray-800">Hyperstimulation:</span>
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={formData.hyperstimulationYes}
+                    onChange={(e) => {
+                      onChange('hyperstimulationYes', e.target.checked)
+                      if (e.target.checked) onChange('hyperstimulationNo', false)
+                    }}
+                    className="h-4 w-4 rounded border-gray-400 text-pink-600 focus:ring-pink-500"
+                  />
+                  <span className="text-sm text-gray-800">Yes</span>
+                </label>
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={formData.hyperstimulationNo}
+                    onChange={(e) => {
+                      onChange('hyperstimulationNo', e.target.checked)
+                      if (e.target.checked) onChange('hyperstimulationYes', false)
+                    }}
+                    className="h-4 w-4 rounded border-gray-400 text-pink-600 focus:ring-pink-500"
+                  />
+                  <span className="text-sm text-gray-800">No</span>
+                </label>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <span className="text-sm font-medium text-gray-800">Fertilisation method:</span>
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={formData.fertilisationIVF}
+                    onChange={(e) => {
+                      onChange('fertilisationIVF', e.target.checked)
+                      if (e.target.checked) onChange('fertilisationICSI', false)
+                    }}
+                    className="h-4 w-4 rounded border-gray-400 text-pink-600 focus:ring-pink-500"
+                  />
+                  <span className="text-sm text-gray-800">IVF</span>
+                </label>
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={formData.fertilisationICSI}
+                    onChange={(e) => {
+                      onChange('fertilisationICSI', e.target.checked)
+                      if (e.target.checked) onChange('fertilisationIVF', false)
+                    }}
+                    className="h-4 w-4 rounded border-gray-400 text-pink-600 focus:ring-pink-500"
+                  />
+                  <span className="text-sm text-gray-800">ICSI</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+              <div>
+                <p className="mb-2 text-sm font-medium text-gray-800">Date of egg retrieval:</p>
+                <div className="flex flex-wrap items-end gap-1 sm:gap-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="DD"
+                    value={formData.eggRetrievalDd}
+                    onChange={(e) => onChange('eggRetrievalDd', digitsOnly(e.target.value, 2))}
+                    className={slashDateInputClass}
+                    aria-label="Egg retrieval day"
+                  />
+                  <span className="pb-2 text-gray-600">/</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="MM"
+                    value={formData.eggRetrievalMm}
+                    onChange={(e) => onChange('eggRetrievalMm', digitsOnly(e.target.value, 2))}
+                    className={slashDateInputClass}
+                    aria-label="Egg retrieval month"
+                  />
+                  <span className="pb-2 text-gray-600">/</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="YYYY"
+                    value={formData.eggRetrievalYyyy}
+                    onChange={(e) => onChange('eggRetrievalYyyy', digitsOnly(e.target.value, 4))}
+                    className={`${slashDateInputClass} w-20 sm:w-24`}
+                    aria-label="Egg retrieval year"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-800">
+                  No. of embryos retrieved:
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={formData.noOfEmbryosRetrieved}
+                  onChange={(e) => onChange('noOfEmbryosRetrieved', digitsOnly(e.target.value, 4))}
+                  className="w-full max-w-xs border-0 border-b-2 border-gray-400 bg-transparent px-1 py-2 text-gray-900 focus:border-pink-500 focus:outline-none"
+                  placeholder=""
+                />
+              </div>
+            </div>
+
+            <div className="max-w-md">
+              <label className="mb-2 block text-sm font-medium text-gray-800">
+                No. of biopsied embryos:
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={formData.noOfBiopsiedEmbryos}
+                onChange={(e) => onChange('noOfBiopsiedEmbryos', digitsOnly(e.target.value, 4))}
+                className="w-full border-0 border-b-2 border-gray-400 bg-transparent px-1 py-2 text-gray-900 focus:border-pink-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <p className="mb-2 text-sm font-medium text-gray-800">
+                <span className="text-pink-600">*</span>Date/Time planned for embryo transfer:
+              </p>
+              <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
+                <div className="flex flex-wrap items-end gap-1 sm:gap-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="DD"
+                    value={formData.embryoTransferDd}
+                    onChange={(e) => onChange('embryoTransferDd', digitsOnly(e.target.value, 2))}
+                    className={slashDateInputClass}
+                    aria-label="Embryo transfer day"
+                  />
+                  <span className="pb-2 text-gray-600">/</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="MM"
+                    value={formData.embryoTransferMm}
+                    onChange={(e) => onChange('embryoTransferMm', digitsOnly(e.target.value, 2))}
+                    className={slashDateInputClass}
+                    aria-label="Embryo transfer month"
+                  />
+                  <span className="pb-2 text-gray-600">/</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="YYYY"
+                    value={formData.embryoTransferYyyy}
+                    onChange={(e) => onChange('embryoTransferYyyy', digitsOnly(e.target.value, 4))}
+                    className={`${slashDateInputClass} w-20 sm:w-24`}
+                    aria-label="Embryo transfer year"
+                  />
+                </div>
+                <div className="flex items-center gap-2 sm:ml-2">
+                  <label className="text-sm text-gray-600">Time</label>
+                  <input
+                    type="time"
+                    value={formData.embryoTransferTime}
+                    onChange={(e) => onChange('embryoTransferTime', e.target.value)}
+                    className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-pink-500 focus:ring-2 focus:ring-pink-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const testReqUnderline =
+  'min-w-[6rem] flex-1 border-0 border-b border-violet-400 bg-transparent px-1 py-0.5 text-sm text-gray-900 focus:border-violet-700 focus:outline-none'
+
+const TestRequestedSection = ({ formData, onChange }: any) => {
+  const setMosaic = (field: 'mosaicReportYes' | 'mosaicReportNoDesignate' | 'mosaicReportDoNot', checked: boolean) => {
+    if (!checked) {
+      onChange(field, false)
+      return
+    }
+    onChange('mosaicReportYes', field === 'mosaicReportYes')
+    onChange('mosaicReportNoDesignate', field === 'mosaicReportNoDesignate')
+    onChange('mosaicReportDoNot', field === 'mosaicReportDoNot')
+  }
+
+  return (
+    <div>
+      <div className="mb-6 flex items-center">
+        <ClipboardList className="mr-3 h-6 w-6 text-violet-800" />
+        <h2 className="text-2xl font-bold text-gray-900">Test Requested</h2>
+      </div>
+
+      <div className="relative rounded-xl border-2 border-violet-800 bg-white px-4 py-10 sm:px-8">
+        <h3 className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-center text-base font-bold tracking-wide text-violet-900">
+          TEST REQUESTED
+        </h3>
+
+        <div className="space-y-5 pt-2 text-sm text-gray-900">
+          <label className="flex cursor-pointer items-start gap-3">
             <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              id="embryo-images"
+              type="checkbox"
+              checked={formData.testPgtA}
+              onChange={(e) => onChange('testPgtA', e.target.checked)}
+              className="mt-1 h-4 w-4 shrink-0 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
             />
-            <label
-              htmlFor="embryo-images"
-              className="flex items-center justify-center w-full px-6 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-pink-400 hover:bg-pink-50 transition-all duration-200"
-            >
-              <div className="text-center">
-                <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">
-                  Click to upload embryo images
-                </p>
-                <p className="text-sm text-gray-500">
-                  Supports JPG, PNG, TIFF formats. Multiple files allowed.
-                </p>
+            <span>
+              Preimplantation genetic testing for aneuploidies (PGT-A)
+            </span>
+          </label>
+
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={formData.testNiPgt}
+              onChange={(e) => onChange('testNiPgt', e.target.checked)}
+              className="mt-1 h-4 w-4 shrink-0 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+            />
+            <span>
+              Non-invasive preimplantation genetic testing for aneuploidies (niPGT)
+            </span>
+          </label>
+
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={formData.testPgtSr}
+              onChange={(e) => onChange('testPgtSr', e.target.checked)}
+              className="mt-1 h-4 w-4 shrink-0 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+            />
+            <span>
+              Preimplantation genetic testing for structural rearrangements (PGT-SR){' '}
+              <span className="text-gray-700">(attach parental karyotype report)</span>
+            </span>
+          </label>
+
+          <div className="space-y-2">
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={formData.testPgtM}
+                onChange={(e) => onChange('testPgtM', e.target.checked)}
+                className="mt-1 h-4 w-4 shrink-0 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+              />
+              <div className="min-w-0 flex-1 space-y-2">
+                <span>
+                  Preimplantation genetic testing for monogenic disorders (PGT-M)
+                  <span className="text-pink-600">*</span>
+                </span>
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-2 pl-0 sm:pl-1">
+                  <span className="text-gray-800">(Requested for Gene</span>
+                  <input
+                    type="text"
+                    value={formData.pgtMGene}
+                    onChange={(e) => onChange('pgtMGene', e.target.value)}
+                    className={testReqUnderline}
+                    aria-label="PGT-M gene"
+                  />
+                  <span className="text-gray-800">Variant</span>
+                  <input
+                    type="text"
+                    value={formData.pgtMVariant}
+                    onChange={(e) => onChange('pgtMVariant', e.target.value)}
+                    className={testReqUnderline}
+                    aria-label="PGT-M variant"
+                  />
+                  <span className="text-gray-800">)</span>
+                </div>
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-2">
+                  <span className="text-gray-800">
+                    (<span className="text-pink-600">*</span> Please mention Pre-PGT-M Lab ID
+                  </span>
+                  <input
+                    type="text"
+                    value={formData.prePgtMLabId}
+                    onChange={(e) => onChange('prePgtMLabId', e.target.value)}
+                    className={`${testReqUnderline} min-w-[8rem]`}
+                    aria-label="Pre-PGT-M Lab ID"
+                  />
+                  <span className="text-gray-800">)</span>
+                </div>
               </div>
             </label>
           </div>
+
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={formData.testPrePgtWorkup}
+              onChange={(e) => onChange('testPrePgtWorkup', e.target.checked)}
+              className="mt-1 h-4 w-4 shrink-0 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+            />
+            <span>
+              <span className="font-medium">Pre-PGT Work up</span>{' '}
+              <span className="text-gray-700">
+                (Mandatory to do before PGT-M, Sample type- 4ml EDTA blood) Attach relevant genetic reports/ Hb
+                electrophoresis report.
+              </span>
+            </span>
+          </label>
         </div>
-        
-        {formData.embryoImages.length > 0 && (
+
+        <div className="mt-10 space-y-8 border-t border-violet-200 pt-8">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Uploaded Images ({formData.embryoImages.length})
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {formData.embryoImages.map((image: File, index: number) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="relative group"
-                >
-                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                    <img
-                      src={URL.createObjectURL(image)}
-                      alt={`Embryo ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <button
-                    onClick={() => removeImage(index)}
-                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600"
-                  >
-                    ×
-                  </button>
-                  <p className="text-xs text-gray-500 mt-1 truncate">
-                    {image.name}
-                  </p>
-                </motion.div>
-              ))}
+            <h4 className="mb-3 text-sm font-bold text-violet-900">In case of PGT-A/niPGT:</h4>
+            <p className="mb-3 text-sm text-gray-900">Is Karyotype done for the couple-</p>
+            <div className="flex flex-wrap gap-x-8 gap-y-2">
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.karyotypeCoupleYes}
+                  onChange={(e) => {
+                    onChange('karyotypeCoupleYes', e.target.checked)
+                    if (e.target.checked) onChange('karyotypeCoupleNo', false)
+                  }}
+                  className="h-4 w-4 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+                />
+                <span className="text-sm text-gray-900">
+                  Yes <span className="text-gray-700">(If yes, kindly provide the reports)</span>
+                </span>
+              </label>
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.karyotypeCoupleNo}
+                  onChange={(e) => {
+                    onChange('karyotypeCoupleNo', e.target.checked)
+                    if (e.target.checked) onChange('karyotypeCoupleYes', false)
+                  }}
+                  className="h-4 w-4 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+                />
+                <span className="text-sm text-gray-900">No</span>
+              </label>
             </div>
           </div>
-        )}
+
+          <div>
+            <h4 className="mb-2 text-sm font-bold text-violet-900">In case of PGT-SR:</h4>
+            <p className="text-sm leading-relaxed text-gray-900">
+              Kindly provide parental karyotype reports prior to testing.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="mb-2 text-sm font-bold text-violet-900">In case of PGT-M:</h4>
+            <p className="text-sm leading-relaxed text-gray-900">
+              Kindly contact NCGM and discuss with the Clinical Geneticist/ Genetic Counsellors regarding the utility of
+              PGT-M for the suspected condition/ reported genetic variant/s.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-10 border-t border-violet-200 pt-8">
+          <h4 className="mb-4 text-sm font-bold text-gray-900">Indication for the test</h4>
+          <div className="flex flex-wrap gap-x-6 gap-y-3">
+            {[
+              { key: 'indicationRecurrentPregnancyLoss', label: 'Recurrent Pregnancy loss' },
+              { key: 'indicationAdvancedMaternalAge', label: 'Advanced maternal age' },
+              { key: 'indicationIvfFailure', label: 'IVF Failure' },
+              { key: 'indicationPrimaryInfertility', label: 'Primary Infertility' },
+              { key: 'indicationBoh', label: 'BOH' }
+            ].map(({ key, label }) => (
+              <label key={key} className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData[key]}
+                  onChange={(e) => onChange(key, e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+                />
+                <span className="text-sm text-gray-900">{label}</span>
+              </label>
+            ))}
+            <div className="flex min-w-[12rem] flex-1 flex-wrap items-center gap-2">
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.indicationOthers}
+                  onChange={(e) => onChange('indicationOthers', e.target.checked)}
+                  className="h-4 w-4 shrink-0 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+                />
+                <span className="text-sm text-gray-900">Others</span>
+              </label>
+              <input
+                type="text"
+                value={formData.indicationOthersText}
+                onChange={(e) => onChange('indicationOthersText', e.target.value)}
+                className="min-w-[10rem] flex-1 border-0 border-b border-gray-500 bg-transparent px-1 py-0.5 text-sm focus:border-violet-700 focus:outline-none"
+                placeholder=""
+                aria-label="Other indication details"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-10 border-t border-violet-200 pt-8">
+          <h4 className="mb-3 text-sm font-bold text-gray-900">Reporting of Mosaics</h4>
+          <p className="mb-5 text-sm leading-relaxed text-gray-900">
+            NGS-based PGT-A is able to detect embryo mosaicism. NCGM reports an embryo as &quot;Low mosaic&quot; or
+            &quot;High mosaic&quot;. We recommend that all patients with mosaic embryos seek genetic counseling prior to
+            considering transfer. Please indicate your preference regarding the reporting of mosaic embryos:
+          </p>
+          <div className="space-y-3">
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={formData.mosaicReportYes}
+                onChange={(e) => setMosaic('mosaicReportYes', e.target.checked)}
+                className="mt-1 h-4 w-4 shrink-0 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+              />
+              <span className="text-sm text-gray-900">Yes - indicate embryo mosaicism on PGT-A report</span>
+            </label>
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={formData.mosaicReportNoDesignate}
+                onChange={(e) => setMosaic('mosaicReportNoDesignate', e.target.checked)}
+                className="mt-1 h-4 w-4 shrink-0 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+              />
+              <span className="text-sm text-gray-900">No - designate mosaic embryos as aneuploid</span>
+            </label>
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={formData.mosaicReportDoNot}
+                onChange={(e) => setMosaic('mosaicReportDoNot', e.target.checked)}
+                className="mt-1 h-4 w-4 shrink-0 rounded border-gray-500 text-violet-800 focus:ring-violet-600"
+              />
+              <span className="text-sm text-gray-900">Do not report mosaicism</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const embryoDetailCellInput =
+  'w-full min-h-[2.5rem] border-0 bg-transparent px-2 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:bg-violet-50/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-violet-400'
+
+const EmbryoDetailsSection = ({ formData, onChange }: any) => {
+  const rows = formData.embryoDetailRows as Array<{
+    tubeNo: string
+    sampleId: string
+    noOfCells: string
+    gradeOfCells: string
+    comments: string
+    typeOfCells: string
+  }>
+
+  const updateRow = (index: number, field: string, value: string) => {
+    const next = rows.map((r, i) => (i === index ? { ...r, [field]: value } : r))
+    onChange('embryoDetailRows', next)
+  }
+
+  return (
+    <div>
+      <h2 className="mb-6 text-lg font-bold text-violet-900 sm:text-xl">
+        Embryo Details / Spent Culture Medium:
+      </h2>
+
+      <div className="overflow-x-auto rounded-lg border-2 border-violet-800">
+        <table className="w-full border-collapse text-left text-sm">
+          <thead>
+            <tr className="bg-violet-100">
+              <th className="border border-violet-800 px-2 py-3 font-semibold text-violet-950">Tube No</th>
+              <th className="border border-violet-800 px-2 py-3 font-semibold text-violet-950">Sample ID</th>
+              <th className="border border-violet-800 px-2 py-3 font-semibold text-violet-950">No. of Cell(s)</th>
+              <th className="border border-violet-800 px-2 py-3 font-semibold text-violet-950">Grade of Cells</th>
+              <th className="border border-violet-800 px-2 py-3 font-semibold text-violet-950">Comments</th>
+              <th className="border border-violet-800 px-2 py-3 font-semibold text-violet-950">Type of Cells</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr key={index} className="bg-white">
+                <td className="border border-violet-800 p-0 align-top">
+                  <input
+                    type="text"
+                    value={row.tubeNo}
+                    onChange={(e) => updateRow(index, 'tubeNo', e.target.value)}
+                    className={embryoDetailCellInput}
+                    aria-label={`Row ${index + 1} Tube No`}
+                  />
+                </td>
+                <td className="border border-violet-800 p-0 align-top">
+                  <input
+                    type="text"
+                    value={row.sampleId}
+                    onChange={(e) => updateRow(index, 'sampleId', e.target.value)}
+                    className={embryoDetailCellInput}
+                    aria-label={`Row ${index + 1} Sample ID`}
+                  />
+                </td>
+                <td className="border border-violet-800 p-0 align-top">
+                  <input
+                    type="text"
+                    value={row.noOfCells}
+                    onChange={(e) => updateRow(index, 'noOfCells', e.target.value)}
+                    className={embryoDetailCellInput}
+                    aria-label={`Row ${index + 1} No. of Cells`}
+                  />
+                </td>
+                <td className="border border-violet-800 p-0 align-top">
+                  <input
+                    type="text"
+                    value={row.gradeOfCells}
+                    onChange={(e) => updateRow(index, 'gradeOfCells', e.target.value)}
+                    className={embryoDetailCellInput}
+                    aria-label={`Row ${index + 1} Grade of Cells`}
+                  />
+                </td>
+                <td className="border border-violet-800 p-0 align-top">
+                  <input
+                    type="text"
+                    value={row.comments}
+                    onChange={(e) => updateRow(index, 'comments', e.target.value)}
+                    className={embryoDetailCellInput}
+                    aria-label={`Row ${index + 1} Comments`}
+                  />
+                </td>
+                <td className="border border-violet-800 p-0 align-top">
+                  <input
+                    type="text"
+                    value={row.typeOfCells}
+                    onChange={(e) => updateRow(index, 'typeOfCells', e.target.value)}
+                    className={embryoDetailCellInput}
+                    aria-label={`Row ${index + 1} Type of Cells`}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

@@ -64,226 +64,10 @@ const Contact = () => {
   ]
 
   return (
-    <div className="min-h-screen overflow-hidden">
-      {/* Animated Background Particles */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        {[...Array(60)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-3 h-3 bg-gradient-to-r from-pink-400/20 to-blue-400/20 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -40, 0],
-              x: [0, Math.random() * 30 - 15, 0],
-              opacity: [0.1, 0.8, 0.1],
-              scale: [1, 2, 1],
-              rotate: [0, 360, 0],
-            }}
-            transition={{
-              duration: 5 + Math.random() * 5,
-              repeat: Infinity,
-              delay: Math.random() * 3,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
-      </div>
-      {/* Hero Section with Advanced Animations */}
-      <section ref={heroRef} className="relative py-24 bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          <motion.div
-            style={{ y, opacity }}
-            className="absolute inset-0"
-          >
-            {/* Floating Geometric Shapes */}
-            <motion.div
-              animate={{ 
-                rotate: 360,
-                scale: [1, 1.3, 1],
-                x: [0, 50, 0],
-              }}
-              transition={{ 
-                duration: 25, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              }}
-              className="absolute top-16 left-16 w-40 h-40 bg-gradient-to-r from-pink-400/15 to-purple-400/15 rounded-full blur-sm"
-            />
-            <motion.div
-              animate={{ 
-                rotate: -360,
-                y: [0, -30, 0],
-                scale: [1, 1.2, 1],
-              }}
-              transition={{ 
-                duration: 18, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              }}
-              className="absolute top-32 right-20 w-32 h-32 bg-gradient-to-r from-blue-400/15 to-cyan-400/15 rounded-lg transform rotate-45 blur-sm"
-            />
-            <motion.div
-              animate={{ 
-                scale: [1, 1.4, 1],
-                rotate: [0, 180, 360],
-                x: [0, -40, 0],
-              }}
-              transition={{ 
-                duration: 20, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              }}
-              className="absolute bottom-20 left-1/3 w-28 h-28 bg-gradient-to-r from-orange-400/15 to-pink-400/15 rounded-full blur-sm"
-            />
-          </motion.div>
-        </div>
-
+    <div className="min-h-screen">
+      {/* Main Contact Section - Moved to Top */}
+      <section className="py-12 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 60 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-            className="text-center"
-          >
-            {/* Simple Icon Cluster */}
-            <motion.div 
-              className="flex justify-center mb-10"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <div className="flex items-center space-x-6">
-                <div className="p-4 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full shadow-2xl">
-                  <Heart className="h-10 w-10 text-white" />
-                </div>
-                <div className="p-5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full shadow-2xl">
-                  <MessageCircle className="h-12 w-12 text-white" />
-                </div>
-                <div className="p-4 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full shadow-2xl">
-                  <Baby className="h-10 w-10 text-white" />
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.h1 
-              className="text-6xl md:text-8xl font-bold mb-8"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5 }}
-            >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600">
-                We're Here
-              </span>
-              <br />
-              <motion.span 
-                className="text-gray-900"
-                animate={{ 
-                  textShadow: [
-                    "0 0 0px rgba(0,0,0,0)",
-                    "0 0 25px rgba(236, 72, 153, 0.4)",
-                    "0 0 0px rgba(0,0,0,0)"
-                  ]
-                }}
-                transition={{ duration: 4, repeat: Infinity }}
-              >
-                to Help
-              </motion.span>
-            </motion.h1>
-            
-            <motion.p 
-              className="text-2xl md:text-3xl text-gray-700 max-w-4xl mx-auto mb-10"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.7 }}
-            >
-              Get in touch with our caring team. We're here to support you in 
-              optimizing your fertility practice with compassionate technology.
-            </motion.p>
-
-            {/* Animated CTA Buttons */}
-            <motion.div 
-              className="flex flex-col sm:flex-row gap-6 justify-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.9 }}
-            >
-              <motion.button
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: "0 25px 50px rgba(236, 72, 153, 0.3)",
-                  y: -5
-                }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-10 py-5 rounded-2xl font-bold text-xl shadow-2xl transition-all duration-300"
-              >
-                Start Conversation
-              </motion.button>
-              <motion.button
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: "0 25px 50px rgba(59, 130, 246, 0.3)",
-                  y: -5
-                }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white text-gray-900 border-2 border-gray-300 px-10 py-5 rounded-2xl font-bold text-xl shadow-2xl hover:border-blue-500 transition-all duration-300"
-              >
-                Schedule Call
-              </motion.button>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-      {/* Contact Information Cards with 3D Effects */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
-        {/* Animated Background Grid */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="grid grid-cols-8 grid-rows-8 h-full w-full">
-            {[...Array(64)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="border border-pink-200/20"
-                animate={{
-                  backgroundColor: [
-                    "rgba(236, 72, 153, 0.05)",
-                    "rgba(147, 51, 234, 0.05)",
-                    "rgba(59, 130, 246, 0.05)",
-                    "rgba(236, 72, 153, 0.05)"
-                  ]
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  delay: i * 0.1
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Multiple Ways to
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600"> Connect</span>
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-            {contactInfo.map((info, index) => (
-              <ContactCard key={info.title} info={info} index={index} />
-            ))}
-          </div>
-
           {/* Main Contact Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Contact Form with Advanced Animations */}
@@ -459,7 +243,8 @@ const Contact = () => {
                 </form>
               </div>
             </motion.div>
-            {/* Interactive Info Panel */}
+
+            {/* Contact Information Card */}
             <motion.div
               initial={{ opacity: 0, x: 50, rotateY: 15 }}
               whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
@@ -468,89 +253,25 @@ const Contact = () => {
               className="space-y-8"
               style={{ transformStyle: 'preserve-3d' }}
             >
-              {/* Interactive Map Card */}
+              {/* Contact Information Card */}
               <motion.div
                 whileHover={{ 
                   scale: 1.02,
                   rotateY: 5,
                   z: 30
                 }}
-                className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl shadow-2xl border border-pink-100 p-8 relative overflow-hidden"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
-                <motion.h2 
-                  className="text-2xl font-bold text-gray-900 mb-6"
-                  animate={{ 
-                    color: [
-                      "rgb(17, 24, 39)",
-                      "rgb(236, 72, 153)",
-                      "rgb(17, 24, 39)"
-                    ]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                >
-                  Visit our office
-                </motion.h2>
-                
-                <motion.div 
-                  className="bg-gradient-to-br from-pink-200 to-purple-200 rounded-2xl h-64 flex items-center justify-center relative overflow-hidden"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  {/* Animated Map Placeholder */}
-                  <div className="absolute inset-0">
-                    {[...Array(15)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        className="absolute w-3 h-3 bg-pink-500/30 rounded-full"
-                        style={{
-                          left: `${Math.random() * 100}%`,
-                          top: `${Math.random() * 100}%`,
-                        }}
-                        animate={{
-                          scale: [1, 2, 1],
-                          opacity: [0.3, 1, 0.3],
-                        }}
-                        transition={{
-                          duration: 3 + Math.random() * 2,
-                          repeat: Infinity,
-                          delay: Math.random() * 2,
-                        }}
-                      />
-                    ))}
-                  </div>
-                  <motion.div
-                    animate={{ 
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, -5, 0]
-                    }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                    className="relative z-10"
-                  >
-                    <MapPin className="h-16 w-16 text-pink-600 mb-4" />
-                    <p className="text-pink-700 font-semibold text-lg">Interactive map coming soon</p>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-
-              {/* Emergency Support Card */}
-              <motion.div
-                whileHover={{ 
-                  scale: 1.02,
-                  rotateY: -5,
-                  z: 30
-                }}
-                className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl shadow-2xl border border-blue-100 p-8 relative overflow-hidden"
+                className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/50 p-8 relative overflow-hidden"
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 {/* Animated Background Elements */}
-                <div className="absolute inset-0 opacity-20">
+                <div className="absolute inset-0 opacity-10">
                   <motion.div
                     animate={{ 
                       rotate: 360,
                       scale: [1, 1.2, 1]
                     }}
                     transition={{ duration: 20, repeat: Infinity }}
-                    className="absolute top-4 right-4 w-20 h-20 bg-blue-300 rounded-full"
+                    className="absolute top-4 right-4 w-20 h-20 bg-pink-300 rounded-full"
                   />
                   <motion.div
                     animate={{ 
@@ -558,99 +279,69 @@ const Contact = () => {
                       scale: [1, 1.3, 1]
                     }}
                     transition={{ duration: 15, repeat: Infinity }}
-                    className="absolute bottom-4 left-4 w-16 h-16 bg-cyan-300 rounded-full"
+                    className="absolute bottom-4 left-4 w-16 h-16 bg-purple-300 rounded-full"
                   />
                 </div>
 
                 <motion.h3 
-                  className="text-xl font-bold text-gray-900 mb-4 relative z-10"
+                  className="text-2xl font-bold text-gray-900 mb-8 relative z-10"
                   animate={{ 
                     textShadow: [
                       "0 0 0px rgba(0,0,0,0)",
-                      "0 0 15px rgba(59, 130, 246, 0.3)",
+                      "0 0 15px rgba(236, 72, 153, 0.3)",
                       "0 0 0px rgba(0,0,0,0)"
                     ]
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
                 >
-                  Need immediate assistance?
+                  Get in Touch
                 </motion.h3>
-                <p className="text-gray-700 mb-6 relative z-10">
-                  For urgent support or critical issues, please call our 
-                  24/7 support hotline.
-                </p>
-                <div className="space-y-3 relative z-10">
-                  <p className="font-semibold text-gray-900">Emergency Support:</p>
-                  <motion.p 
-                    className="text-blue-600 font-bold text-xl"
-                    animate={{ 
-                      scale: [1, 1.05, 1],
-                      color: [
-                        "rgb(37, 99, 235)",
-                        "rgb(236, 72, 153)",
-                        "rgb(37, 99, 235)"
-                      ]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    +1 (555) 999-0000
-                  </motion.p>
-                </div>
-              </motion.div>
 
-              {/* Support Resources Card */}
-              <motion.div
-                whileHover={{ 
-                  scale: 1.02,
-                  rotateY: 5,
-                  z: 30
-                }}
-                className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl shadow-2xl border border-green-100 p-8 relative overflow-hidden"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
-                <motion.h3 
-                  className="text-xl font-bold text-gray-900 mb-6"
-                  animate={{ 
-                    color: [
-                      "rgb(17, 24, 39)",
-                      "rgb(34, 197, 94)",
-                      "rgb(17, 24, 39)"
-                    ]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                >
-                  Quick Resources
-                </motion.h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
-                    { icon: Users, label: "FAQ", desc: "Common questions" },
-                    { icon: Shield, label: "Support", desc: "Help center" },
-                    { icon: Globe, label: "Docs", desc: "Documentation" },
-                    { icon: Star, label: "Updates", desc: "Latest news" }
-                  ].map((item, index) => (
-                    <motion.button
-                      key={item.label}
-                      whileHover={{ 
-                        scale: 1.05,
-                        backgroundColor: "rgba(255, 255, 255, 0.8)"
-                      }}
-                      whileTap={{ scale: 0.95 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="bg-white/60 backdrop-blur-sm rounded-xl p-4 text-center hover:shadow-lg transition-all duration-300"
-                    >
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                        className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2"
-                      >
-                        <item.icon className="h-4 w-4 text-white" />
-                      </motion.div>
-                      <h4 className="font-semibold text-gray-900 text-sm">{item.label}</h4>
-                      <p className="text-gray-600 text-xs">{item.desc}</p>
-                    </motion.button>
-                  ))}
+                <div className="space-y-6 relative z-10">
+                  {/* Email */}
+                  <motion.div 
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl"
+                    whileHover={{ scale: 1.02, x: 5 }}
+                  >
+                    <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center">
+                      <Mail className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Email</p>
+                      <p className="text-pink-600 font-medium">Contact@ivf360.life</p>
+                      <p className="text-sm text-gray-600">We'll respond within 24 hours</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Phone */}
+                  <motion.div 
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl"
+                    whileHover={{ scale: 1.02, x: 5 }}
+                  >
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
+                      <Phone className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Phone</p>
+                      <p className="text-blue-600 font-medium">+91 89048 30562</p>
+                      <p className="text-sm text-gray-600">Mon-Sat, 9:00 AM - 6:00 PM PST</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Address */}
+                  <motion.div 
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl"
+                    whileHover={{ scale: 1.02, x: 5 }}
+                  >
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                      <MapPin className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Address</p>
+                      <p className="text-green-600 font-medium">206,Atulya IT Park,Indore</p>
+                      <p className="text-sm text-gray-600">Madhya Pradesh,India</p>
+                    </div>
+                  </motion.div>
                 </div>
               </motion.div>
             </motion.div>
