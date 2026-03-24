@@ -69,10 +69,10 @@ const Layout = ({ children }: LayoutProps) => {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:transform-none flex flex-col`}
       >
-        <div className="flex items-center justify-between h-16 px-4 lg:px-6 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
-            <Activity className="h-6 w-6 lg:h-8 lg:w-8 text-pink-600" />
-            <span className="text-lg lg:text-xl font-bold text-gray-900">IVF 360</span>
+        <div className="flex items-center justify-between h-20 px-4 lg:px-6 border-b border-gray-200">
+          <div className="flex items-center space-x-3">
+            <img src="/background-removed.png" alt="IVF 360" className="h-45 w-auto object-contain" />
+            
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -120,7 +120,7 @@ const Layout = ({ children }: LayoutProps) => {
       <div className="flex-1 flex flex-col overflow-hidden min-w-0 lg:ml-0">
         {/* Header */}
         <header className="bg-white shadow-sm border-b border-gray-200">
-          <div className="flex items-center justify-between h-16 px-4 lg:px-6">
+          <div className="flex items-center justify-between h-20 px-4 lg:px-6">
             <button
               onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-2 -ml-2 hover:bg-gray-100 rounded-md"

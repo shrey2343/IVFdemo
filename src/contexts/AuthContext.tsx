@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Mock authentication - in real app, this would be an API call
     let mockUser: User | null = null
     
-    if (email === 'doctor@example.com' && password === 'password' && userType === 'doctor') {
+    if (email === 'doctor@example.com' && password === 'Shrey@2343' && userType === 'doctor') {
       mockUser = {
         id: '1',
         name: 'Dr. Sarah Johnson',
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           isActive: true
         }
       }
-    } else if (email === 'wetlab@example.com' && password === 'password' && userType === 'wetlab') {
+    } else if (email === 'wetlab@example.com' && password === 'Shrey@2343' && userType === 'wetlab') {
       mockUser = {
         id: '2',
         name: 'IVF 360 Wet Lab',

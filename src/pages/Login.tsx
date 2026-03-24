@@ -66,9 +66,9 @@ const Login = () => {
           className="sm:mx-auto sm:w-full sm:max-w-md"
         >
           <div className="flex justify-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <Activity className="h-10 w-10 text-white drop-shadow-lg" />
-              <span className="text-2xl font-bold text-white drop-shadow-lg">IVF 360</span>
+            <Link to="/" className="flex items-center space-x-3">
+              <img src="/background-removed.png" alt="IVF 360" className="w-auto object-contain drop-shadow-lg" style={{ height: '16.875rem' }} />
+             
             </Link>
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold text-white drop-shadow-lg">
@@ -223,26 +223,6 @@ const Login = () => {
                 </motion.button>
               </div>
             </form>
-
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/30" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white/20 backdrop-blur-sm text-white rounded-lg">Demo Credentials</span>
-                </div>
-              </div>
-              <div className="mt-3 text-sm text-white bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
-                <p><strong>Doctor Login:</strong></p>
-                <p>Email: doctor@example.com</p>
-                <p>Password: password</p>
-                <br />
-                <p><strong>Wet Lab Login:</strong></p>
-                <p>Email: wetlab@example.com</p>
-                <p>Password: password</p>
-              </div>
-            </div>
           </div>
         </motion.div>
       </div>

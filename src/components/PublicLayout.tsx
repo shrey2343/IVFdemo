@@ -24,13 +24,15 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-gray-900 shadow-lg border-b border-gray-700">
+      <header className="shadow-lg border-b border-pink-200" style={{ background: 'linear-gradient(90deg, #ffffff 0%, #b0bec5 18%, #1a237e 55%, #050a14 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-24">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <Activity className="h-8 w-8 text-pink-400" />
-              <span className="text-xl font-bold text-white">IVF 360</span>
+            <Link to="/" className="flex items-center space-x-3">
+              
+                <img src="/background-removed.png" alt="IVF 360" className="h-36 w-54" />
+              
+             
             </Link>
 
             {/* Desktop Navigation */}
@@ -39,10 +41,10 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`px-3 py-2 text-sm font-semibold transition-colors ${
                     isActive(item.href)
-                      ? 'text-pink-400 border-b-2 border-pink-400'
-                      : 'text-gray-300 hover:text-white'
+                      ? 'text-white border-b-2 border-white'
+                      : 'text-white hover:text-gray-100'
                   }`}
                 >
                   {item.name}
@@ -54,13 +56,13 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             <div className="hidden md:flex items-center space-x-4">
               <Link
                 to="/login"
-                className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors"
+                className="text-white hover:text-gray-100 px-3 py-2 text-sm font-semibold transition-colors"
               >
                 Login
               </Link>
               <Link
                 to="/signup"
-                className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors"
+                className="text-white hover:text-gray-100 px-3 py-2 text-sm font-semibold transition-colors"
               >
                 Sign Up
               </Link>
@@ -75,7 +77,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-300 hover:text-white"
+              className="md:hidden p-2 text-white hover:text-gray-100"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -137,9 +139,11 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <Activity className="h-8 w-8 text-pink-400" />
-                <span className="text-xl font-bold text-white">IVF 360</span>
+              <div className="flex items-center space-x-3 mb-4">
+              
+                  <img src="/background-removed.png" alt="IVF 360" className="w-auto object-contain" style={{ height: '18.8rem' }} />
+               
+              
               </div>
               <p className="text-gray-300 max-w-md">
                 Advanced IVF analysis platform designed for medical professionals to track, 

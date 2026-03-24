@@ -93,9 +93,9 @@ const Signup = () => {
           className="sm:mx-auto sm:w-full sm:max-w-4xl"
         >
           <div className="flex justify-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <Activity className="h-10 w-10 text-white drop-shadow-lg" />
-              <span className="text-2xl font-bold text-white drop-shadow-lg">IVF 360</span>
+            <Link to="/" className="flex items-center space-x-3">
+              <img src="/background-removed.png" alt="IVF 360" className="w-auto object-contain drop-shadow-lg" style={{ height: '16.875rem' }} />
+            
             </Link>
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold text-white drop-shadow-lg">

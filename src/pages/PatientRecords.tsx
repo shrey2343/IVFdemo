@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import { 
   Search, 
   Plus, 
@@ -16,8 +17,8 @@ import {
 } from 'lucide-react'
 
 const PatientRecords = () => {
+  const { user } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
-  const [userRole, setUserRole] = useState('doctor') // 'doctor' or 'wetlab'
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const [toastType, setToastType] = useState<'success' | 'error'>('success')
@@ -400,6 +401,9 @@ const PatientRecords = () => {
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Status</th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Date</th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Action</th>
+                {user?.role === 'wetlab' && (
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Upload FASTQ</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -427,65 +431,48 @@ const PatientRecords = () => {
                   <td className="py-3 px-4">
                     <div className="flex items-center space-x-2">
                       {sample.status === 'Completed' ? (
-                        <>
-                          <button 
-                            onClick={() => navigate(`/patients/${sample.patientId}?tab=reports`)}
-                            className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-1"
-                          >
-                            <FileText className="h-3 w-3" />
-                            <span>View Report</span>
-                          </button>
-                          {userRole === 'wetlab' && (
-                            <button 
-                              onClick={() => handleUploadFastQ(sample.id)}
-                              className="text-sm text-green-600 hover:text-green-800 flex items-center space-x-1"
-                            >
-                              <Upload className="h-3 w-3" />
-                              <span>Upload FastQ</span>
-                            </button>
-                          )}
-                        </>
+                        <button 
+                          onClick={() => navigate(`/patients/${sample.patientId}?tab=reports`)}
+                          className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+                        >
+                          <FileText className="h-3 w-3" />
+                          <span>View Report</span>
+                        </button>
                       ) : sample.status === 'Flagged' ? (
-                        <>
-                          <button 
-                            onClick={() => handleSampleClick(sample.patientId)}
-                            className="text-sm text-red-600 hover:text-red-800 flex items-center space-x-1"
-                          >
-                            <Eye className="h-3 w-3" />
-                            <span>Review</span>
-                          </button>
-                          {userRole === 'wetlab' && (
-                            <button 
-                              onClick={() => handleUploadFastQ(sample.id)}
-                              className="text-sm text-green-600 hover:text-green-800 flex items-center space-x-1"
-                            >
-                              <Upload className="h-3 w-3" />
-                              <span>Upload FastQ</span>
-                            </button>
-                          )}
-                        </>
+                        <button 
+                          onClick={() => handleSampleClick(sample.patientId)}
+                          className="text-sm text-red-600 hover:text-red-800 flex items-center space-x-1"
+                        >
+                          <Eye className="h-3 w-3" />
+                          <span>Review</span>
+                        </button>
                       ) : (
-                        <>
-                          <button 
-                            onClick={() => handleSampleClick(sample.patientId)}
-                            className="text-sm text-gray-600 hover:text-gray-800 flex items-center space-x-1"
-                          >
-                            <span>View</span>
-                            <ChevronRight className="h-3 w-3" />
-                          </button>
-                          {userRole === 'wetlab' && (
-                            <button 
-                              onClick={() => handleUploadFastQ(sample.id)}
-                              className="text-sm text-green-600 hover:text-green-800 flex items-center space-x-1"
-                            >
-                              <Upload className="h-3 w-3" />
-                              <span>Upload FastQ</span>
-                            </button>
-                          )}
-                        </>
+                        <button 
+                          onClick={() => handleSampleClick(sample.patientId)}
+                          className="text-sm text-gray-600 hover:text-gray-800 flex items-center space-x-1"
+                        >
+                          <span>View</span>
+                          <ChevronRight className="h-3 w-3" />
+                        </button>
                       )}
                     </div>
                   </td>
+                  {user?.role === 'wetlab' && (
+                    <td className="py-3 px-4">
+                      <button 
+                        onClick={() => handleUploadFastQ(sample.id)}
+                        disabled={sample.status !== 'Completed'}
+                        className={`text-sm flex items-center space-x-1 ${
+                          sample.status === 'Completed'
+                            ? 'text-green-600 hover:text-green-800 cursor-pointer'
+                            : 'text-gray-400 cursor-not-allowed'
+                        }`}
+                      >
+                        <Upload className="h-4 w-4" />
+                        <span>Upload</span>
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
