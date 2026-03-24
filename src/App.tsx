@@ -24,6 +24,8 @@ import Retest from './pages/Retest'
 import AddPatient from './pages/AddPatient'
 import Settings from './pages/Settings'
 import Billing from './pages/Billing'
+import IVFSuccessReport from './pages/IVFSuccessReport'
+import IVFSuccessScore from './pages/IVFSuccessScore'
 
 function App() {
   return (
@@ -144,6 +146,20 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Billing />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/ivf-success-report" element={
+              <ProtectedRoute>
+                <Layout>
+                  <IVFSuccessReport />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/ivf-success-score/:sampleId" element={
+              <ProtectedRoute>
+                <Layout>
+                  <IVFSuccessScore />
                 </Layout>
               </ProtectedRoute>
             } />

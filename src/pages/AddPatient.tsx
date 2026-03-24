@@ -7,7 +7,8 @@ import {
   Image as ImageIcon,
   ClipboardList,
   Table2,
-  Save
+  Save,
+  Printer
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
@@ -124,6 +125,24 @@ const AddPatient = () => {
     mosaicReportNoDesignate: false,
     mosaicReportDoNot: false,
 
+    // Consent Form
+    consentPatientName: '',
+    consentAge: '',
+    consentWifeDaughter: '',
+    consentAddress: '',
+    consentDate1: '',
+    consentPlace1: '',
+    consentCompanionName: '',
+    consentCompanionAddress: '',
+    consentRelationship: '',
+    consentDate2: '',
+    consentPlace2: '',
+    consentDoctorName: '',
+    consentDoctorRegistration: '',
+    consentClinicName: '',
+    consentClinicAddress: '',
+    consentClinicRegistration: '',
+
     embryoDetailRows: initialEmbryoDetailRows()
   })
 
@@ -131,12 +150,12 @@ const AddPatient = () => {
   const entityName = isWetLab ? 'Sample' : 'Patient'
 
   const sections = [
-    { id: 0, title: `${entityName} Details`, icon: User },
-    { id: 1, title: 'Referring Clinician', icon: Heart },
-    { id: 2, title: 'Sample Details', icon: TestTube },
-    { id: 3, title: 'Cycle History', icon: ImageIcon },
-    { id: 4, title: 'Test Requested', icon: ClipboardList },
-    { id: 5, title: 'Embryo Details', icon: Table2 }
+    { id: 0, title: `${entityName} Details` },
+    { id: 1, title: 'Referring Clinician' },
+    { id: 2, title: 'Sample Details',  },
+    { id: 3, title: 'Cycle History'},
+    { id: 4, title: 'Test Requested' },
+    { id: 5, title: 'Embryo Details' }
   ]
 
   const handleInputChange = (field: string, value: any) => {
@@ -144,6 +163,477 @@ const AddPatient = () => {
       ...prev,
       [field]: value
     }))
+  }
+
+  const generateCompletePDF = () => {
+    // Generate comprehensive HTML for PDF with all sections
+    const pdfHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Patient Form - ${formData.patientName || 'New Patient'}</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+            font-size: 12px;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #ec4899;
+            padding-bottom: 20px;
+          }
+          .header h1 {
+            color: #ec4899;
+            margin: 0;
+            font-size: 24px;
+          }
+          .section {
+            margin: 30px 0;
+            page-break-inside: avoid;
+          }
+          .section-title {
+            background: #ec4899;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+          }
+          .field-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 10px;
+          }
+          .field {
+            padding: 8px;
+            border-bottom: 1px solid #e5e7eb;
+          }
+          .field-label {
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 11px;
+            margin-bottom: 3px;
+          }
+          .field-value {
+            color: #111827;
+            font-size: 12px;
+          }
+          .checkbox-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+          }
+          table th, table td {
+            border: 1px solid #9333ea;
+            padding: 8px;
+            text-align: left;
+            font-size: 11px;
+          }
+          table th {
+            background: #ede9fe;
+            font-weight: 600;
+          }
+          .consent-section {
+            border: 2px solid #666;
+            padding: 20px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+          }
+          .consent-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+          }
+          .consent-subtitle {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 20px;
+          }
+          .consent-text {
+            line-height: 1.6;
+            margin: 10px 0;
+          }
+          .signature-line {
+            border-bottom: 1px solid #666;
+            display: inline-block;
+            min-width: 200px;
+            margin: 0 5px;
+          }
+          @media print {
+            body { margin: 0; }
+            .section { page-break-inside: avoid; }
+          }
+        </style>
+        <script>
+          window.onload = function() {
+            window.print();
+          }
+        </script>
+      </head>
+      <body>
+        <div class="header">
+          <h1>IVF 360 Platform</h1>
+          <h2>Patient Information Form</h2>
+          <p>Generated on: ${new Date().toLocaleString()}</p>
+        </div>
+
+        <!-- Patient Details -->
+        <div class="section">
+          <div class="section-title">Patient Details</div>
+          <div class="field-group">
+            <div class="field">
+              <div class="field-label">Patient Name</div>
+              <div class="field-value">${formData.patientName || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Date of Birth</div>
+              <div class="field-value">${formData.dob || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Age</div>
+              <div class="field-value">${formData.age || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Ethnicity</div>
+              <div class="field-value">${formData.ethnicity || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Partner Name</div>
+              <div class="field-value">${formData.partnerName || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Partner DOB</div>
+              <div class="field-value">${formData.partnerDob || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Partner Age</div>
+              <div class="field-value">${formData.partnerAge || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Email</div>
+              <div class="field-value">${formData.email || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Contact No</div>
+              <div class="field-value">${formData.contactNo || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Height</div>
+              <div class="field-value">${formData.height || 'N/A'} cm</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Weight</div>
+              <div class="field-value">${formData.weight || 'N/A'} kg</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Blood Type</div>
+              <div class="field-value">${formData.bloodType || 'N/A'}</div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Address</div>
+            <div class="field-value">${formData.address || 'N/A'}</div>
+          </div>
+        </div>
+
+        <!-- Referring Clinician -->
+        <div class="section">
+          <div class="section-title">Referring Clinician</div>
+          <div class="field-group">
+            <div class="field">
+              <div class="field-label">Clinician Name</div>
+              <div class="field-value">${formData.clinicianName || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Embryologist Name</div>
+              <div class="field-value">${formData.embryologistName || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Hospital/Clinic Name</div>
+              <div class="field-value">${formData.hospitalClinicName || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Email ID</div>
+              <div class="field-value">${formData.emailId || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Contact No 1</div>
+              <div class="field-value">${formData.contactNo1 || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Contact Person Email</div>
+              <div class="field-value">${formData.emailIdContactPerson || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Contact No 2</div>
+              <div class="field-value">${formData.contactNo2 || 'N/A'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sample Details -->
+        <div class="section">
+          <div class="section-title">Sample Details</div>
+          <div class="field-group">
+            <div class="field">
+              <div class="field-label">Sample Collection Date</div>
+              <div class="field-value">${formData.sampleCollectionDate || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Sample Collection Time</div>
+              <div class="field-value">${formData.sampleCollectionTime || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">No. of Embryos</div>
+              <div class="field-value">${formData.noOfEmbryos || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Day of Biopsy</div>
+              <div class="field-value">${formData.dayOfBiopsy || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Age of Donor</div>
+              <div class="field-value">${formData.ageOfDonor || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Spent Culture Medium</div>
+              <div class="field-value">${formData.spentCultureMedium || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Previous Patient ID</div>
+              <div class="field-value">${formData.previousPatientId || 'N/A'}</div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Sample Types</div>
+            <div class="checkbox-group">
+              ${formData.edtaBlood ? '<span>✓ EDTA Blood</span>' : ''}
+              ${formData.couple ? '<span>✓ Couple</span>' : ''}
+              ${formData.affectedIndividual ? '<span>✓ Affected Individual</span>' : ''}
+              ${formData.embryos ? '<span>✓ Embryos</span>' : ''}
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Donor</div>
+            <div class="checkbox-group">
+              ${formData.donorYes ? '<span>✓ Yes</span>' : ''}
+              ${formData.donorNo ? '<span>✓ No</span>' : ''}
+              ${formData.donorEgg ? '<span>✓ Donor Egg</span>' : ''}
+              ${formData.donorSperm ? '<span>✓ Donor Sperm</span>' : ''}
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Rebiopsy</div>
+            <div class="checkbox-group">
+              ${formData.rebiopsyYes ? '<span>✓ Yes</span>' : ''}
+              ${formData.rebiopsyNo ? '<span>✓ No</span>' : ''}
+            </div>
+          </div>
+        </div>
+
+        <!-- Cycle History -->
+        <div class="section">
+          <div class="section-title">Cycle History</div>
+          <div class="field-group">
+            <div class="field">
+              <div class="field-label">Hyperstimulation</div>
+              <div class="field-value">${formData.hyperstimulationYes ? 'Yes' : formData.hyperstimulationNo ? 'No' : 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Fertilisation Method</div>
+              <div class="field-value">${formData.fertilisationIVF ? 'IVF' : formData.fertilisationICSI ? 'ICSI' : 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Date of Egg Retrieval</div>
+              <div class="field-value">${formData.eggRetrievalDd || 'DD'}/${formData.eggRetrievalMm || 'MM'}/${formData.eggRetrievalYyyy || 'YYYY'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">No. of Embryos Retrieved</div>
+              <div class="field-value">${formData.noOfEmbryosRetrieved || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">No. of Biopsied Embryos</div>
+              <div class="field-value">${formData.noOfBiopsiedEmbryos || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Date/Time for Embryo Transfer</div>
+              <div class="field-value">${formData.embryoTransferDd || 'DD'}/${formData.embryoTransferMm || 'MM'}/${formData.embryoTransferYyyy || 'YYYY'} ${formData.embryoTransferTime || ''}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Test Requested -->
+        <div class="section">
+          <div class="section-title">Test Requested</div>
+          <div class="checkbox-group">
+            ${formData.testPgtA ? '<span>✓ PGT-A</span>' : ''}
+            ${formData.testNiPgt ? '<span>✓ niPGT</span>' : ''}
+            ${formData.testPgtSr ? '<span>✓ PGT-SR</span>' : ''}
+            ${formData.testPgtM ? '<span>✓ PGT-M</span>' : ''}
+            ${formData.testPrePgtWorkup ? '<span>✓ Pre-PGT Work up</span>' : ''}
+          </div>
+          ${formData.testPgtM ? `
+            <div class="field">
+              <div class="field-label">PGT-M Details</div>
+              <div class="field-value">Gene: ${formData.pgtMGene || 'N/A'}, Variant: ${formData.pgtMVariant || 'N/A'}, Lab ID: ${formData.prePgtMLabId || 'N/A'}</div>
+            </div>
+          ` : ''}
+          <div class="field">
+            <div class="field-label">Karyotype Done for Couple</div>
+            <div class="field-value">${formData.karyotypeCoupleYes ? 'Yes' : formData.karyotypeCoupleNo ? 'No' : 'N/A'}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Indication for Test</div>
+            <div class="checkbox-group">
+              ${formData.indicationRecurrentPregnancyLoss ? '<span>✓ Recurrent Pregnancy loss</span>' : ''}
+              ${formData.indicationAdvancedMaternalAge ? '<span>✓ Advanced maternal age</span>' : ''}
+              ${formData.indicationIvfFailure ? '<span>✓ IVF Failure</span>' : ''}
+              ${formData.indicationPrimaryInfertility ? '<span>✓ Primary Infertility</span>' : ''}
+              ${formData.indicationBoh ? '<span>✓ BOH</span>' : ''}
+              ${formData.indicationOthers ? `<span>✓ Others: ${formData.indicationOthersText || ''}</span>` : ''}
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Reporting of Mosaics</div>
+            <div class="field-value">
+              ${formData.mosaicReportYes ? 'Yes - indicate embryo mosaicism on PGT-A report' : ''}
+              ${formData.mosaicReportNoDesignate ? 'No - designate mosaic embryos as aneuploid' : ''}
+              ${formData.mosaicReportDoNot ? 'Do not report mosaicism' : ''}
+            </div>
+          </div>
+        </div>
+
+        <!-- Consent Form -->
+        <div class="consent-section">
+          <div class="consent-title">FORM OF CONSENT</div>
+          <div class="consent-subtitle">(For Non-invasive / invasive techniques)</div>
+          
+          <div class="consent-text">
+            I, <span class="signature-line">${formData.consentPatientName || ''}</span> age <span class="signature-line">${formData.consentAge || ''}</span> yrs, wife/daughter of
+            <span class="signature-line">${formData.consentWifeDaughter || ''}</span> residing at (address) <span class="signature-line">${formData.consentAddress || ''}</span>
+            hereby state that I have been explained fully the probable side effects and after-eects of the prenatal diagnostic procedures. 
+            I wish to undergo the pre-natal diagnostic procedures in my interest, to find out the possibility and abnormality 
+            (i.e. deformity/deformity/disorder) in the child, I am carrying.
+          </div>
+          
+          <div class="consent-text">
+            I undertake not to terminate the pregnancy if the pre-natal procedure/technique/test conducted 
+            show the absence of disease/deformity/disorder.
+          </div>
+          
+          <div class="consent-text">
+            I understand that the sex of the fetus will not be disclosed to me.
+          </div>
+          
+          <div class="consent-text">
+            I understand that breach of this undertaking will make me liable to penalty as prescribed in 
+            the Prenatal Diagnostic Technique (Regulation and Prevention of Misuse) Act, 1994 (57 of 1994).
+          </div>
+          
+          <div style="margin-top: 30px;">
+            <div style="display: flex; justify-content: space-between;">
+              <div>Date: <span class="signature-line">${formData.consentDate1 || ''}</span></div>
+              <div>Signature of Patient</div>
+            </div>
+            <div style="margin-top: 10px;">Place: <span class="signature-line">${formData.consentPlace1 || ''}</span></div>
+          </div>
+          
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #666;">
+            <div class="consent-text">
+              I have explained the contents of the above consent form to the patient and/or her companion
+              (Name <span class="signature-line">${formData.consentCompanionName || ''}</span> 
+              Address <span class="signature-line">${formData.consentCompanionAddress || ''}</span>
+              <span class="signature-line">${formData.consentRelationship || ''}</span> Relationship) 
+              in a language she/they understand.
+            </div>
+            
+            <div style="margin-top: 30px;">
+              <div style="display: flex; justify-content: space-between;">
+                <div>Date: <span class="signature-line">${formData.consentDate2 || ''}</span></div>
+                <div>Signature of Patient</div>
+              </div>
+              <div style="margin-top: 10px;">Place: <span class="signature-line">${formData.consentPlace2 || ''}</span></div>
+            </div>
+          </div>
+          
+          <div style="margin-top: 30px; text-align: right;">
+            <div style="margin-bottom: 10px;">Name, Signature & Registration No.</div>
+            <div>of Gynaecologist/Medical Geneticist / Radiologist/</div>
+            <div>Pediatrician / Director of the Clinic / Center / Laboratory</div>
+            <div style="margin-top: 15px;">
+              <div><span class="signature-line">${formData.consentDoctorName || ''}</span></div>
+              <div><span class="signature-line">${formData.consentDoctorRegistration || ''}</span></div>
+            </div>
+          </div>
+          
+          <div style="margin-top: 30px; text-align: right;">
+            <div>Name, Address& Registration No.</div>
+            <div>of Genetic Clinic / Institute [Seal]</div>
+            <div style="margin-top: 15px;">
+              <div><span class="signature-line">${formData.consentClinicName || ''}</span></div>
+              <div><span class="signature-line">${formData.consentClinicAddress || ''}</span></div>
+              <div><span class="signature-line">${formData.consentClinicRegistration || ''}</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Embryo Details -->
+        <div class="section">
+          <div class="section-title">Embryo Details / Spent Culture Medium</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Tube No</th>
+                <th>Sample ID</th>
+                <th>No. of Cell(s)</th>
+                <th>Grade of Cells</th>
+                <th>Comments</th>
+                <th>Type of Cells</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${formData.embryoDetailRows.map((row: any) => `
+                <tr>
+                  <td>${row.tubeNo || ''}</td>
+                  <td>${row.sampleId || ''}</td>
+                  <td>${row.noOfCells || ''}</td>
+                  <td>${row.gradeOfCells || ''}</td>
+                  <td>${row.comments || ''}</td>
+                  <td>${row.typeOfCells || ''}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 11px;">
+          <p>This document was generated by IVF 360 Platform</p>
+          <p>Saved by: ${user?.name || 'Unknown'} on ${new Date().toLocaleString()}</p>
+        </div>
+      </body>
+      </html>
+    `
+    
+    // Open print dialog for PDF download
+    const printWindow = window.open('', '_blank')
+    if (printWindow) {
+      printWindow.document.write(pdfHTML)
+      printWindow.document.close()
+    } else {
+      showError('Failed to Generate PDF', 'Please allow popups to download PDF.')
+    }
   }
 
   const handleSubmit = () => {
@@ -165,10 +655,13 @@ const AddPatient = () => {
       return
     }
     
+    // Generate comprehensive PDF with all form data
+    generateCompletePDF()
+    
     console.log(`${entityName} data:`, formData)
     showSuccess(
       `${entityName} Added Successfully!`,
-      `${entityName} information has been saved and a cycle has been used from your plan.`
+      `${entityName} information has been saved and PDF will be downloaded.`
     )
     
     // Reset form
@@ -255,9 +748,291 @@ const AddPatient = () => {
       mosaicReportYes: false,
       mosaicReportNoDesignate: false,
       mosaicReportDoNot: false,
+      consentPatientName: '',
+      consentAge: '',
+      consentWifeDaughter: '',
+      consentAddress: '',
+      consentDate1: '',
+      consentPlace1: '',
+      consentCompanionName: '',
+      consentCompanionAddress: '',
+      consentRelationship: '',
+      consentDate2: '',
+      consentPlace2: '',
+      consentDoctorName: '',
+      consentDoctorRegistration: '',
+      consentClinicName: '',
+      consentClinicAddress: '',
+      consentClinicRegistration: '',
       embryoDetailRows: initialEmbryoDetailRows()
     })
     setCurrentSection(0)
+  }
+
+  const handleSaveAndPrint = () => {
+    // First save data to localStorage
+    const dataToSave = {
+      ...formData,
+      savedAt: new Date().toISOString(),
+      savedBy: user?.name || 'Unknown'
+    }
+    
+    localStorage.setItem('patientFormData', JSON.stringify(dataToSave))
+    
+    // Generate HTML content for PDF
+    const printHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Patient Form - ${formData.patientName || 'New Patient'}</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #ec4899;
+            padding-bottom: 20px;
+          }
+          .header h1 {
+            color: #ec4899;
+            margin: 0;
+          }
+          .section {
+            margin: 30px 0;
+            page-break-inside: avoid;
+          }
+          .section-title {
+            background: #ec4899;
+            color: white;
+            padding: 10px 15px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+          }
+          .field-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 10px;
+          }
+          .field {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+          }
+          .field-label {
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 5px;
+          }
+          .field-value {
+            color: #111827;
+            font-size: 14px;
+          }
+          .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+          }
+          @media print {
+            body { margin: 0; }
+            .section { page-break-inside: avoid; }
+          }
+        </style>
+        <script>
+          window.onload = function() {
+            // Automatically trigger print dialog which allows "Save as PDF"
+            window.print();
+          }
+        </script>
+      </head>
+      <body>
+        <div class="header">
+          <h1>IVF 360 Platform</h1>
+          <h2>Patient Information Form</h2>
+          <p>Generated on: ${new Date().toLocaleString()}</p>
+        </div>
+
+        <!-- Patient Details -->
+        <div class="section">
+          <div class="section-title">Patient Details</div>
+          <div class="field-group">
+            <div class="field">
+              <div class="field-label">Patient Name</div>
+              <div class="field-value">${formData.patientName || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Date of Birth</div>
+              <div class="field-value">${formData.dob || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Age</div>
+              <div class="field-value">${formData.age || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Ethnicity</div>
+              <div class="field-value">${formData.ethnicity || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Partner Name</div>
+              <div class="field-value">${formData.partnerName || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Partner DOB</div>
+              <div class="field-value">${formData.partnerDob || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Email</div>
+              <div class="field-value">${formData.email || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Contact No</div>
+              <div class="field-value">${formData.contactNo || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Height</div>
+              <div class="field-value">${formData.height || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Weight</div>
+              <div class="field-value">${formData.weight || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Blood Type</div>
+              <div class="field-value">${formData.bloodType || 'N/A'}</div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Address</div>
+            <div class="field-value">${formData.address || 'N/A'}</div>
+          </div>
+        </div>
+
+        <!-- Referring Clinician -->
+        <div class="section">
+          <div class="section-title">Referring Clinician</div>
+          <div class="field-group">
+            <div class="field">
+              <div class="field-label">Clinician Name</div>
+              <div class="field-value">${formData.clinicianName || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Embryologist Name</div>
+              <div class="field-value">${formData.embryologistName || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Hospital/Clinic Name</div>
+              <div class="field-value">${formData.hospitalClinicName || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Email ID</div>
+              <div class="field-value">${formData.emailId || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Contact No 1</div>
+              <div class="field-value">${formData.contactNo1 || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Contact No 2</div>
+              <div class="field-value">${formData.contactNo2 || 'N/A'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sample Details -->
+        <div class="section">
+          <div class="section-title">Sample Details</div>
+          <div class="field-group">
+            <div class="field">
+              <div class="field-label">Sample Collection Date</div>
+              <div class="field-value">${formData.sampleCollectionDate || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Sample Collection Time</div>
+              <div class="field-value">${formData.sampleCollectionTime || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">No. of Embryos</div>
+              <div class="field-value">${formData.noOfEmbryos || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Day of Biopsy</div>
+              <div class="field-value">${formData.dayOfBiopsy || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Age of Donor</div>
+              <div class="field-value">${formData.ageOfDonor || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Previous Patient ID</div>
+              <div class="field-value">${formData.previousPatientId || 'N/A'}</div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Sample Types</div>
+            <div class="checkbox-group">
+              ${formData.edtaBlood ? '<span>✓ EDTA Blood</span>' : ''}
+              ${formData.couple ? '<span>✓ Couple</span>' : ''}
+              ${formData.affectedIndividual ? '<span>✓ Affected Individual</span>' : ''}
+              ${formData.embryos ? '<span>✓ Embryos</span>' : ''}
+            </div>
+          </div>
+        </div>
+
+        <!-- Cycle History -->
+        <div class="section">
+          <div class="section-title">Cycle History</div>
+          <div class="field-group">
+            <div class="field">
+              <div class="field-label">Hyperstimulation</div>
+              <div class="field-value">${formData.hyperstimulationYes ? 'Yes' : formData.hyperstimulationNo ? 'No' : 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Fertilisation Method</div>
+              <div class="field-value">${formData.fertilisationIVF ? 'IVF' : formData.fertilisationICSI ? 'ICSI' : 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Date of Egg Retrieval</div>
+              <div class="field-value">${formData.eggRetrievalDd || 'DD'}/${formData.eggRetrievalMm || 'MM'}/${formData.eggRetrievalYyyy || 'YYYY'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">No. of Embryos Retrieved</div>
+              <div class="field-value">${formData.noOfEmbryosRetrieved || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">No. of Biopsied Embryos</div>
+              <div class="field-value">${formData.noOfBiopsiedEmbryos || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Date/Time for Embryo Transfer</div>
+              <div class="field-value">${formData.embryoTransferDd || 'DD'}/${formData.embryoTransferMm || 'MM'}/${formData.embryoTransferYyyy || 'YYYY'}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 12px;">
+          <p>This document was generated by IVF 360 Platform</p>
+          <p>Saved by: ${user?.name || 'Unknown'} on ${new Date().toLocaleString()}</p>
+        </div>
+      </body>
+      </html>
+    `
+    
+    // Create a blob and download as PDF
+    const printWindow = window.open('', '_blank')
+    if (printWindow) {
+      printWindow.document.write(printHTML)
+      printWindow.document.close()
+      
+      // Show success message
+      showSuccess('Data Saved Successfully!', 'Print dialog will open. Select "Save as PDF" to download.')
+    } else {
+      showError('Failed to Open Print Dialog', 'Please allow popups to download PDF.')
+    }
   }
 
   return (
@@ -284,7 +1059,7 @@ const AddPatient = () => {
                       : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
               }`}
             >
-              <section.icon className="h-4 w-4 lg:h-5 lg:w-5 mr-1 lg:mr-2" />
+              
               <span className="hidden sm:inline">{section.title}</span>
               <span className="sm:hidden">{section.title.split(' ')[0]}</span>
             </motion.button>
@@ -353,29 +1128,42 @@ const AddPatient = () => {
                 Previous
               </button>
               
-              {currentSection < sections.length - 1 ? (
-                <button
-                  onClick={() => setCurrentSection(currentSection + 1)}
-                  className="px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
-                >
-                  Next
-                </button>
-              ) : (
-                <motion.button
-                  onClick={handleSubmit}
-                  disabled={!canAddPatient()}
-                  whileHover={canAddPatient() ? { scale: 1.02 } : {}}
-                  whileTap={canAddPatient() ? { scale: 0.98 } : {}}
-                  className={`flex items-center px-6 py-2 rounded-lg transition-colors ${
-                    canAddPatient()
-                      ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                  }`}
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {canAddPatient() ? 'Save Patient' : 'Plan Required'}
-                </motion.button>
-              )}
+              <div className="flex items-center space-x-3">
+                {/* Show Save and Print button only in Cycle History section */}
+                {currentSection === 3 && (
+                  <button
+                    onClick={handleSaveAndPrint}
+                    className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 transition-all shadow-md"
+                  >
+                   
+                    <span>Save & Print</span>
+                  </button>
+                )}
+                
+                {currentSection < sections.length - 1 ? (
+                  <button
+                    onClick={() => setCurrentSection(currentSection + 1)}
+                    className="px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
+                  >
+                    Next
+                  </button>
+                ) : (
+                  <motion.button
+                    onClick={handleSubmit}
+                    disabled={!canAddPatient()}
+                    whileHover={canAddPatient() ? { scale: 1.02 } : {}}
+                    whileTap={canAddPatient() ? { scale: 0.98 } : {}}
+                    className={`flex items-center px-6 py-2 rounded-lg transition-colors ${
+                      canAddPatient()
+                        ? 'bg-green-600 text-white hover:bg-green-700'
+                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    }`}
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    {canAddPatient() ? 'Save Patient' : 'Plan Required'}
+                  </motion.button>
+                )}
+              </div>
             </div>
           </motion.div>
       </div>
@@ -389,7 +1177,7 @@ const PersonalDetailsSection = ({ formData, onChange }: any) => {
   return (
     <div>
       <div className="flex items-center mb-6">
-        <User className="h-6 w-6 text-pink-600 mr-3" />
+       
         <h2 className="text-2xl font-bold text-gray-900">Patient Details</h2>
       </div>
       
@@ -592,7 +1380,7 @@ const ComorbiditiesSection = ({ formData, onChange }: any) => {
   return (
     <div>
       <div className="flex items-center mb-6">
-        <Heart className="h-6 w-6 text-pink-600 mr-3" />
+       
         <h2 className="text-2xl font-bold text-gray-900">Referring Clinician</h2>
         <span className="text-sm text-gray-500 ml-2">(In BLOCK letters)</span>
       </div>
@@ -1415,6 +2203,234 @@ const TestRequestedSection = ({ formData, onChange }: any) => {
               />
               <span className="text-sm text-gray-900">Do not report mosaicism</span>
             </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Consent Form Section */}
+      <div className="mt-8 relative rounded-xl border-2 border-gray-400 bg-white px-4 py-10 sm:px-8">
+        <h3 className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-center text-base font-bold tracking-wide text-gray-900">
+          FORM OF CONSENT
+        </h3>
+        <p className="text-center text-sm text-gray-700 mb-8">(For Non-invasive / invasive techniques)</p>
+
+        <div className="space-y-6 text-sm text-gray-900 leading-relaxed">
+          {/* First Paragraph with inline inputs */}
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-2">
+            <span>I,</span>
+            <input
+              type="text"
+              value={formData.consentPatientName}
+              onChange={(e) => onChange('consentPatientName', e.target.value)}
+              className="min-w-[15rem] flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+              placeholder=""
+            />
+            <span>age</span>
+            <input
+              type="text"
+              value={formData.consentAge}
+              onChange={(e) => onChange('consentAge', e.target.value)}
+              className="w-16 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 text-center focus:border-gray-700 focus:outline-none"
+              placeholder=""
+            />
+            <span>yrs, wife/daughter of</span>
+          </div>
+
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-2">
+            <input
+              type="text"
+              value={formData.consentWifeDaughter}
+              onChange={(e) => onChange('consentWifeDaughter', e.target.value)}
+              className="min-w-[20rem] flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+              placeholder=""
+            />
+            <span>residing at (address)</span>
+            <input
+              type="text"
+              value={formData.consentAddress}
+              onChange={(e) => onChange('consentAddress', e.target.value)}
+              className="min-w-[20rem] flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+              placeholder=""
+            />
+          </div>
+
+          <p>
+            hereby state that I have been explained fully the probable side effects and after-eects of the prenatal diagnostic procedures. I wish to undergo the pre-natal diagnostic procedures in my interest, to find out the possibility and abnormality (i.e. deformity/deformity/disorder) in the child, I am carrying.
+          </p>
+
+          <p>
+            I undertake not to terminate the pregnancy if the pre-natal procedure/technique/test conducted show the absence of disease/deformity/disorder.
+          </p>
+
+          <p>
+            I understand that the sex of the fetus will not be disclosed to me.
+          </p>
+
+          <p>
+            I understand that breach of this undertaking will make me liable to penalty as prescribed in the Prenatal Diagnostic Technique (Regulation and Prevention of Misuse) Act, 1994 (57 of 1994).
+          </p>
+
+          {/* Date and Place - First Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <div className="flex items-baseline gap-2">
+              <span>Date :</span>
+              <input
+                type="date"
+                value={formData.consentDate1}
+                onChange={(e) => onChange('consentDate1', e.target.value)}
+                className="flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+              />
+            </div>
+            <div className="text-right">
+              <span className="text-gray-700">Signature of Patient</span>
+            </div>
+          </div>
+
+          <div className="flex items-baseline gap-2">
+            <span>Pl ace :</span>
+            <input
+              type="text"
+              value={formData.consentPlace1}
+              onChange={(e) => onChange('consentPlace1', e.target.value)}
+              className="flex-1 max-w-md border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+            />
+          </div>
+
+          {/* Companion Section */}
+          <div className="mt-10 pt-6 border-t border-gray-300">
+            <p className="mb-4">
+              I have explained the contents of the above consent form to the patient and/or her companion
+            </p>
+
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-2">
+                <span>(Name</span>
+                <input
+                  type="text"
+                  value={formData.consentCompanionName}
+                  onChange={(e) => onChange('consentCompanionName', e.target.value)}
+                  className="min-w-[15rem] flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+                />
+                <span>Address</span>
+                <input
+                  type="text"
+                  value={formData.consentCompanionAddress}
+                  onChange={(e) => onChange('consentCompanionAddress', e.target.value)}
+                  className="min-w-[20rem] flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-2">
+                <input
+                  type="text"
+                  value={formData.consentRelationship}
+                  onChange={(e) => onChange('consentRelationship', e.target.value)}
+                  className="min-w-[10rem] flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+                  placeholder=""
+                />
+                <span>Relationship</span>
+                <input
+                  type="text"
+                  className="min-w-[15rem] flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+                  placeholder=""
+                />
+                <span>) in a language she/they understand.</span>
+              </div>
+            </div>
+
+            {/* Date and Place - Second Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+              <div className="flex items-baseline gap-2">
+                <span>Date :</span>
+                <input
+                  type="date"
+                  value={formData.consentDate2}
+                  onChange={(e) => onChange('consentDate2', e.target.value)}
+                  className="flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+                />
+              </div>
+              <div className="text-right">
+                <span className="text-gray-700">Signature of Patient</span>
+              </div>
+            </div>
+
+            <div className="flex items-baseline gap-2">
+              <span>Pl ace :</span>
+              <input
+                type="text"
+                value={formData.consentPlace2}
+                onChange={(e) => onChange('consentPlace2', e.target.value)}
+                className="flex-1 max-w-md border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Doctor/Clinic Information */}
+          <div className="mt-10 pt-6 border-t border-gray-300 space-y-6">
+            <div className="text-right space-y-2">
+              <p className="text-sm text-gray-700">Name, Signature & Registration No.</p>
+              <p className="text-sm text-gray-700">of Gynaecologist/Medical Geneticist / Radiologist/</p>
+              <p className="text-sm text-gray-700">Pediatrician / Director of the Clinic / Center / Laboratory</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-baseline gap-2">
+                <input
+                  type="text"
+                  value={formData.consentDoctorName}
+                  onChange={(e) => onChange('consentDoctorName', e.target.value)}
+                  className="flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+                  placeholder="Doctor Name"
+                />
+              </div>
+
+              <div className="flex items-baseline gap-2">
+                <input
+                  type="text"
+                  value={formData.consentDoctorRegistration}
+                  onChange={(e) => onChange('consentDoctorRegistration', e.target.value)}
+                  className="flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+                  placeholder="Registration No."
+                />
+              </div>
+            </div>
+
+            <div className="text-right space-y-2 mt-8">
+              <p className="text-sm text-gray-700">Name, Address& Registration No.</p>
+              <p className="text-sm text-gray-700">of Genetic Clinic / Institute [Seal]</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-baseline gap-2">
+                <input
+                  type="text"
+                  value={formData.consentClinicName}
+                  onChange={(e) => onChange('consentClinicName', e.target.value)}
+                  className="flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+                  placeholder="Clinic/Institute Name"
+                />
+              </div>
+
+              <div className="flex items-baseline gap-2">
+                <input
+                  type="text"
+                  value={formData.consentClinicAddress}
+                  onChange={(e) => onChange('consentClinicAddress', e.target.value)}
+                  className="flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+                  placeholder="Address"
+                />
+              </div>
+
+              <div className="flex items-baseline gap-2">
+                <input
+                  type="text"
+                  value={formData.consentClinicRegistration}
+                  onChange={(e) => onChange('consentClinicRegistration', e.target.value)}
+                  className="flex-1 border-0 border-b border-gray-400 bg-transparent px-1 py-0.5 focus:border-gray-700 focus:outline-none"
+                  placeholder="Registration No."
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

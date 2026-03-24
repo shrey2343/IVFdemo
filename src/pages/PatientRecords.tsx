@@ -13,7 +13,8 @@ import {
   Eye,
   ChevronRight,
   Upload,
-  X
+  X,
+  Activity
 } from 'lucide-react'
 
 const PatientRecords = () => {
@@ -397,6 +398,7 @@ const PatientRecords = () => {
             <thead>
               <tr className="border-b border-gray-200">
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Sample ID</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Name</th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Test Type</th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Status</th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Date</th>
@@ -420,6 +422,7 @@ const PatientRecords = () => {
                       {sample.id}
                     </button>
                   </td>
+                  <td className="py-3 px-4 text-sm text-gray-900 font-medium">{sample.patientName}</td>
                   <td className="py-3 px-4 text-sm text-gray-900">{sample.testType}</td>
                   <td className="py-3 px-4">
                     <span className={`inline-flex items-center space-x-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(sample.status)}`}>
@@ -431,13 +434,24 @@ const PatientRecords = () => {
                   <td className="py-3 px-4">
                     <div className="flex items-center space-x-2">
                       {sample.status === 'Completed' ? (
-                        <button 
-                          onClick={() => navigate(`/patients/${sample.patientId}?tab=reports`)}
-                          className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-1"
-                        >
-                          <FileText className="h-3 w-3" />
-                          <span>View Report</span>
-                        </button>
+                        <>
+                          <button 
+                            onClick={() => navigate(`/patients/${sample.patientId}?tab=reports`)}
+                            className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+                          >
+                            <FileText className="h-3 w-3" />
+                            <span>View Report</span>
+                          </button>
+                          {user?.role === 'doctor' && (
+                            <button 
+                              onClick={() => navigate(`/ivf-success-score/${sample.id}`)}
+                              className="text-sm text-purple-600 hover:text-purple-800 flex items-center space-x-1"
+                            >
+                              <Activity className="h-3 w-3" />
+                              <span>IVF Success Score</span>
+                            </button>
+                          )}
+                        </>
                       ) : sample.status === 'Flagged' ? (
                         <button 
                           onClick={() => handleSampleClick(sample.patientId)}

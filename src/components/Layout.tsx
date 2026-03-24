@@ -9,7 +9,8 @@ import {
   X,
   LogOut,
   Settings,
-  CreditCard
+  CreditCard,
+  FileText
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
@@ -29,6 +30,7 @@ const Layout = ({ children }: LayoutProps) => {
         { name: 'Sample Records', href: '/patient-records', icon: Users },
         { name: 'Add Sample', href: '/add-patient', icon: UserPlus },
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'IVF Success Report', href: '/ivf-success-report', icon: FileText },
         { name: 'Billing', href: '/billing', icon: CreditCard },
         { name: 'Settings', href: '/settings', icon: Settings },
       ]
@@ -39,6 +41,7 @@ const Layout = ({ children }: LayoutProps) => {
       { name: 'Patient Records', href: '/patient-records', icon: Users },
       { name: 'Add Patient', href: '/add-patient', icon: UserPlus },
       { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { name: 'IVF Success Report', href: '/ivf-success-report', icon: FileText },
       { name: 'Billing', href: '/billing', icon: CreditCard },
       { name: 'Settings', href: '/settings', icon: Settings },
     ]
