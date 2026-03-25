@@ -24,7 +24,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="shadow-lg border-b border-pink-200" style={{ background: 'linear-gradient(90deg, #ffffff 0%, #b0bec5 18%, #1a237e 55%, #050a14 100%)' }}>
+      <header className="shadow-lg border-b border-pink-200" style={{ background: 'linear-gradient(90deg, #c9c0f1ff 0%, #b0bec5 18%, #1a237e 55%, #050a14 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-24">
             {/* Logo */}

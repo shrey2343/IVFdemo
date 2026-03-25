@@ -26,7 +26,7 @@ interface User {
 interface AuthContextType {
   user: User | null
   login: (email: string, password: string, userType?: 'doctor' | 'wetlab') => Promise<boolean>
-  signup: (name: string, email: string, password: string, plan?: any) => Promise<boolean>
+  signup: (name: string, email: string, password: string, plan?: any, role?: 'doctor' | 'wetlab', additionalData?: any) => Promise<boolean>
   logout: () => void
   isLoading: boolean
   canAddPatient: () => boolean
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Mock authentication - in real app, this would be an API call
     let mockUser: User | null = null
     
-    if (email === 'doctor@example.com' && password === 'Shrey@2343' && userType === 'doctor') {
+    if ((email === 'doctor@example.com' && (password === 'Doctor@123' || password === 'Shrey@2343') && userType === 'doctor')) {
       mockUser = {
         id: '1',
         name: 'Dr. Sarah Johnson',
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           isActive: true
         }
       }
-    } else if (email === 'wetlab@example.com' && password === 'Shrey@2343' && userType === 'wetlab') {
+    } else if (email === 'wetlab@example.com' && (password === 'Wetlab@123' || password === 'Shrey@2343') && userType === 'wetlab') {
       mockUser = {
         id: '2',
         name: 'IVF 360 Wet Lab',
@@ -131,7 +131,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return false
   }
 
-  const signup = async (name: string, email: string, password: string, plan?: any): Promise<boolean> => {
+  const signup = async (name: string, email: string, password: string, plan?: any, role: 'doctor' | 'wetlab' = 'doctor', additionalData?: any): Promise<boolean> => {
     setIsLoading(true)
     
     // Simulate API call
@@ -142,14 +142,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       id: Date.now().toString(),
       name: name,
       email: email,
-      role: 'doctor',
+      role: role, // Use the selected role
       profile: {
         firstName: name.split(' ')[0] || name,
         lastName: name.split(' ').slice(1).join(' ') || '',
         phone: '',
-        specialization: '',
-        hospital: '',
-        licenseNumber: '',
+        specialization: additionalData?.specialization || additionalData?.labName || (role === 'doctor' ? 'Reproductive Endocrinology' : 'IVF Testing & Analysis'),
+        hospital: additionalData?.hospital || additionalData?.labAddress || (role === 'doctor' ? '' : 'Reproductive Testing Center'),
+        licenseNumber: additionalData?.licenseNumber || additionalData?.certificationNumber || '',
         bio: ''
       },
       plan: plan ? {

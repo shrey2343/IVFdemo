@@ -149,13 +149,19 @@ const AddPatient = () => {
   const isWetLab = user?.role === 'wetlab'
   const entityName = isWetLab ? 'Sample' : 'Patient'
 
-  const sections = [
-    { id: 0, title: `${entityName} Details` },
-    { id: 1, title: 'Referring Clinician' },
-    { id: 2, title: 'Sample Details',  },
-    { id: 3, title: 'Cycle History'},
-    { id: 4, title: 'Test Requested' },
-    { id: 5, title: 'Embryo Details' }
+  const sections = isWetLab ? [
+    { id: 0, title: `${entityName} Details`, icon: User },
+    { id: 1, title: 'Referring Clinician', icon: Heart },
+    { id: 2, title: 'Cycle History', icon: ImageIcon },
+    { id: 3, title: 'Sample Details', icon: TestTube },
+    { id: 4, title: 'Test Requested', icon: ClipboardList },
+    { id: 5, title: 'Embryo Details', icon: Table2 }
+  ] : [
+    { id: 0, title: `${entityName} Details`, icon: User },
+    { id: 1, title: 'Cycle History', icon: ImageIcon },
+    { id: 2, title: 'Sample Details', icon: TestTube },
+    { id: 3, title: 'Test Requested', icon: ClipboardList },
+    { id: 4, title: 'Embryo Details', icon: Table2 }
   ]
 
   const handleInputChange = (field: string, value: any) => {
@@ -383,6 +389,37 @@ const AddPatient = () => {
           </div>
         </div>
 
+        <!-- Cycle History -->
+        <div class="section">
+          <div class="section-title">Cycle History</div>
+          <div class="field-group">
+            <div class="field">
+              <div class="field-label">Hyperstimulation</div>
+              <div class="field-value">${formData.hyperstimulationYes ? 'Yes' : formData.hyperstimulationNo ? 'No' : 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Fertilisation Method</div>
+              <div class="field-value">${formData.fertilisationIVF ? 'IVF' : formData.fertilisationICSI ? 'ICSI' : 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Date of Egg Retrieval</div>
+              <div class="field-value">${formData.eggRetrievalDd || 'DD'}/${formData.eggRetrievalMm || 'MM'}/${formData.eggRetrievalYyyy || 'YYYY'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">No. of Embryos Retrieved</div>
+              <div class="field-value">${formData.noOfEmbryosRetrieved || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">No. of Biopsied Embryos</div>
+              <div class="field-value">${formData.noOfBiopsiedEmbryos || 'N/A'}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Date/Time for Embryo Transfer</div>
+              <div class="field-value">${formData.embryoTransferDd || 'DD'}/${formData.embryoTransferMm || 'MM'}/${formData.embryoTransferYyyy || 'YYYY'} ${formData.embryoTransferTime || ''}</div>
+            </div>
+          </div>
+        </div>
+
         <!-- Sample Details -->
         <div class="section">
           <div class="section-title">Sample Details</div>
@@ -439,37 +476,6 @@ const AddPatient = () => {
             <div class="checkbox-group">
               ${formData.rebiopsyYes ? '<span>✓ Yes</span>' : ''}
               ${formData.rebiopsyNo ? '<span>✓ No</span>' : ''}
-            </div>
-          </div>
-        </div>
-
-        <!-- Cycle History -->
-        <div class="section">
-          <div class="section-title">Cycle History</div>
-          <div class="field-group">
-            <div class="field">
-              <div class="field-label">Hyperstimulation</div>
-              <div class="field-value">${formData.hyperstimulationYes ? 'Yes' : formData.hyperstimulationNo ? 'No' : 'N/A'}</div>
-            </div>
-            <div class="field">
-              <div class="field-label">Fertilisation Method</div>
-              <div class="field-value">${formData.fertilisationIVF ? 'IVF' : formData.fertilisationICSI ? 'ICSI' : 'N/A'}</div>
-            </div>
-            <div class="field">
-              <div class="field-label">Date of Egg Retrieval</div>
-              <div class="field-value">${formData.eggRetrievalDd || 'DD'}/${formData.eggRetrievalMm || 'MM'}/${formData.eggRetrievalYyyy || 'YYYY'}</div>
-            </div>
-            <div class="field">
-              <div class="field-label">No. of Embryos Retrieved</div>
-              <div class="field-value">${formData.noOfEmbryosRetrieved || 'N/A'}</div>
-            </div>
-            <div class="field">
-              <div class="field-label">No. of Biopsied Embryos</div>
-              <div class="field-value">${formData.noOfBiopsiedEmbryos || 'N/A'}</div>
-            </div>
-            <div class="field">
-              <div class="field-label">Date/Time for Embryo Transfer</div>
-              <div class="field-value">${formData.embryoTransferDd || 'DD'}/${formData.embryoTransferMm || 'MM'}/${formData.embryoTransferYyyy || 'YYYY'} ${formData.embryoTransferTime || ''}</div>
             </div>
           </div>
         </div>
@@ -779,7 +785,7 @@ const AddPatient = () => {
     
     localStorage.setItem('patientFormData', JSON.stringify(dataToSave))
     
-    // Generate HTML content for PDF
+    // Generate HTML content for PDF (only till Cycle History)
     const printHTML = `
       <!DOCTYPE html>
       <html>
@@ -912,7 +918,8 @@ const AddPatient = () => {
           </div>
         </div>
 
-        <!-- Referring Clinician -->
+        ${isWetLab ? `
+        <!-- Referring Clinician (Only for Wetlab) -->
         <div class="section">
           <div class="section-title">Referring Clinician</div>
           <div class="field-group">
@@ -942,46 +949,7 @@ const AddPatient = () => {
             </div>
           </div>
         </div>
-
-        <!-- Sample Details -->
-        <div class="section">
-          <div class="section-title">Sample Details</div>
-          <div class="field-group">
-            <div class="field">
-              <div class="field-label">Sample Collection Date</div>
-              <div class="field-value">${formData.sampleCollectionDate || 'N/A'}</div>
-            </div>
-            <div class="field">
-              <div class="field-label">Sample Collection Time</div>
-              <div class="field-value">${formData.sampleCollectionTime || 'N/A'}</div>
-            </div>
-            <div class="field">
-              <div class="field-label">No. of Embryos</div>
-              <div class="field-value">${formData.noOfEmbryos || 'N/A'}</div>
-            </div>
-            <div class="field">
-              <div class="field-label">Day of Biopsy</div>
-              <div class="field-value">${formData.dayOfBiopsy || 'N/A'}</div>
-            </div>
-            <div class="field">
-              <div class="field-label">Age of Donor</div>
-              <div class="field-value">${formData.ageOfDonor || 'N/A'}</div>
-            </div>
-            <div class="field">
-              <div class="field-label">Previous Patient ID</div>
-              <div class="field-value">${formData.previousPatientId || 'N/A'}</div>
-            </div>
-          </div>
-          <div class="field">
-            <div class="field-label">Sample Types</div>
-            <div class="checkbox-group">
-              ${formData.edtaBlood ? '<span>✓ EDTA Blood</span>' : ''}
-              ${formData.couple ? '<span>✓ Couple</span>' : ''}
-              ${formData.affectedIndividual ? '<span>✓ Affected Individual</span>' : ''}
-              ${formData.embryos ? '<span>✓ Embryos</span>' : ''}
-            </div>
-          </div>
-        </div>
+        ` : ''}
 
         <!-- Cycle History -->
         <div class="section">
@@ -1051,12 +1019,8 @@ const AddPatient = () => {
                 !canAddPatient()
                   ? 'text-gray-400 cursor-not-allowed'
                   : currentSection === section.id
-                    ? section.id === 2 // Tests section
-                      ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white border-2 border-pink-400 shadow-lg'
-                      : 'bg-pink-100 text-pink-700 border-2 border-pink-300'
-                    : section.id === 2 // Tests section when not active
-                      ? 'text-pink-600 hover:text-pink-700 hover:bg-pink-50 border border-pink-200'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                    ? 'bg-pink-100 text-pink-700 border-2 border-pink-300'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
               }`}
             >
               
@@ -1083,38 +1047,38 @@ const AddPatient = () => {
               />
             )}
 
-            {/* Referring Clinician Section */}
-            {currentSection === 1 && (
+            {/* Referring Clinician Section - Only for Wetlab */}
+            {isWetLab && currentSection === 1 && (
               <ComorbiditiesSection 
                 formData={formData} 
                 onChange={handleInputChange} 
               />
             )}
 
-            {/* Sample Details Section */}
-            {currentSection === 2 && (
-              <TestsSection 
-                formData={formData} 
-                onChange={handleInputChange} 
-              />
-            )}
-
             {/* Cycle History Section */}
-            {currentSection === 3 && (
+            {currentSection === (isWetLab ? 2 : 1) && (
               <CycleHistorySection 
                 formData={formData} 
                 onChange={handleInputChange} 
               />
             )}
 
-            {currentSection === 4 && (
+            {/* Sample Details Section */}
+            {currentSection === (isWetLab ? 3 : 2) && (
+              <TestsSection 
+                formData={formData} 
+                onChange={handleInputChange} 
+              />
+            )}
+
+            {currentSection === (isWetLab ? 4 : 3) && (
               <TestRequestedSection
                 formData={formData}
                 onChange={handleInputChange}
               />
             )}
 
-            {currentSection === 5 && (
+            {currentSection === (isWetLab ? 5 : 4) && (
               <EmbryoDetailsSection formData={formData} onChange={handleInputChange} />
             )}
 
@@ -1130,7 +1094,7 @@ const AddPatient = () => {
               
               <div className="flex items-center space-x-3">
                 {/* Show Save and Print button only in Cycle History section */}
-                {currentSection === 3 && (
+                {currentSection === (isWetLab ? 2 : 1) && (
                   <button
                     onClick={handleSaveAndPrint}
                     className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-lg hover:from-blue-700 hover:to-green-700 transition-all shadow-md"

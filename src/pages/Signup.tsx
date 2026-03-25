@@ -1,16 +1,24 @@
 import { useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Activity, ArrowRight, Eye, EyeOff, Mail, Lock, User, ArrowLeft } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, Mail, Lock, User, ArrowLeft, Stethoscope, FlaskConical } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 const Signup = () => {
-  const [currentStep, setCurrentStep] = useState(1) // Only 1 step now - Account Info
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: '' as 'doctor' | 'wetlab' | '',
+    // Doctor-specific fields
+    specialization: '',
+    hospital: '',
+    licenseNumber: '',
+    // Wetlab-specific fields
+    labName: '',
+    labAddress: '',
+    certificationNumber: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -18,10 +26,6 @@ const Signup = () => {
   const [acceptTerms, setAcceptTerms] = useState(false)
   const { signup, isLoading } = useAuth()
   const navigate = useNavigate()
-
-  const steps = [
-    { id: 1, title: 'Create Account', description: 'Get your free test' }
-  ]
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -33,6 +37,12 @@ const Signup = () => {
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
+    // Validate role selection
+    if (!formData.role) {
+      setError('Please select your role (Doctor or Wetlab)')
+      return
+    }
 
     // Validate account info
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
@@ -52,8 +62,28 @@ const Signup = () => {
       return
     }
 
-    // Create account with free trial
-    const success = await signup(formData.name, formData.email, formData.password, { type: 'free-trial', name: 'Free Trial' })
+    // Prepare additional data based on role
+    const additionalData = formData.role === 'doctor' 
+      ? {
+          specialization: formData.specialization,
+          hospital: formData.hospital,
+          licenseNumber: formData.licenseNumber
+        }
+      : {
+          labName: formData.labName,
+          labAddress: formData.labAddress,
+          certificationNumber: formData.certificationNumber
+        }
+
+    // Create account with free trial and selected role
+    const success = await signup(
+      formData.name, 
+      formData.email, 
+      formData.password, 
+      { type: 'free-trial', name: 'Free Trial' },
+      formData.role,
+      additionalData
+    )
     if (success) {
       navigate('/dashboard')
     } else {
@@ -98,38 +128,12 @@ const Signup = () => {
             
             </Link>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-white drop-shadow-lg">
-            Create your account
-          </h2>
           
-          {/* Step Indicator */}
-          <div className="mt-8 flex justify-center">
-            <div className="flex items-center space-x-4">
-              {steps.map((step, index) => (
-                <div key={step.id} className="flex items-center">
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                    currentStep >= step.id 
-                      ? 'bg-pink-600 border-pink-600 text-white' 
-                      : 'border-white/50 text-white/50'
-                  }`}>
-                    {step.id}
-                  </div>
-                  <div className="ml-3 text-white">
-                    <p className="text-sm font-medium">{step.title}</p>
-                    <p className="text-xs text-white/70">{step.description}</p>
-                  </div>
-                  {index < steps.length - 1 && (
-                    <ArrowRight className="h-5 w-5 text-white/50 mx-4" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          
         </motion.div>
 
         {/* Step Content */}
         <motion.div
-          key={currentStep}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
@@ -138,13 +142,9 @@ const Signup = () => {
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl py-8 px-4 sm:px-10">
               <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-green-500/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-3xl">🎉</span>
-                </div>
+               
                 <h3 className="text-xl font-bold text-white mb-2">Get Your Free Test!</h3>
-                <p className="text-white/80 text-sm">
-                  Create your account and get your first genetic test absolutely free. No payment required.
-                </p>
+               
               </div>
 
               <form className="space-y-6" onSubmit={handleSubmit}>
@@ -157,6 +157,74 @@ const Signup = () => {
                     {error}
                   </motion.div>
                 )}
+
+                {/* Role Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-white mb-3">
+                    Select Your Role
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setFormData(prev => ({ ...prev, role: 'doctor' }))}
+                      className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                        formData.role === 'doctor'
+                          ? 'bg-pink-500/30 border-pink-400 shadow-lg'
+                          : 'bg-white/10 border-white/30 hover:bg-white/20'
+                      }`}
+                    >
+                      <div className="flex flex-col items-center space-y-2">
+                        <Stethoscope className={`h-8 w-8 ${formData.role === 'doctor' ? 'text-pink-300' : 'text-white'}`} />
+                        <span className={`text-sm font-medium ${formData.role === 'doctor' ? 'text-white' : 'text-gray-200'}`}>
+                          Doctor
+                        </span>
+                      </div>
+                      {formData.role === 'doctor' && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-2 right-2 w-5 h-5 bg-pink-400 rounded-full flex items-center justify-center"
+                        >
+                          <svg className="w-3 h-3 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M5 13l4 4L19 7"></path>
+                          </svg>
+                        </motion.div>
+                      )}
+                    </motion.button>
+
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setFormData(prev => ({ ...prev, role: 'wetlab' }))}
+                      className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                        formData.role === 'wetlab'
+                          ? 'bg-blue-500/30 border-blue-400 shadow-lg'
+                          : 'bg-white/10 border-white/30 hover:bg-white/20'
+                      }`}
+                    >
+                      <div className="flex flex-col items-center space-y-2">
+                        <FlaskConical className={`h-8 w-8 ${formData.role === 'wetlab' ? 'text-blue-300' : 'text-white'}`} />
+                        <span className={`text-sm font-medium ${formData.role === 'wetlab' ? 'text-white' : 'text-gray-200'}`}>
+                          Wetlab
+                        </span>
+                      </div>
+                      {formData.role === 'wetlab' && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-2 right-2 w-5 h-5 bg-blue-400 rounded-full flex items-center justify-center"
+                        >
+                          <svg className="w-3 h-3 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M5 13l4 4L19 7"></path>
+                          </svg>
+                        </motion.div>
+                      )}
+                    </motion.button>
+                  </div>
+                </div>
 
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
@@ -272,6 +340,127 @@ const Signup = () => {
                   </div>
                 </div>
 
+                {/* Role-specific fields */}
+                {formData.role === 'doctor' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-4 pt-2"
+                  >
+                    <div className="border-t border-white/20 pt-4">
+                      <h4 className="text-sm font-medium text-white mb-4">Doctor Information</h4>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <label htmlFor="specialization" className="block text-sm font-medium text-white mb-2">
+                            Specialization
+                          </label>
+                          <input
+                            id="specialization"
+                            name="specialization"
+                            type="text"
+                            value={formData.specialization}
+                            onChange={handleChange}
+                            className="appearance-none block w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400/50 transition-all duration-300"
+                            placeholder="e.g., Reproductive Endocrinology"
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="hospital" className="block text-sm font-medium text-white mb-2">
+                            Hospital/Clinic Name
+                          </label>
+                          <input
+                            id="hospital"
+                            name="hospital"
+                            type="text"
+                            value={formData.hospital}
+                            onChange={handleChange}
+                            className="appearance-none block w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400/50 transition-all duration-300"
+                            placeholder="Enter hospital or clinic name"
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="licenseNumber" className="block text-sm font-medium text-white mb-2">
+                            Medical License Number
+                          </label>
+                          <input
+                            id="licenseNumber"
+                            name="licenseNumber"
+                            type="text"
+                            value={formData.licenseNumber}
+                            onChange={handleChange}
+                            className="appearance-none block w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400/50 transition-all duration-300"
+                            placeholder="Enter your license number"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {formData.role === 'wetlab' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-4 pt-2"
+                  >
+                    <div className="border-t border-white/20 pt-4">
+                      <h4 className="text-sm font-medium text-white mb-4">Laboratory Information</h4>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <label htmlFor="labName" className="block text-sm font-medium text-white mb-2">
+                            Laboratory Name
+                          </label>
+                          <input
+                            id="labName"
+                            name="labName"
+                            type="text"
+                            value={formData.labName}
+                            onChange={handleChange}
+                            className="appearance-none block w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300"
+                            placeholder="Enter laboratory name"
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="labAddress" className="block text-sm font-medium text-white mb-2">
+                            Laboratory Address
+                          </label>
+                          <input
+                            id="labAddress"
+                            name="labAddress"
+                            type="text"
+                            value={formData.labAddress}
+                            onChange={handleChange}
+                            className="appearance-none block w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300"
+                            placeholder="Enter laboratory address"
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="certificationNumber" className="block text-sm font-medium text-white mb-2">
+                            Certification Number
+                          </label>
+                          <input
+                            id="certificationNumber"
+                            name="certificationNumber"
+                            type="text"
+                            value={formData.certificationNumber}
+                            onChange={handleChange}
+                            className="appearance-none block w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300"
+                            placeholder="Enter certification number"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
                 <div className="flex items-center">
                   <input
                     id="accept-terms"
@@ -289,20 +478,7 @@ const Signup = () => {
                   </label>
                 </div>
 
-                <div className="bg-green-500/20 backdrop-blur-sm border border-green-400/30 rounded-xl p-4">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                      <span className="text-white font-bold text-sm">1</span>
-                    </div>
-                    <div>
-                      <p className="text-green-300 font-medium text-sm">Free Test Included</p>
-                      <p className="text-green-200 text-xs">
-                        Get your first genetic test free - no payment required
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
+                
                 <div className="flex space-x-4">
                   <Link
                     to="/login"
